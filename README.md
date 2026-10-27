@@ -147,11 +147,26 @@
 ## Project Structure
 
 ```
-웹프로그래밍응용_기말프로젝트/
+WebApplication_TermProject/
 ├── src/
 │   └── main/
-│       ├── java/
-│       └── webapp/
+│       └── java/                    # Java 소스 (Servlet, DAO, DTO 등)
+├── WebContents/                     # 웹 루트 (JSP, HTML, CSS, JS, 이미지)
+│   ├── META-INF/
+│   │   └── MANIFEST.MF
+│   └── WEB-INF/
+│       ├── lib/                     # 외부 라이브러리 (WAR 배포 시 포함)
+│       │   ├── mysql-connector-j-9.7.0.jar
+│       │   ├── commons-dbcp-1.4.jar
+│       │   ├── commons-pool-1.5.7.jar
+│       │   ├── taglibs-standard-impl-1.2.5.jar
+│       │   ├── taglibs-standard-spec-1.2.5.jar
+│       │   └── cos.jar
+│       └── web.xml                  # 배포 서술자 (Servlet 4.0)
+├── build/                           # 컴파일 결과물 (git 제외)
+├── .settings/                       # Eclipse 프로젝트 설정 (Facet, Context Root)
+├── .classpath                       # Eclipse 빌드 경로 (JavaSE-17, Tomcat v9.0)
+├── .project                         # Eclipse 프로젝트 정의
 ├── LICENSE
 ├── .gitignore
 └── README.md
@@ -165,11 +180,19 @@
 
 | 항목 | 버전 |
 |---|---|
-| JDK | |
-| Apache Tomcat | |
-| MySQL | |
-| MySQL Connector/J | |
-| IDE | |
+| OS | macOS 27.0.1 |
+| Chip / Memory | Apple M5 / 24 GB |
+| JDK | OpenJDK 17.0.19 (Homebrew) |
+| Apache Tomcat | 9.0.117 (Servlet 4.0 / JSP 2.3) |
+| Dynamic Web Module | 4.0 |
+| MySQL | 9.6.0 (Homebrew) |
+| MySQL Connector/J | 9.7.0 |
+| JSTL | taglibs-standard 1.2.5 |
+| Commons DBCP / Pool | 1.4 / 1.5.7 |
+| IDE | Eclipse IDE for Enterprise Java and Web Developers 4.39 (2026-03) |
+| Editor | Visual Studio Code 1.143.1 |
+| DB Client | DBeaver 26.2.1 |
+| Git | 2.54.0 |
 
 ### DB 초기화
 
@@ -205,10 +228,10 @@ See the [LICENSE](LICENSE) file for details.
 
 ## Author
 
-Name: Jiyong Kim (ZYONGE)
+Name: Jiyong Kim, Hawon Yoon, Minjun Kim
 
-Profile: https://github.com/ZYONGE
+Profile: https://github.com/ZYONGE, https://github.com/yhw2528-cmd, https://github.com/minjun2388
 
 ## Motivation
 
-A+를 위하여 !!!!
+For A+ !!!!

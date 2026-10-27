@@ -8,7 +8,7 @@ desktop.ini
 
 # Jar — 일반 jar는 제외하되, WAR 배포에 포함돼야 하는 WEB-INF/lib는 추적
 *.jar
-!src/main/webapp/WEB-INF/lib/*.jar
+!WebContents/WEB-INF/lib/*.jar
 
 # Deployment artifacts (Eclipse Export → WAR file 결과물)
 *.war
@@ -39,11 +39,11 @@ Servers/
 /logs/
 
 # DB 접속 정보 — context.xml.example 을 복사해 context.xml 로 사용
-src/main/webapp/META-INF/context.xml
+WebContents/META-INF/context.xml
 
 # 관리자 상품 이미지 업로드 경로 (런타임 생성 파일)
-src/main/webapp/upload/*
-!src/main/webapp/upload/.gitkeep
+WebContents/upload/*
+!WebContents/upload/.gitkeep
 
 # Logs and temp files
 *.log
