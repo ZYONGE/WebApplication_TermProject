@@ -63,8 +63,6 @@
 
 ## Project Overview
 
-<!-- 프로젝트 한 줄 소개 -->
-
 - **아키텍처**:
 - **DB 연동**:
 - **인증 방식**:
@@ -180,19 +178,14 @@ WebApplication_TermProject/
 
 | 항목 | 버전 |
 |---|---|
-| OS | macOS 27.0.1 |
-| Chip / Memory | Apple M5 / 24 GB |
-| JDK | OpenJDK 17.0.19 (Homebrew) |
+| JDK | OpenJDK 17.0.19|
 | Apache Tomcat | 9.0.117 (Servlet 4.0 / JSP 2.3) |
 | Dynamic Web Module | 4.0 |
-| MySQL | 9.6.0 (Homebrew) |
+| MySQL | 9.6.0|
 | MySQL Connector/J | 9.7.0 |
-| JSTL | taglibs-standard 1.2.5 |
-| Commons DBCP / Pool | 1.4 / 1.5.7 |
 | IDE | Eclipse IDE for Enterprise Java and Web Developers 4.39 (2026-03) |
-| Editor | Visual Studio Code 1.143.1 |
-| DB Client | DBeaver 26.2.1 |
-| Git | 2.54.0 |
+| Editor | Visual Studio Code|
+| DB Client | DBeaver, Heidisql |
 
 ### DB 초기화
 
