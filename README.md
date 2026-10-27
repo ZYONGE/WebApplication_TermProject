@@ -148,8 +148,44 @@
 WebApplication_TermProject/
 ├── src/
 │   └── main/
-│       └── java/                    # Java 소스 (Servlet, DAO, DTO 등)
-├── WebContents/                     # 웹 루트 (JSP, HTML, CSS, JS, 이미지)
+│       └── java/
+│           └── shop/
+│               ├── controller/      # Servlet
+│               ├── service/         # 비즈니스 로직
+│               ├── dao/             # DB 접근 (SQL)
+│               ├── dto/             # 데이터 전달 객체
+│               └── util/            # DB 연결, 공통 유틸
+├── WebContents/                     # 웹 루트
+│   ├── common/                      # 공통 JSP (header, footer)
+│   ├── member/                      # 로그인, 회원가입
+│   ├── product/                     # 상품 목록, 상세
+│   ├── cart/                        # 장바구니
+│   ├── order/                       # 주문서, 주문완료, 주문내역
+│   ├── mypage/                      # 마이페이지
+│   ├── admin/                       # 관리자 페이지
+│   ├── css/
+│   │   ├── base/
+│   │   │   ├── reset.css            # 브라우저 기본 스타일 초기화
+│   │   │   ├── variables.css        # 디자인 토큰 (색상, 폰트, 간격)
+│   │   │   └── layout.css           # header, nav, footer, container
+│   │   ├── components/
+│   │   │   ├── popup.css            # 팝업, 모달, 토스트
+│   │   │   ├── button.css
+│   │   │   ├── form.css
+│   │   │   ├── card.css             # 상품 카드
+│   │   │   ├── table.css            # 목록 테이블
+│   │   │   └── pagination.css
+│   │   └── pages/                   # 라우트(페이지)별 스타일
+│   │       ├── main.css
+│   │       ├── member.css
+│   │       ├── product.css
+│   │       ├── cart.css
+│   │       ├── order.css
+│   │       ├── mypage.css
+│   │       └── admin.css
+│   ├── js/
+│   ├── images/                      # 정적 이미지 (로고, 배너, 아이콘)
+│   ├── upload/                      # 관리자 업로드 상품 이미지 (git 제외)
 │   ├── META-INF/
 │   │   └── MANIFEST.MF
 │   └── WEB-INF/
@@ -161,6 +197,12 @@ WebApplication_TermProject/
 │       │   ├── taglibs-standard-spec-1.2.5.jar
 │       │   └── cos.jar
 │       └── web.xml                  # 배포 서술자 (Servlet 4.0)
+├── sql/
+│   ├── schema.sql                   # 테이블 생성 DDL
+│   └── data.sql                     # 샘플 데이터
+├── docs/
+│   ├── ERD.md                       # ERD 설계 문서
+│   └── CRUD.md                      # CRUD 매트릭스
 ├── build/                           # 컴파일 결과물 (git 제외)
 ├── .settings/                       # Eclipse 프로젝트 설정 (Facet, Context Root)
 ├── .classpath                       # Eclipse 빌드 경로 (JavaSE-17, Tomcat v9.0)
