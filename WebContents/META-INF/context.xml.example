@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  DB 커넥션 풀 설정 예시.
+
+  사용법: 이 파일을 같은 디렉터리에 context.xml 로 복사한 뒤 값을 채운다.
+          context.xml 은 .gitignore 로 추적 제외되므로 접속 정보가 커밋되지 않는다.
+
+      cp WebContents/META-INF/context.xml.example WebContents/META-INF/context.xml
+
+  주의: name / username / password / url 의 스키마명은 sql/schema.sql 과 반드시 일치시킨다.
+        (담당: DB Schema 트랙 — docs/tracks/SCHEMA.md)
+-->
+<Context>
+  <Resource
+      name="jdbc/shop"
+      auth="Container"
+      type="javax.sql.DataSource"
+      driverClassName="com.mysql.cj.jdbc.Driver"
+      url="jdbc:mysql://localhost:3306/CHANGE_ME_SCHEMA?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=Asia/Seoul&amp;characterEncoding=UTF-8"
+      username="CHANGE_ME_USER"
+      password="CHANGE_ME_PASSWORD"
+      maxTotal="20"
+      maxIdle="10"
+      maxWaitMillis="10000"
+      validationQuery="SELECT 1"
+      testOnBorrow="true"
+      removeAbandonedOnBorrow="true"
+      removeAbandonedTimeout="60" />
+</Context>
