@@ -50,6 +50,7 @@
 11. 프로젝트 완성도는 **프론트엔드 → 배선&서버 → DB** 의 원활한 흐름으로 평가된다.
     - 즉, 어느 한 계층만 화려한 것보다 **세 계층이 끊기지 않고 연결되는 것**이 최우선 평가 기준이다.
 12. 개발 인원은 3명(Jiyong Kim, Hawon Yoon, Minjun Kim)이며, **이 세션은 프로젝트 매니저를 맡는다.**
+13. **추가 브랜치·피처 브랜치를 생성하지 않는다. 오로지 `main` 브랜치 위에서만 작업한다.** (§ 4.4)
 
 ---
 
@@ -106,7 +107,7 @@
 
 | 소유 세션 | 전담 파일 / 디렉터리 | 트랙 문서 |
 |---|---|---|
-| UI / 디자인 테마 | `WebContents/css/**`, `WebContents/mockup/**`, `WebContents/images/**`, `WebContents/js/ui.js` | `docs/tracks/UI.md` |
+| UI / 디자인 테마 | `WebContents/css/**` (결정 기록: `css/DECISIONS.md`), `WebContents/mockup/**`, `WebContents/images/**`, `WebContents/js/ui.js` | `docs/tracks/UI.md` |
 | JSP 배선 | `WebContents/**/*.jsp`, `src/main/java/shop/**`, `WebContents/WEB-INF/web.xml`, `WebContents/META-INF/context.xml`, `WebContents/js/validate.js` | `docs/tracks/JSP.md` |
 | ERD | `docs/ERD.md`, `docs/CRUD.md` | `docs/tracks/ERD.md` |
 | DB Schema | `sql/schema.sql`, `sql/data.sql` | `docs/tracks/SCHEMA.md` |
@@ -116,8 +117,20 @@
 
 - 자기 소유가 아닌 파일은 **읽기만** 한다. 수정이 필요하면 트랙 문서 §7에 적고 PM을 거쳐 소유 세션에 넘긴다.
 - 각 트랙 세션은 작업 시작 시 자기 트랙 문서를 읽고, 끝낼 때 §6 진행 로그와 §7 요청을 **직접 갱신**한다. 이것이 세션 간 인계 경로다.
+- UI 트랙의 결정(토큰 변수명·클래스명·팝업 패턴)은 `WebContents/css/DECISIONS.md`에 기록된다. **JSP 배선 트랙은 마크업을 쓰기 전 이 문서를 읽는다.**
 - `README.md`는 모든 트랙이 채워야 하므로 **PM이 취합**한다. 각 세션은 내용을 PM에 전달하고 직접 쓰지 않는다.
 - Eclipse 설정(`.project`, `.classpath`, `.settings/**`)과 `WEB-INF/lib/**`는 **PM만** 손댄다. Dynamic Web Project 구성이 깨지면 전 트랙이 멈춘다.
+
+**작업 디렉터리별 세션 안내** — 새 세션이 열리는 즉시 자기 역할·권한을 알도록, 각 작업 디렉터리에 중첩 `CLAUDE.md` 를 둔다. 루트 규약과 함께 자동으로 읽힌다.
+
+| 작업 디렉터리 | 세션 안내 | 대상 트랙 |
+|---|---|---|
+| `src/main/java/shop/` | `src/main/java/shop/CLAUDE.md` | JSP 배선 (`*.jsp` 포함, 두 트리에 걸침) |
+| `docs/` | `docs/CLAUDE.md` | ERD 설계 (PM 파일과 공유하는 디렉터리) |
+| `sql/` | `sql/CLAUDE.md` | DB Schema |
+| `WebContents/css/` | — | UI/UX는 세션 안내 없이 `css/DECISIONS.md`(결정 기록) + `docs/tracks/UI.md` 운용 |
+
+각 세션 안내는 ①세션 정체성 ②즉시 시작 체크리스트 ③쓰기 권한 ④읽기 전용 ⑤능력 범위 ⑥타 세션 인터페이스 ⑦충돌 수칙·git 수칙 구성이다.
 
 **공유 지점 해소 규칙** — 두 트랙의 관심이 겹치는 곳은 아래로 확정한다.
 
@@ -144,7 +157,27 @@ ERD 없이 배선을, 컨셉 없이 UI를 동시에 진행하려면 다음 **계
 ### 4.3 통합 점검
 
 - 항목 11의 평가 기준에 따라, 병렬 산출물이 쌓이면 **프론트 → 배선 → DB 왕복 흐름 통합 점검**을 PM 세션이 수행한다.
-- 각 세션이 별도 worktree / 브랜치에서 작업한 경우, 통합 점검 전에 사용자 승인을 받아 병합한다. PM이 임의로 병합하지 않는다.
+- 모든 트랙이 `main` 위에서 작업하므로 **병합 단계가 없다.** 통합 점검은 현재 `main` 상태를 그대로 대상으로 한다.
+- 통합 점검 시점에 미완 상태로 섞인 변경이 있으면, 되돌리지 않고 해당 트랙 세션에 완료를 요청한다.
+
+### 4.4 브랜치 전략 — `main` 단일 브랜치
+
+- **추가 브랜치 · 피처 브랜치 · worktree 를 만들지 않는다. 모든 작업은 `main` 위에서 직접 한다.** (공지 항목 13)
+- PM이 서브 세션을 열 때도 별도 worktree를 쓰지 않고 **같은 작업 폴더를 공유**한다.
+- 결과: **브랜치 격리라는 안전망이 없다.** 충돌을 막는 것은 § 4.1 파일 소유권과 아래 수칙뿐이다.
+
+**동시 작업 수칙** (`main` 공유 전제)
+
+| 수칙 | 이유 |
+|---|---|
+| 커밋 전 반드시 `git status` 로 변경 목록을 확인한다 | 다른 세션의 작업이 같은 트리에 섞여 있을 수 있다 |
+| `git add -A` · `git add .` **금지.** 자기 소유 파일만 경로로 지정해 스테이징 | 타 트랙 변경을 끌어가면 그 세션의 작업이 미완 상태로 커밋된다 |
+| 자기 소유가 아닌 파일이 변경돼 있으면 **그대로 둔다** | 다른 세션이 진행 중이라는 신호다 |
+| 한 커밋에는 **한 트랙의 변경만** 담는다 | 되돌릴 때 트랙 단위로 분리된다 |
+| **한 트랙당 세션 하나만** 연다 | 같은 트랙을 두 세션이 동시에 열면 파일 소유권 규약이 무의미해진다 |
+| 충돌 · 덮어쓰기 위험이 보이면 멈추고 PM에 보고 | `main` 위에서는 되돌리기가 전원에게 영향을 준다 |
+| `git push` 는 **PM만** 수행한다 | 원격 `main` 이력을 단일 창구로 관리 |
+| `git reset --hard` · `git checkout -- .` · 강제 푸시 금지 | 다른 세션의 미커밋 작업이 소멸한다 |
 
 ---
 
@@ -155,6 +188,7 @@ ERD 없이 배선을, 컨셉 없이 UI를 동시에 진행하려면 다음 **계
 - npm, webpack, Sass 등 프런트 빌드 체인
 - 실결제 연동, 외부 인증(OAuth/소셜 로그인)
 - 클라이언트 피드백·사용자 테스트 기반 의사결정
+- 추가 브랜치 · 피처 브랜치 · worktree 생성 (공지 항목 13)
 
 ---
 
@@ -178,6 +212,7 @@ WebContents/
 │   ├── _layout.html             #   header/footer 마크업 제시용
 │   └── *.html                   #   라우팅 페이지 + 팝업 목업
 ├── css/                         # UI 트랙
+│   └── DECISIONS.md             # [신설] UI/UX 결정 기록 (타 트랙 읽기 전용)
 ├── js/
 │   ├── ui.js                    # UI 트랙 (팝업·탭·드롭다운)
 │   └── validate.js              # JSP 배선 트랙 (폼 검증)
@@ -191,7 +226,14 @@ WebContents/
     ├── lib/                     # PM 전담 (6개 고정)
     └── web.xml                  # JSP 배선 트랙
 
+src/main/java/shop/
+└── CLAUDE.md                    # [신설] JSP 배선 세션 안내
+
+sql/
+└── CLAUDE.md                    # [신설] DB Schema 세션 안내
+
 docs/
+├── CLAUDE.md                    # [신설] ERD 설계 세션 안내
 ├── STATUS.md                    # PM 현황 보드
 ├── ERD.md, CRUD.md              # ERD 트랙 산출물
 └── tracks/                      # [신설] 트랙별 작업 지시 + 진행 로그 + 인계

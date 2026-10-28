@@ -9,6 +9,7 @@
 
 | 경로 | 내용 |
 |---|---|
+| `WebContents/css/DECISIONS.md` | **결정 기록 전용** — 토큰·클래스명·팝업 패턴 등 (타 트랙은 읽기만) |
 | `WebContents/css/base/variables.css` | 디자인 토큰 `:root` **단일 정의 지점** |
 | `WebContents/css/base/reset.css` | 브라우저 기본 스타일 초기화 |
 | `WebContents/css/base/layout.css` | header / nav / footer / container |
@@ -36,6 +37,8 @@
 
 ## 4. 작업 규칙
 
+- **결정이 생기면 즉시 `WebContents/css/DECISIONS.md` 에 기록한다.** 다른 트랙이 읽어가는 단일 창구다.
+  - 변수명·클래스명·마크업 구조·경로처럼 타 트랙에 영향 가는 결정은 이 문서 §7에도 적어 PM이 전파하게 한다.
 - 빌드 도구·전처리기·npm 금지. 순수 CSS만. (공지 항목 2)
 - 외부 CDN·원격 폰트 금지 — localhost 오프라인에서 깨지면 안 된다. (공지 항목 10)
 - 색·폰트·간격은 `variables.css`에서만 선언하고 나머지는 전부 `var()` 참조.
@@ -49,7 +52,7 @@
 
 ## 5. Done 기준
 
-- [ ] 화면 목록(라우팅 페이지 + 팝업) 기록 — PM 계약 재개 트리거
+- [ ] 화면 목록(라우팅 페이지 + 팝업) 기록 — `DECISIONS.md` §8, PM 계약 재개 트리거
 - [ ] 디자인 토큰 변수명 + CSS 클래스 네이밍 확정
 - [ ] `base/` 3개 파일 작성 완료
 - [ ] `components/` 6개 파일 작성 완료 (팝업 포함)

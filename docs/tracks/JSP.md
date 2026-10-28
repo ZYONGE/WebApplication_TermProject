@@ -1,6 +1,7 @@
 # 트랙 2 — JSP 배선 (Wiring / Server)
 
 > 소유 세션: **JSP 배선 세션** · 이 문서는 해당 세션이 직접 갱신한다.
+> 세션 생성 직후 읽을 역할·권한 안내: `src/main/java/shop/CLAUDE.md` (작업 디렉터리에서 자동 로드)
 > 최종 갱신: 2026-10-28 (PM, 초기 생성) · 상태: ⬜ 착수 전
 
 ---
@@ -23,6 +24,7 @@
 
 ## 2. 읽기만 하는 파일
 
+- `WebContents/css/DECISIONS.md` — **UI 트랙의 확정 클래스명·토큰 변수명·팝업 패턴. 마크업 작성 전 반드시 읽는다.** 수정 금지
 - `WebContents/css/**`, `WebContents/mockup/**` — 마크업·클래스명 가져오기용. **수정 금지** (UI 트랙 소유)
 - `WebContents/js/ui.js` — **수정 금지** (UI 트랙 소유)
 - `docs/ERD.md`, `sql/schema.sql` — DTO·DAO 설계 근거. **수정 금지**
