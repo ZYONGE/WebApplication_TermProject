@@ -2,7 +2,7 @@
 
 > 소유 세션: **DB Schema 세션** · 이 문서는 해당 세션이 직접 갱신한다.
 > 세션 생성 직후 읽을 역할·권한 안내: `sql/CLAUDE.md` (작업 디렉터리에서 자동 로드)
-> 최종 갱신: 2026-10-29 (DB Schema 세션, 품절 제거 반영) · 상태: 🟢 **1차 완료 — 미결 0건**
+> 최종 갱신: 2026-10-29 (DB Schema 세션, UTF-8 인코딩 고정) · 상태: 🟢 **1차 완료 — 미결 0건**
 > ⚠️ 이 문서는 **샌드박스 체크아웃 전용**이다. main 의 같은 파일과 내용이 다르다. (§ 9)
 
 ---
@@ -61,6 +61,7 @@
 | 2026-10-29 | **구축 수행.** `web` 의 `sb_*` 6개 삭제 → `docs/ERD.md` 기준 17테이블 + 인덱스 + 뷰 5개 DDL 작성 → 샘플 데이터 작성 → `webapplication_sandbox` 적용 · 재실행 검증 | `sql/schema.sql`, `sql/data.sql` |
 | 2026-10-29 | ERD § 9.3~9.5 추가 제약 7건 반영 — CHECK 5건 · UNIQUE 2건 · FK 21개 `ON UPDATE RESTRICT` 명시. 위반 데이터 9종으로 작동 시험 | `sql/schema.sql` |
 | 2026-10-29 | `product.status` 를 `ENUM('판매중','숨김')` 2값으로 전환. `v_low_stock` 조건·샘플 데이터·노출 규칙 주석 동반 수정 후 재적용 | `sql/schema.sql`, `sql/data.sql` |
+| 2026-10-29 | 🔴 **한글 이중 인코딩 발견·복구.** 클라이언트 기본 문자셋이 `latin1` 이라 전 테이블 한글이 깨진 채 저장돼 있었다. 세 지점에 UTF-8 을 못 박고 전면 재적재 | `sql/**`, `META-INF/context.xml*`, `~/.my.cnf` |
 
 ## 7. 다른 트랙에 넘길 요청
 
@@ -261,3 +262,54 @@ WHERE status = '판매중' AND stock > 0   -- 목록 · 검색 · 상품상세(�
 
 `v_low_stock` 이 **선택 기능이 아니게 됐다.** 재고 0 상품은 사용자 화면에서 조용히 사라지므로,
 관리자가 그 사실을 아는 유일한 경로가 이 뷰다.
+
+### 9.9 🔴 한글 이중 인코딩 — 발견과 복구 (2026-10-29)
+
+**증상** — DBeaver 에서 한글이 깨져 보였다. CLI 에서는 멀쩡해 보였다.
+
+**진단** — 저장된 바이트가 실제로 깨져 있었다.
+
+| 값 | 정상 | 실제 (복구 전) |
+|---|---|---|
+| `'베이식 반팔 티셔츠'` 길이 | 10자 / 26 byte | **26자 / 55 byte** |
+| 첫 글자 HEX | `EBB2A0` (`베`) | **`C3AB`** (`ë`) |
+
+**원인** — 접속 문자셋이 `latin1` 이었다.
+
+```
+character_set_client     latin1      <- 범인
+character_set_connection latin1
+character_set_results    latin1
+character_set_database   utf8mb4     <- DB 는 정상
+```
+
+Homebrew `mysql` 클라이언트의 **컴파일 기본값**이 `latin1` 이다. 설정 파일 문제가 아니라
+`~/.my.cnf` 에 `default-character-set` 이 **없어서** 기본값이 적용된 것이다.
+
+UTF-8 파일을 그 접속으로 밀어 넣으면 서버가 바이트를 latin1 로 해석해 utf8mb4 로 **다시**
+인코딩한다. `베`(`EB B2 A0`) → `ë`+`²`+`NBSP` → `C3AB C2B2 C2A0`. 이중 인코딩이다.
+
+**CLI 에서 멀쩡해 보인 이유** — 같은 latin1 접속으로 읽으면 변환이 정확히 역으로 일어나
+원래 글자로 되돌아온다. **왕복이 성립해서 깨진 걸 모른다.** UTF-8 로 접속하는 DBeaver·JDBC 에서만
+정체가 드러난다. 이 조합이 가장 위험하다 — 검증을 CLI 로만 하면 통과한다.
+
+**조치 — 세 지점에 고정**
+
+| 지점 | 조치 | 효과 |
+|---|---|---|
+| `sql/schema.sql` · `sql/data.sql` | 선두에 `SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;` | **누가 어떤 클라이언트로 돌려도** 세션 문자셋이 고정된다. 가장 중요한 방어선 |
+| `~/.my.cnf` `[client]` | `default-character-set=utf8mb4` | CLI 접속 전반 |
+| `META-INF/context.xml` · `.example` | URL 에 `connectionCollation=utf8mb4_unicode_ci` 추가 | JDBC 커넥션 풀 |
+
+`SET NAMES` 를 SQL 파일에 넣은 것이 핵심이다. `~/.my.cnf` 는 이 머신·이 계정에만 적용되지만,
+SQL 파일 안의 선언은 **파일을 따라다닌다.** DBeaver·HeidiSQL 로 열어 실행해도 동일하게 보장된다.
+
+**복구 검증**
+
+| 항목 | 결과 |
+|---|---|
+| 전면 재적재 후 바이트 | ✅ `EBB2A0` / 10자 / 26 byte — 정상 |
+| 12개 테이블 텍스트 컬럼 mojibake 스캔 | ✅ **0건** |
+| 한글 ENUM (`판매중` `배송완료` `간편결제` …) | ✅ 정상 집계 |
+| 한글 `LIKE '%스니커즈%'` 검색 | ✅ 정상 |
+| 뷰 한글 집계 (`v_delivery_status_count`) | ✅ 정상 |

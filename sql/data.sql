@@ -16,6 +16,14 @@
 --     4. qna 의 answer 와 answered_at 은 항상 함께 채우거나 함께 NULL (§ 2.14 불변식)
 -- =============================================================
 
+-- ★ 접속 문자셋 고정 — 이 줄이 없으면 한글이 깨진다.
+--   Homebrew mysql 클라이언트의 기본 character_set_client 는 latin1 이다.
+--   그 상태로 UTF-8 파일을 밀어 넣으면 서버가 바이트를 latin1 로 해석해
+--   utf8mb4 로 다시 인코딩한다 — 이중 인코딩(mojibake)이 되어 '베' 가 'ë²' 로 저장된다.
+--   같은 latin1 접속으로 읽으면 되돌아와 멀쩡해 보이지만, DBeaver 등 UTF-8
+--   클라이언트에서는 깨져 보인다. SET NAMES 로 세션 문자셋을 못 박는다.
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 USE webapplication_sandbox;
 
 -- 재실행 대비 — FK 역순으로 비운다 ---------------------------------

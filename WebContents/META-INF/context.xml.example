@@ -18,7 +18,7 @@
       auth="Container"
       type="javax.sql.DataSource"
       driverClassName="com.mysql.cj.jdbc.Driver"
-      url="jdbc:mysql://localhost:3306/webapplication_sandbox?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=Asia/Seoul&amp;characterEncoding=UTF-8"
+      url="jdbc:mysql://localhost:3306/webapplication_sandbox?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=Asia/Seoul&amp;characterEncoding=UTF-8&amp;connectionCollation=utf8mb4_unicode_ci"
       username="CHANGE_ME_USER"
       password="CHANGE_ME_PASSWORD"
       maxTotal="20"
