@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  DB 커넥션 풀 설정 예시.
+  DB 커넥션 풀 설정 예시 — 샌드박스 전용 (zyonge_Sandbox)
 
-  사용법: 이 파일을 같은 디렉터리에 context.xml 로 복사한 뒤 값을 채운다.
+  사용법: 이 파일을 같은 디렉터리에 context.xml 로 복사한 뒤 username / password 를 채운다.
           context.xml 은 .gitignore 로 추적 제외되므로 접속 정보가 커밋되지 않는다.
 
       cp WebContents/META-INF/context.xml.example WebContents/META-INF/context.xml
 
-  주의: name / username / password / url 의 스키마명은 sql/schema.sql 과 반드시 일치시킨다.
-        (담당: DB Schema 트랙 — docs/tracks/SCHEMA.md)
+  스키마는 webapplication_sandbox 로 고정한다.
+    - main 프로젝트와 데이터를 공유하지 않는다. 실험이 main 의 DB를 건드릴 수 없도록 분리한 것이다.
+    - 수업 실습 DB(web)도 쓰지 않는다. 실습 테이블과 섞이지 않는다.
+    - 생성 스크립트는 sql/00_create_database.sql (관리자 계정으로 1회 실행, 이미 적용됨)
 -->
 <Context>
   <Resource
@@ -16,7 +18,7 @@
       auth="Container"
       type="javax.sql.DataSource"
       driverClassName="com.mysql.cj.jdbc.Driver"
-      url="jdbc:mysql://localhost:3306/CHANGE_ME_SCHEMA?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=Asia/Seoul&amp;characterEncoding=UTF-8"
+      url="jdbc:mysql://localhost:3306/webapplication_sandbox?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=Asia/Seoul&amp;characterEncoding=UTF-8"
       username="CHANGE_ME_USER"
       password="CHANGE_ME_PASSWORD"
       maxTotal="20"
