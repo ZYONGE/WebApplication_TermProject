@@ -249,12 +249,14 @@ INSERT INTO qna (qna_id, member_id, product_id, question, is_secret, answer, cre
 -- 17. admin_log -----------------------------------------------------
 --   delivery_history 와 목적이 다르다 — 저쪽은 "배송이 어떻게 흘렀나",
 --   이쪽은 "누가 무엇을 건드렸나". action 어휘는 ERD § 2.17 고정 목록을 쓴다.
+--   ★ 역할 격리(ERD § 5, § 9.6-8): mode 는 member 의 role 과 같아야 하고 USER 는 기록하지 않는다.
+--     고객 본인 취소는 admin_log 에 남지 않는다. 6번은 관리자가 취소한 건이다.
 INSERT INTO admin_log (log_id, member_id, mode, action, target_table, target_id, detail, created_at) VALUES
     (1, 1, 'ADMIN', 'PRODUCT_CREATE',        'product',       8, '가죽 벨트 등록',                      '2026-09-12 11:00:00'),
     (2, 1, 'ADMIN', 'DELIVERY_TRACKING_SET', 'delivery',      1, '운송장 1234567890 (샌드박스택배)',     '2026-10-22 08:30:00'),
     (3, 1, 'ADMIN', 'DELIVERY_NEXT_STEP',    'delivery',      1, '배송중 -> 배송완료',                   '2026-10-23 15:20:00'),
     (4, 1, 'ADMIN', 'QNA_ANSWER',            'qna',           1, '세탁 방법 문의 답변',                  '2026-10-21 15:30:00'),
     (5, 2, 'DEV',   'FORCE_DELIVERY_STATUS', 'delivery',      2, '상품준비 -> 배송중 (강제)',            '2026-10-28 08:10:00'),
-    (6, 1, 'ADMIN', 'ORDER_CANCEL',          'orders',        3, '고객 요청으로 취소, 환불 처리',        '2026-10-28 19:30:00'),
+    (6, 1, 'ADMIN', 'ORDER_CANCEL',          'orders',        3, '관리자 취소 처리, 환불 완료',         '2026-10-28 19:30:00'),
     (7, 2, 'DEV',   'SHOP_STATUS_TOGGLE',    'system_config', NULL, 'MAINTENANCE -> OPEN',               '2026-10-28 22:00:00'),
     (8, 1, 'ADMIN', 'PRODUCT_UPDATE',        'product',       1, '판매가 17000 -> 19000',                '2026-10-25 10:00:00');
