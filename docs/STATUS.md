@@ -1,89 +1,72 @@
-# 개발 현황 보드
+# 현황 보드
 
-> 관리 주체: **PM 세션** (이 파일은 PM만 수정한다)
-> 각 트랙의 상세 진행 로그는 `docs/tracks/*.md` 에 해당 세션이 직접 기록한다.
-> 최종 갱신: 2026-10-28 — 트랙 문서·디렉터리 확정, 모든 트랙 착수 전
+> PM만 수정한다. 트랙별 상세는 `docs/tracks/*.md`.
 
----
+## 트랙
 
-## 1. 트랙별 현황
-
-| # | 트랙 | 트랙 문서 | 상태 | 차단 요인 |
-|---|---|---|---|---|
-| 1 | UI / 디자인 테마 | `docs/tracks/UI.md` | ⬜ 착수 전 | 컨셉·디자인 테마 미전달 (공지 항목 3) |
-| 2 | JSP 배선 | `docs/tracks/JSP.md` | ⬜ 착수 전 | 없음 — 화면 목록·URL 매핑 **기록이 이 트랙의 첫 산출물** |
-| 3 | ERD | `docs/tracks/ERD.md` | ⬜ 착수 전 | 없음 — **즉시 착수 가능** |
-| 4 | DB Schema | `docs/tracks/SCHEMA.md` | ⬜ 착수 전 | ERD 초안 대기 |
-
-상태 표기: ⬜ 착수 전 / 🟡 진행 중 / 🟢 1차 완료 / 🔵 통합 검증 완료
-
----
-
-## 2. 계약(Contract) 확정 현황
-
-병렬 개발이 충돌 없이 수렴하기 위해 고정해야 하는 항목. (CLAUDE.md § 4.2)
-
-| 계약 | 접점 | 상태 | 기록 주체 → 확정 위치 |
-|---|---|---|---|
-| 화면 목록 + URL 매핑 | UI ↔ 배선 | ⏸ **보류** | UI · JSP 배선 세션이 기록 완료 → **PM이 취합해 재개** |
-| DTO 필드 계약 | 배선 ↔ ERD | ⬜ 미확정 | ERD 세션 → `docs/ERD.md` |
-| CSS 클래스 네이밍 + 토큰 변수명 | UI ↔ 배선 | ⬜ 미확정 | UI 세션 → `css/base/variables.css` |
-| 팝업 공통 마크업 패턴 | UI ↔ 배선 | ⬜ 미확정 | UI 세션 → `css/components/popup.css` |
-
-**화면 목록 · URL 매핑 보류 조건**
-PM이 선행 확정하지 않는다. 프론트엔드 세션과 JSP 배선 세션이 각자 트랙 문서에 화면·라우트를 기록한 뒤, PM이 두 기록을 대조해 `README.md` URL 매핑 명세로 확정한다. 불일치가 나오면 PM이 조정한다.
-
-**이미 고정된 공통 계약** (CLAUDE.md § 4.1 공유 지점 해소 규칙)
-
-| 계약 | 값 |
-|---|---|
-| 업로드 저장 경로 | `WebContents/upload/` |
-| 업로드 웹 참조 경로 | `/upload/<파일명>` |
-| 목업 위치 | `WebContents/mockup/*.html` |
-| 레이아웃 인계 | UI `mockup/_layout.html` → JSP `common/header.jsp`·`footer.jsp` |
-| JS 분담 | `js/ui.js`(UI) / `js/validate.js`(배선) |
-| DB 접속 | `META-INF/context.xml` ← `context.xml.example` 복사 |
-
----
-
-## 3. 실측 진행도 (2026-10-28)
-
-| 영역 | 측정 | 비고 |
+| 트랙 | 작업 위치 | 상태 |
 |---|---|---|
-| CSS | 16개 파일 모두 주석 1줄 | 뼈대만 존재 |
-| 목업 HTML | 0개 | `WebContents/mockup/` 신설, 비어 있음 |
-| JSP | 0개 | — |
-| Java (`shop/**`) | 0개 | 패키지 디렉터리만 존재 |
-| `sql/schema.sql`, `sql/data.sql` | 0 byte | — |
-| `docs/ERD.md`, `docs/CRUD.md` | 0 byte | — |
-| `README.md` 본문 섹션 | 미작성 (템플릿) | PM이 취합 |
-| 라이브러리 | 6개 확보 완료 | `WEB-INF/lib` |
-| `build/` git 추적 | 비추적 확인 완료 | 문제 없음 |
+| UI | 샌드박스 | CSS 청사진 17개 · 목업 8개 작성, 역할별 헤더·구매 영역 작업 중 |
+| JSP 배선 | 샌드박스 | 전 화면 배선, 3역할 격리 반영, 화면 목록·URL 기록 완료 |
+| ERD | 샌드박스 | 17테이블 · 뷰 5 · CRUD 매트릭스 |
+| DB Schema | 샌드박스 | DDL · 샘플 데이터 적용 (스키마 `webapplication_sandbox`) |
 
----
+`main` 은 골격과 규약만 있다.
 
-## 4. 구조 변경 이력
+## PM 결정 대기
 
-| 날짜 | 변경 | 사유 |
+**환경 · 운영**
+
+| # | 항목 | 요청 |
 |---|---|---|
-| 2026-10-28 | `WebContents/mockup/` 신설 | UI의 `.html` 목업과 배선의 `.jsp`가 `product/` 등 같은 디렉터리를 공유해 소유권 충돌 발생 → 분리 |
-| 2026-10-28 | `META-INF/context.xml.example` 신설 | `.gitignore`가 참조하는 템플릿 파일이 실제로 없어, 각 세션이 DB 접속 설정을 만들 수 없었음 |
-| 2026-10-28 | `docs/tracks/` 신설 | 트랙별 작업 지시·진행 로그·인계 사항을 세션 간에 전달 |
-| 2026-10-28 | `js/` 파일 단위 소유권 분리 | `ui.js`(UI) / `validate.js`(배선) — 디렉터리 공유 충돌 제거 |
-| 2026-10-28 | `WebContents/css/DECISIONS.md` 신설 | UI 트랙의 결정(토큰 변수명·클래스명·팝업 패턴)을 작업 디렉터리에서 기록. JSP 배선 트랙이 읽어가는 단일 창구 |
-| 2026-10-28 | 작업 디렉터리별 중첩 `CLAUDE.md` 3개 신설 (`src/main/java/shop/`, `docs/`, `sql/`) | 새 세션이 생성 직후 자기 역할·쓰기 권한·읽기 전용 경계를 자동으로 인식. 병렬 세션 간 동시 편집 충돌 방지 (UI/UX 제외) |
+| P1 | main 스키마명 (제안 `shopdb`) — 관리자 계정으로 DB 생성·GRANT 1회 필요 | DB |
+| P2 | 샌드박스 `data.sql` 재실행 승인 — 역할 위반 4행 제거, 테스터 데이터도 지워짐 | DB · ERD |
+| P3 | 샌드박스 미커밋 변경의 커밋 주체와 푸시 시점 | 전 트랙 |
+| P4 | 비밀번호 평문 vs 해시 (ERD는 해시, 구현·데이터는 평문) | JSP · DB |
+| P5 | 샘플 이미지 404 — 공백 유지 / `thumbnail` NULL+기본 이미지 / 파일 준비 | JSP · DB · UI |
 
-> Dynamic Web Project 구성(웹 루트 · 소스 폴더 · 출력 경로 · `WEB-INF` / `META-INF`)은 변경하지 않았다.
+**계약**
 
----
+| # | 항목 | 요청 |
+|---|---|---|
+| C1 | 화면 목록 · URL 매핑 확정 (JSP 기록 vs `CRUD.md` 표기 대조) | JSP · ERD |
+| C2 | 팝업 방식 — 현재 `<dialog>` 인페이지 / 별창 | JSP · ERD |
+| C3 | doctype — 현재 HTML5 / 4.01 Transitional | JSP |
+| C4 | DTO 계약: `OrderDTO` 조인 필드 4개 추가, EL 예약어 프로퍼티명 금지 | JSP |
+| C5 | CSS 클래스 계약 보완: 부록 B 밖 클래스, `notice_*` 접두어, `qna_answer` 귀속, `popup_sub` 신설 | JSP · UI |
+| C6 | `soldout` 을 장바구니·찜의 "재고 없음" 전용으로 변경 | UI · ERD |
+| C7 | `pageCss` 설정을 JSP 쪽으로 단일화 (서블릿 호출 제거) | JSP |
 
-## 5. 세션 ↔ PM 보고 규약
+**설계 · 규칙**
 
-각 트랙 세션은 작업을 마칠 때 **자기 트랙 문서**(`docs/tracks/*.md`)의 아래 항목을 직접 갱신한다. PM은 이를 읽고 이 보드와 `README.md`를 갱신한다.
+| # | 항목 | 요청 |
+|---|---|---|
+| D1 | 상품은 리프 카테고리에만 등록 가능하게 할지 | JSP |
+| D2 | 고객 주문 목록 N+1 해소용 뷰 추가 (선택) | JSP |
+| D3 | 우편번호는 직접 입력 (외부 API 금지) | ERD |
+| D4 | 반응형 — D-06(고정폭 1200px) 유지 / 테스터 지적 반영 | UI |
+| D5 | JSP 직접 접근 차단 — 필터 유지 / `/WEB-INF/views/` 이동 | JSP |
 
-1. **§6 진행 상황 로그** — 날짜 / 작업 / 산출물 파일 경로
-2. **§7 다른 트랙에 넘길 요청** — 자기 소유가 아닌 파일의 수정 필요 사항
-3. **§8 미결 / 질문** — 막힌 지점, PM 판단이 필요한 사항
-4. 계약에 영향을 주는 변경(필드명·URL·클래스명·변수명)은 §7에 **반드시** 적는다
+**main 반영 후보**
 
-> **모든 세션은 `main` 브랜치에서만 작업한다.** (예외: 실험 전용 `zyonge_Sandbox` — `CLAUDE.md` § 4.5, `main` 병합 금지) 추가 브랜치·worktree를 만들지 않으므로 병합 단계가 없고, 충돌 방지는 § 2 파일 소유권과 `CLAUDE.md` § 4.4 동시 작업 수칙에 전적으로 의존한다. `git push` 는 PM만 수행한다.
+| # | 항목 | 요청 |
+|---|---|---|
+| M1 | 규약 편입: 서블릿 `/xxx/*` 매핑 금지, `<jsp-config>` UTF-8, JDBC `connectionCollation=utf8mb4_unicode_ci` | JSP · DB |
+| M2 | 제출 전 제거: `error500.jsp` 예외 노출, 로그인 화면 테스트 계정 안내 | JSP |
+| M3 | Build & Run 문서: CLI로 컨텍스트 선언 시 `context.xml` 무시됨 | JSP |
+| M4 | 샌드박스 ERD 판단의 main 환원 범위 (DATETIME, 3역할 격리, 품절 제거, 제약) | ERD |
+
+## PM 전달 대기 (결정 불필요)
+
+- ERD → JSP: `admin_log.action` 어휘 `REVIEW_DELETE` · `CONFIG_UPDATE` 확정. 설정 변경이 아직 `SHOP_STATUS_TOGGLE` 로 기록되는 중.
+- DB → JSP: 취소 주문의 배송 상태는 `order_status` 를 먼저 보고 렌더 (delivery에 '취소' 없음). 판매 집계는 6일 범위로 자름. qna 답변·취소·환불·배송중 전환은 관련 컬럼을 같은 UPDATE에서 함께 기록.
+- ERD → DB: `product.status` 품절 제거 DDL 반영 확인 필요.
+- ERD → JSP: 회원관리 역할 토글 제거(`admin/members.jsp`), 역할별 헤더 이식.
+- JSP → UI: 임시 `js/ui.js` 인수 (`openPopup` · `closePopup` 두 함수만 사용).
+- ERD의 `mermaid.min.js` 요청은 무효 (ERD 다이어그램은 이미지로 넣기로 결정).
+- `error404.jsp` 에 공통 레이아웃이 없는 것은 의도일 수 있음 (DB 장애 시 헤더 조회 실패 방지). 통일 전 확인.
+
+## 인지 사항
+
+- 로컬 MySQL root 비밀번호가 빈 값이다. 머신 전체에 영향.
+- Homebrew mysql 클라이언트 기본 문자셋이 latin1이라 한글이 이중 인코딩된다. `~/.my.cnf` 에 utf8mb4 설정 완료.
