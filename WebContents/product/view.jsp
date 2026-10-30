@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<c:set var="pageCss" value="product" />
 <%@ include file="/common/header.jsp" %>
 
 <article class="prod_detail">
@@ -30,7 +31,15 @@
 
 	<div class="prod_desc"><c:out value="${product.description}" /></div>
 
-	<%-- 담기 · 찜은 로그인 필요. LoginFilter 가 /cart/*, /wish/* 를 지킨다. --%>
+	<%--
+	  구매 컨트롤은 USER 와 비로그인(누르면 로그인으로)에게만 보인다.
+	  ADMIN · DEV 에게 숨기는 것은 화면 처리일 뿐이고, 실제 방어는 UserFilter 다 (ERD § 5.3).
+	--%>
+	<c:choose>
+	<c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.role != 'USER'}">
+		<p class="field_help">구매는 일반 회원 계정으로만 가능합니다.</p>
+	</c:when>
+	<c:otherwise>
 	<form class="prod_buy" action="${ctx}/cart/add" method="post" data-validate>
 		<input type="hidden" name="productId" value="${product.productId}">
 		<input type="hidden" name="back" value="/product/view?productId=${product.productId}">
@@ -45,6 +54,8 @@
 		<input type="hidden" name="back" value="/product/view?productId=${product.productId}">
 		<button type="submit" class="btn btn_sub">${wished ? '찜 해제' : '찜하기'}</button>
 	</form>
+	</c:otherwise>
+	</c:choose>
 </article>
 
 <section class="prod_review">
@@ -81,7 +92,7 @@
 
 <section class="prod_qna">
 	<h3>상품 문의</h3>
-	<c:if test="${not empty sessionScope.loginMember}">
+	<c:if test="${sessionScope.loginMember.role == 'USER'}">
 		<button type="button" class="btn" data-popup-open="qnaPopup">문의하기</button>
 	</c:if>
 

@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<c:set var="pageCss" value="admin" />
 <%@ include file="/common/header.jsp" %>
 
 <ul class="admin_nav">
@@ -50,7 +51,9 @@
 				<td>
 					<button type="button" class="btn btn_small"
 					        onclick="openAnswer(${q.qnaId}, this)">${q.answered ? '답변 수정' : '답변 쓰기'}</button>
-					<span hidden><c:out value="${q.answer}" /></span>
+					<span hidden data-field="answer"><c:out value="${q.answer}" /></span>
+					<span hidden data-field="product"><c:out value="${q.productName}" /></span>
+					<span hidden data-field="question"><c:out value="${q.question}" /></span>
 				</td>
 			</tr>
 		</c:forEach>
@@ -66,6 +69,9 @@
 
 		<h3 class="popup_head">문의 답변</h3>
 		<div class="popup_body">
+			<%-- 어떤 문의에 답하는지 — 운송장 팝업이 주문번호를 보여주는 것과 같은 방식 --%>
+			<p id="answerTarget"></p>
+			<blockquote id="answerQuestion"></blockquote>
 			<label for="answer">답변 내용</label>
 			<textarea id="answer" name="answer" rows="6" class="field" data-rule="required"></textarea>
 			<%-- answer 와 answered_at 은 같은 UPDATE 로 함께 쓰인다 (chk_qna_answered) --%>
@@ -80,9 +86,15 @@
 
 <script>
 function openAnswer(qnaId, button) {
+	var cell = button.parentNode;
+	function field(name) {
+		var el = cell.querySelector("span[data-field='" + name + "']");
+		return el ? el.textContent.trim() : "";
+	}
 	document.getElementById("answerQnaId").value = qnaId;
-	var holder = button.parentNode.querySelector("span[hidden]");
-	document.getElementById("answer").value = holder ? holder.textContent.trim() : "";
+	document.getElementById("answerTarget").textContent = "문의 #" + qnaId + " — " + field("product");
+	document.getElementById("answerQuestion").textContent = field("question");
+	document.getElementById("answer").value = field("answer");
 	window.openPopup("answerPopup");
 }
 </script>

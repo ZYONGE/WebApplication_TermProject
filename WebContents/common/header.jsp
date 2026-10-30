@@ -41,28 +41,33 @@
 				<li><a href="${ctx}/member/join">회원가입</a></li>
 			</c:when>
 			<c:otherwise>
-				<li><c:out value="${sessionScope.loginMember.name}" />님</li>
-				<li><a href="${ctx}/mypage/">마이페이지</a></li>
-				<li>
-					<a href="${ctx}/cart/list">장바구니<c:if test="${not empty cartCount and cartCount > 0}"> (${cartCount})</c:if></a>
-				</li>
-				<c:if test="${sessionScope.loginMember.role == 'ADMIN' or sessionScope.loginMember.role == 'DEV'}">
-					<li><a href="${ctx}/admin/dashboard">관리자</a></li>
-				</c:if>
-				<c:if test="${sessionScope.loginMember.role == 'DEV' or not empty sessionScope.devOrigin}">
-					<li><a href="${ctx}/dev/">dev</a></li>
-				</c:if>
+				<li><c:out value="${sessionScope.loginMember.name}" />님 (<c:out value="${sessionScope.loginMember.role}" />)</li>
+				<%-- 역할별 메뉴 — 3개 입장은 서로의 영역을 보지 않는다 (ERD § 5.3) --%>
+				<c:choose>
+					<c:when test="${sessionScope.loginMember.role == 'USER'}">
+						<li><a href="${ctx}/mypage/">마이페이지</a></li>
+						<li>
+							<a href="${ctx}/cart/list">장바구니<c:if test="${not empty cartCount and cartCount > 0}"> (${cartCount})</c:if></a>
+						</li>
+					</c:when>
+					<c:when test="${sessionScope.loginMember.role == 'ADMIN'}">
+						<li><a href="${ctx}/admin/dashboard">관리자</a></li>
+					</c:when>
+					<c:when test="${sessionScope.loginMember.role == 'DEV'}">
+						<li><a href="${ctx}/dev/">dev</a></li>
+					</c:when>
+				</c:choose>
 				<li><a href="${ctx}/member/logout">로그아웃</a></li>
 			</c:otherwise>
 		</c:choose>
 	</ul>
 
 	<%-- 계정 전환 중이라는 사실을 숨기지 않는다 — 감사 추적의 일부다 (ERD § 8 쟁점 7) --%>
-	<c:if test="${not empty sessionScope.devOrigin}">
+	<c:if test="${not empty sessionScope.impersonatorId}">
 		<p class="page_header_notice">
-			[dev] <c:out value="${sessionScope.devOrigin.loginId}" /> 계정으로
-			<c:out value="${sessionScope.loginMember.loginId}" /> 에 전환 중입니다.
-			<a href="${ctx}/dev/loginAs?action=restore">원래 계정으로</a>
+			[dev] 개발자 계정(#${sessionScope.impersonatorId})이
+			<c:out value="${sessionScope.loginMember.loginId}" /> 계정으로 전환 중입니다.
+			<a href="${ctx}/dev/loginAs/return">원래 계정으로</a>
 		</p>
 	</c:if>
 

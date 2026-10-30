@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<c:set var="pageCss" value="admin" />
 <%@ include file="/common/header.jsp" %>
 
 <ul class="admin_nav">
@@ -31,7 +32,7 @@
 <table class="listtable">
 	<thead class="listtable_head">
 		<tr><th>번호</th><th>아이디</th><th>이름</th><th>이메일</th><th>연락처</th>
-		    <th>권한</th><th>상태</th><th>가입일</th><th>권한 변경</th></tr>
+		    <th>권한</th><th>상태</th><th>가입일</th><th>처리</th></tr>
 	</thead>
 	<tbody>
 		<c:forEach var="m" items="${pageData.list}">
@@ -46,22 +47,17 @@
 				<td><fmt:formatDate value="${m.createdAt}" pattern="yyyy-MM-dd" /></td>
 				<td>
 					<%--
-					  ★ DEV 는 선택지에 없다. ADMIN 은 DEV 권한을 줄 수 없고(ERD § 5),
-					    DEV 계정의 권한도 바꿀 수 없다. 서버에서도 같은 판정을 한다 —
-					    화면에서 빼는 것만으로는 막은 것이 아니다.
+					  역할은 바꿀 수 없다 (ERD § 5.3). 탈퇴 처리만 있고, 대상은 활동 중인 USER 뿐이다.
+					  탈퇴 회원 · 운영 계정에는 폼을 내지 않는다. 서버도 같은 조건으로 거부한다.
 					--%>
 					<c:choose>
-						<c:when test="${m.role == 'DEV'}">변경 불가 (DEV)</c:when>
-						<c:when test="${m.memberId == sessionScope.loginMember.memberId}">본인</c:when>
+						<c:when test="${m.status == 'LEFT'}">탈퇴</c:when>
+						<c:when test="${m.role != 'USER'}">-</c:when>
 						<c:otherwise>
 							<form action="${ctx}/admin/members" method="post">
 								<input type="hidden" name="memberId" value="${m.memberId}">
-								<select name="role">
-									<option value="USER" ${m.role == 'USER' ? 'selected' : ''}>USER</option>
-									<option value="ADMIN" ${m.role == 'ADMIN' ? 'selected' : ''}>ADMIN</option>
-								</select>
-								<button type="submit" class="btn btn_small"
-								        data-confirm-message="권한을 변경하시겠습니까?">변경</button>
+								<button type="submit" class="btn btn_danger btn_small"
+								        data-confirm-message="이 회원을 탈퇴 처리하시겠습니까? 되돌릴 수 없습니다.">탈퇴 처리</button>
 							</form>
 						</c:otherwise>
 					</c:choose>

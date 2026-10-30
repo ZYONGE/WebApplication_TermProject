@@ -15,8 +15,8 @@ import shop.util.Paging;
 /*
   26번 회원 관리 (CRUD.md § 3)
 
-  ★ 권한 변경에서 DEV 를 거부하는 것이 이 화면의 핵심 규칙이다 (ERD § 5).
-    필터는 경로만 막는다. 권한 상승은 AdminService.changeRole 이 막는다.
+  ★ 역할은 불변이다 (ERD § 5.3). 이 화면의 member 변경은 탈퇴 처리 하나뿐이고,
+    역할을 바꾸는 요청 경로 자체가 없다.
 */
 @WebServlet(name = "AdminMemberServlet", urlPatterns = { "/admin/members" })
 public class AdminMemberServlet extends BaseServlet {
@@ -43,9 +43,8 @@ public class AdminMemberServlet extends BaseServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			adminService.changeRole(loginMemberId(request), intParam(request, "memberId", 0),
-					param(request, "role"));
-			flash(request, "회원 권한을 변경했습니다.");
+			adminService.leaveMember(loginMemberId(request), intParam(request, "memberId", 0));
+			flash(request, "탈퇴 처리했습니다.");
 		} catch (ServiceException e) {
 			flashError(request, e.getMessage());
 		} catch (SQLException e) {

@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<c:set var="pageCss" value="admin" />
 <%@ include file="/common/header.jsp" %>
 
 <ul class="admin_nav">
@@ -58,6 +59,7 @@
 						<c:choose>
 							<c:when test="${o.delivery.status == '결제완료'}">
 								<form action="${ctx}/admin/orders" method="post">
+									<input type="hidden" name="returnQuery" value="<c:out value='${pageContext.request.queryString}' />">
 									<input type="hidden" name="mode" value="next">
 									<input type="hidden" name="deliveryId" value="${o.delivery.deliveryId}">
 									<button type="submit" class="btn btn_small">상품준비로</button>
@@ -69,6 +71,7 @@
 							</c:when>
 							<c:when test="${o.delivery.status == '배송중'}">
 								<form action="${ctx}/admin/orders" method="post">
+									<input type="hidden" name="returnQuery" value="<c:out value='${pageContext.request.queryString}' />">
 									<input type="hidden" name="mode" value="next">
 									<input type="hidden" name="deliveryId" value="${o.delivery.deliveryId}">
 									<button type="submit" class="btn btn_small">배송완료로</button>
@@ -79,7 +82,8 @@
 
 						<c:if test="${o.cancelable}">
 							<form action="${ctx}/admin/orders" method="post">
-								<input type="hidden" name="mode" value="cancel">
+								<input type="hidden" name="returnQuery" value="<c:out value='${pageContext.request.queryString}' />">
+									<input type="hidden" name="mode" value="cancel">
 								<input type="hidden" name="orderId" value="${o.orderId}">
 								<button type="submit" class="btn btn_danger btn_small"
 								        data-confirm-message="주문을 취소하시겠습니까? 재고가 복구됩니다.">취소</button>
@@ -131,7 +135,8 @@
 
 <dialog id="shipPopup" class="popup">
 	<form class="popup_form" action="${ctx}/admin/orders" method="post" data-validate>
-		<input type="hidden" name="mode" value="next">
+		<input type="hidden" name="returnQuery" value="<c:out value='${pageContext.request.queryString}' />">
+									<input type="hidden" name="mode" value="next">
 		<input type="hidden" name="deliveryId" id="shipDeliveryId">
 
 		<h3 class="popup_head">배송중으로 — 운송장 입력</h3>

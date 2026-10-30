@@ -13,9 +13,11 @@
          1. EncodingFilter        UTF-8. 누구보다 먼저 와야 파라미터가 안 깨진다
          2. JspDirectAccessFilter .jsp 직접 접근 차단 (REQUEST 디스패치만)
          3. ShopFilter            점검 모드. ★ AdminFilter 보다 먼저
-         4. LoginFilter           로그인 필요 영역
-         5. AdminFilter           /admin/*  role IN ('ADMIN','DEV')
-         6. DevFilter             /dev/*    role = 'DEV'
+         4. UserFilter            구매 경로 role = 'USER'   (ADMIN · DEV 는 각자 홈으로)
+         5. AdminFilter           /admin/*  role = 'ADMIN'  (DEV 도 거부)
+         6. DevFilter             /dev/*    role = 'DEV'    (/dev/loginAs/return 만 impersonatorId 로 판정)
+
+       USER · ADMIN · DEV 3개 입장은 완전히 격리된다 (ERD § 5).
 
        ★ 3번이 5번보다 뒤로 가면 점검 모드에서 관리자까지 막혀
          점검을 해제할 수 없게 된다.
@@ -55,23 +57,23 @@
   </filter-mapping>
 
   <filter>
-    <filter-name>LoginFilter</filter-name>
-    <filter-class>shop.filter.LoginFilter</filter-class>
+    <filter-name>UserFilter</filter-name>
+    <filter-class>shop.filter.UserFilter</filter-class>
   </filter>
   <filter-mapping>
-    <filter-name>LoginFilter</filter-name>
+    <filter-name>UserFilter</filter-name>
     <url-pattern>/cart/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
-    <filter-name>LoginFilter</filter-name>
+    <filter-name>UserFilter</filter-name>
     <url-pattern>/order/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
-    <filter-name>LoginFilter</filter-name>
+    <filter-name>UserFilter</filter-name>
     <url-pattern>/mypage/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
-    <filter-name>LoginFilter</filter-name>
+    <filter-name>UserFilter</filter-name>
     <url-pattern>/wish/*</url-pattern>
   </filter-mapping>
 

@@ -9,6 +9,7 @@ import java.util.List;
 
 import shop.dto.AdminLogDTO;
 import shop.dto.PageDTO;
+import shop.util.AuditContext;
 import shop.util.DBUtil;
 import shop.util.Paging;
 
@@ -34,7 +35,6 @@ public class AdminLogDAO {
 	public static final String DELIVERY_NEXT_STEP = "DELIVERY_NEXT_STEP";
 	public static final String DELIVERY_TRACKING_SET = "DELIVERY_TRACKING_SET";
 	public static final String ORDER_CANCEL = "ORDER_CANCEL";
-	public static final String MEMBER_ROLE_CHANGE = "MEMBER_ROLE_CHANGE";
 	public static final String MEMBER_LEAVE = "MEMBER_LEAVE";
 	public static final String QNA_ANSWER = "QNA_ANSWER";
 	public static final String NOTICE_CREATE = "NOTICE_CREATE";
@@ -48,21 +48,24 @@ public class AdminLogDAO {
 	public static final String FORCE_PAY_STATUS = "FORCE_PAY_STATUS";
 	public static final String FORCE_STOCK_SET = "FORCE_STOCK_SET";
 	public static final String SHOP_STATUS_TOGGLE = "SHOP_STATUS_TOGGLE";
+	/* 샌드박스 임시 어휘 — ERD § 2.17 에 설정 변경 action 이 없어 추가 요청 중 (트랙 문서 § 7) */
+	public static final String CONFIG_UPDATE = "CONFIG_UPDATE";
 	public static final String SEED_GENERATE = "SEED_GENERATE";
 	public static final String SEED_TRUNCATE_ALL = "SEED_TRUNCATE_ALL";
 	public static final String SEED_TRUNCATE_TABLE = "SEED_TRUNCATE_TABLE";
 	public static final String LOGIN_AS = "LOGIN_AS";
+	public static final String LOGIN_AS_RETURN = "LOGIN_AS_RETURN";
 
 	/* 감사로그 조회 화면의 필터 셀렉트가 그대로 쓴다. */
 	public static final String[] ACTIONS = {
 		PRODUCT_CREATE, PRODUCT_UPDATE, PRODUCT_DELETE,
 		CATEGORY_CREATE, CATEGORY_UPDATE, CATEGORY_DELETE,
 		DELIVERY_NEXT_STEP, DELIVERY_TRACKING_SET, ORDER_CANCEL,
-		MEMBER_ROLE_CHANGE, MEMBER_LEAVE, QNA_ANSWER,
+		MEMBER_LEAVE, QNA_ANSWER,
 		NOTICE_CREATE, NOTICE_UPDATE, NOTICE_DELETE, REVIEW_DELETE,
 		FORCE_DELIVERY_STATUS, FORCE_ORDER_STATUS, FORCE_PAY_STATUS,
-		FORCE_STOCK_SET, SHOP_STATUS_TOGGLE,
-		SEED_GENERATE, SEED_TRUNCATE_ALL, SEED_TRUNCATE_TABLE, LOGIN_AS };
+		FORCE_STOCK_SET, SHOP_STATUS_TOGGLE, CONFIG_UPDATE,
+		SEED_GENERATE, SEED_TRUNCATE_ALL, SEED_TRUNCATE_TABLE, LOGIN_AS, LOGIN_AS_RETURN };
 
 	/* 트랜잭션에 참여하는 기록 — 본 작업과 같이 커밋되거나 같이 롤백된다. */
 	public int insert(Connection conn, int memberId, String mode, String action,
@@ -82,7 +85,7 @@ public class AdminLogDAO {
 			} else {
 				pstmt.setInt(5, targetId.intValue());
 			}
-			pstmt.setString(6, cut(detail));
+			pstmt.setString(6, cut(withImpersonator(detail)));
 			return pstmt.executeUpdate();
 		} finally {
 			DBUtil.close(pstmt);
@@ -99,6 +102,19 @@ public class AdminLogDAO {
 		} finally {
 			DBUtil.close(conn);
 		}
+	}
+
+	/*
+	  계정 전환 중에 남는 기록에는 원래 DEV 를 덧붙인다 (ERD § 5.4-3).
+	  전환되면 member_id 가 대상 계정이 되므로, 이게 없으면 실제 행위자가 사라진다.
+	*/
+	private String withImpersonator(String detail) {
+		int devId = AuditContext.impersonator();
+		if (devId <= 0) {
+			return detail;
+		}
+		String suffix = "impersonated_by=" + devId;
+		return detail == null ? suffix : detail + " / " + suffix;
 	}
 
 	/* detail 은 VARCHAR(500) 이다. 넘치면 INSERT 가 통째로 실패하므로 잘라서 넣는다. */

@@ -2,7 +2,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<c:set var="pageCss" value="order" />
 <%@ include file="/common/header.jsp" %>
+
+<ul class="my_nav">
+	<li><a href="${ctx}/mypage/">마이페이지</a></li>
+	<li><a href="${ctx}/mypage/edit">정보수정</a></li>
+	<li><a href="${ctx}/mypage/address">배송지</a></li>
+	<li><a href="${ctx}/mypage/wishlist">찜 목록</a></li>
+	<li><a href="${ctx}/mypage/review">내 리뷰</a></li>
+	<li><a href="${ctx}/mypage/qna">내 문의</a></li>
+	<li><a href="${ctx}/order/list">주문 내역</a></li>
+</ul>
 
 <h2>주문 내역</h2>
 

@@ -157,7 +157,7 @@ public class AdminService {
 	/* ---------------- 카테고리 ---------------- */
 
 	public List<CategoryDTO> findCategories() throws SQLException {
-		return categoryDAO.findAll();
+		return categoryDAO.findAllOrdered();
 	}
 
 	public List<CategoryDTO> findCategoryTree() throws SQLException {
@@ -277,36 +277,31 @@ public class AdminService {
 	}
 
 	/*
-	  권한 변경.
+	  회원 탈퇴 처리 — 26번 화면의 유일한 member 변경 (ERD § 5.3).
 
-	  ★ ADMIN 은 DEV 권한을 줄 수 없다 (ERD § 5).
-	    필터는 "경로 접근" 만 막는다. 권한 상승은 처리 로직에서 막아야 하는 문제다.
-	    요청 파라미터가 DEV 면 여기서 거부하고, DAO 와 SQL 에도 같은 가드를 뒀다.
+	  역할 토글은 폐지됐다. 파라미터로 막는 것이 아니라 처리 코드를 두지 않는 방식이라,
+	  이 서비스에는 역할을 바꾸는 메서드가 없다.
 	*/
-	public void changeRole(int adminId, int memberId, String role) throws SQLException {
-		if (!"USER".equals(role) && !"ADMIN".equals(role)) {
-			throw new ServiceException("부여할 수 없는 권한입니다.");
-		}
+	public void leaveMember(int adminId, int memberId) throws SQLException {
 		MemberDTO target = memberDAO.findById(memberId);
 		if (target == null) {
 			throw new ServiceException("회원을 찾을 수 없습니다.");
 		}
-		if ("DEV".equals(target.getRole())) {
-			throw new ServiceException("DEV 계정의 권한은 변경할 수 없습니다.");
+		if (!"USER".equals(target.getRole())) {
+			throw new ServiceException("일반 회원만 탈퇴 처리할 수 있습니다.");
 		}
-		if (adminId == memberId) {
-			throw new ServiceException("자기 자신의 권한은 변경할 수 없습니다.");
+		if ("LEFT".equals(target.getStatus())) {
+			throw new ServiceException("이미 탈퇴한 회원입니다.");
 		}
 
 		Connection conn = null;
 		try {
 			conn = DBUtil.beginTransaction();
-			if (memberDAO.updateRole(conn, memberId, role) == 0) {
-				throw new ServiceException("권한을 변경하지 못했습니다.");
+			if (memberDAO.leaveByAdmin(conn, memberId) == 0) {
+				throw new ServiceException("탈퇴 처리하지 못했습니다.");
 			}
-			adminLogDAO.insert(conn, adminId, AdminLogDAO.MODE_ADMIN,
-					AdminLogDAO.MEMBER_ROLE_CHANGE, "member", Integer.valueOf(memberId),
-					target.getLoginId() + ": " + target.getRole() + " -> " + role);
+			adminLogDAO.insert(conn, adminId, AdminLogDAO.MODE_ADMIN, AdminLogDAO.MEMBER_LEAVE,
+					"member", Integer.valueOf(memberId), target.getLoginId() + ": ACTIVE -> LEFT");
 			DBUtil.commit(conn);
 		} catch (SQLException e) {
 			DBUtil.rollback(conn);

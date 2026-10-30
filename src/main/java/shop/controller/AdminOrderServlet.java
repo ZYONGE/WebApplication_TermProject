@@ -70,6 +70,26 @@ public class AdminOrderServlet extends BaseServlet {
 		} catch (SQLException e) {
 			throw wrap(e);
 		}
-		redirect(request, response, "/admin/orders");
+		redirect(request, response, "/admin/orders" + returnQuery(request));
+	}
+
+	/*
+	  처리 전 목록의 검색 조건을 되살린다 (배송상태 필터 등).
+	  경로는 고정이고 쿼리스트링만 받는다 — 다른 곳으로 보내는 열린 리다이렉트가 되지 않게.
+	  상세 보기(orderId)는 처리 후 다시 열 이유가 없어 뺀다.
+	*/
+	private String returnQuery(HttpServletRequest request) {
+		String query = request.getParameter("returnQuery");
+		if (query == null || query.length() == 0 || query.indexOf('\r') >= 0 || query.indexOf('\n') >= 0) {
+			return "";
+		}
+		StringBuilder kept = new StringBuilder();
+		for (String pair : query.split("&")) {
+			if (pair.startsWith("orderId=") || pair.length() == 0) {
+				continue;
+			}
+			kept.append(kept.length() == 0 ? "?" : "&").append(pair);
+		}
+		return kept.toString();
 	}
 }

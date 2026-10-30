@@ -200,10 +200,15 @@ public class OrderService {
 				productDAO.increaseStock(conn, item.getProductId(), item.getQuantity());
 			}
 
-			/* 4. 기록 */
-			adminLogDAO.insert(conn, actorId, admin ? AdminLogDAO.MODE_ADMIN : AdminLogDAO.MODE_ADMIN,
-					AdminLogDAO.ORDER_CANCEL, "orders", Integer.valueOf(orderId),
-					"주문 " + order.getOrderNo() + " 취소 · 재고 " + items.size() + "건 복구");
+			/*
+			  4. 기록 — 관리자 취소만 남긴다 (ERD § 6.3 개정).
+			     admin_log.mode 에 USER 가 없다. 고객 본인 취소는 orders.canceled_at 이 기록이다.
+			*/
+			if (admin) {
+				adminLogDAO.insert(conn, actorId, AdminLogDAO.MODE_ADMIN,
+						AdminLogDAO.ORDER_CANCEL, "orders", Integer.valueOf(orderId),
+						"주문 " + order.getOrderNo() + " 취소 · 재고 " + items.size() + "건 복구");
+			}
 
 			DBUtil.commit(conn);
 		} catch (SQLException e) {

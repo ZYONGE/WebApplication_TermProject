@@ -168,21 +168,17 @@ public class MemberDAO {
 	}
 
 	/*
-	  권한 변경 — 관리자 회원관리.
-
-	  SQL 에서도 DEV 를 한 번 더 막는다. 서비스 계층 검사가 1차지만,
-	  권한 상승은 한 군데만 뚫려도 끝이라 DB 문장에도 가드를 남긴다. (ERD § 5)
+	  관리자 탈퇴 처리 — 트랜잭션에 참여한다 (admin_log 와 함께 커밋).
+	  역할은 바꾸지 않는다. 역할 변경 경로는 존재하지 않는다 (ERD § 5.3 — 역할 불변).
+	  대상은 USER 로 한정한다 — 운영 계정을 화면에서 지울 수 없게.
 	*/
-	public int updateRole(Connection conn, int memberId, String role) throws SQLException {
-		if (!"USER".equals(role) && !"ADMIN".equals(role)) {
-			return 0;
-		}
-		String sql = "UPDATE member SET role = ? WHERE member_id = ? AND role <> 'DEV'";
+	public int leaveByAdmin(Connection conn, int memberId) throws SQLException {
+		String sql = "UPDATE member SET status = 'LEFT'"
+				   + " WHERE member_id = ? AND status = 'ACTIVE' AND role = 'USER'";
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, role);
-			pstmt.setInt(2, memberId);
+			pstmt.setInt(1, memberId);
 			return pstmt.executeUpdate();
 		} finally {
 			DBUtil.close(pstmt);

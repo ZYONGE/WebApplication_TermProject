@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<c:set var="pageCss" value="admin" />
 <%@ include file="/common/header.jsp" %>
 
 <ul class="admin_nav">
@@ -11,7 +12,6 @@
 	<li><a href="${ctx}/dev/seed">데이터 관리</a></li>
 	<li><a href="${ctx}/dev/loginAs">계정 전환</a></li>
 	<li><a href="${ctx}/dev/log">감사 로그</a></li>
-	<li><a href="${ctx}/admin/dashboard">관리자로</a></li>
 </ul>
 
 <h2>dev · 계정 전환</h2>
@@ -22,8 +22,9 @@
     /dev/log 에서 그 값으로 실제 행위자를 되찾는다.
 --%>
 <p class="field_help">
-	전환 후의 조작은 감사 로그에 전환된 계정으로 기록됩니다.
-	전환 기록 자체에 원래 DEV 계정(impersonated_by)이 남으므로 /dev/log 에서 추적할 수 있습니다.
+	전환하면 세션이 대상 계정으로 완전히 바뀝니다. 전환 중에는 /dev 화면도 막히고,
+	상단의 '원래 계정으로'로만 돌아올 수 있습니다. 전환 중 조작 기록에는 impersonated_by 가 붙습니다.
+	탈퇴 회원과 개발자 계정은 전환 대상이 아닙니다.
 </p>
 
 <table class="listtable">
@@ -39,7 +40,7 @@
 				<td><c:out value="${m.role}" /></td>
 				<td><c:out value="${m.status}" /></td>
 				<td>
-					<c:if test="${m.memberId != sessionScope.loginMember.memberId}">
+					<c:if test="${m.status == 'ACTIVE' and m.role != 'DEV'}">
 						<form action="${ctx}/dev/loginAs" method="post">
 							<input type="hidden" name="memberId" value="${m.memberId}">
 							<button type="submit" class="btn btn_small"
@@ -52,9 +53,4 @@
 	</tbody>
 </table>
 
-<c:if test="${not empty sessionScope.devOrigin}">
-	<div class="btnstyle">
-		<a class="btn btn_primary" href="${ctx}/dev/loginAs?action=restore">원래 계정으로 돌아가기</a>
-	</div>
-</c:if>
 <%@ include file="/common/footer.jsp" %>

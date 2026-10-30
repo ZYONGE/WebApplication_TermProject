@@ -13,6 +13,8 @@ import shop.dao.CartDAO;
 import shop.dao.CategoryDAO;
 import shop.dto.MemberDTO;
 import shop.service.ConfigService;
+import shop.util.AuditContext;
+import shop.util.RoleUtil;
 import shop.util.WebUtil;
 
 /*
@@ -35,6 +37,21 @@ public abstract class BaseServlet extends HttpServlet {
 	private final CategoryDAO categoryDAO = new CategoryDAO();
 	private final CartDAO cartDAO = new CartDAO();
 	private final ConfigService configService = new ConfigService();
+
+	/*
+	  모든 요청의 입구에서 감사 문맥을 싣고, 끝나면 반드시 비운다.
+	  계정 전환 중이면 admin_log.detail 에 impersonated_by 가 자동으로 붙는다 (ERD § 5.4-3).
+	*/
+	@Override
+	protected void service(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		AuditContext.setImpersonator(RoleUtil.impersonatorId(request));
+		try {
+			super.service(request, response);
+		} finally {
+			AuditContext.clear();
+		}
+	}
 
 	/*
 	  /cart/add -> "add", /mypage/ -> "".
@@ -91,9 +108,7 @@ public abstract class BaseServlet extends HttpServlet {
 	}
 
 	protected boolean isAdmin(HttpServletRequest request) {
-		MemberDTO member = loginMember(request);
-		return member != null
-			&& ("ADMIN".equals(member.getRole()) || "DEV".equals(member.getRole()));
+		return RoleUtil.is(request, "ADMIN");
 	}
 
 	protected int intParam(HttpServletRequest request, String name, int defaultValue) {
@@ -118,8 +133,9 @@ public abstract class BaseServlet extends HttpServlet {
 			request.setAttribute("navCategories", categoryDAO.findTree());
 			request.setAttribute("maintenance", Boolean.valueOf(configService.isMaintenance()));
 
+			/* 장바구니 배지는 USER 세션에서만 조회한다 — 다른 역할에는 장바구니가 없다 (ERD § 5.3). */
 			int memberId = loginMemberId(request);
-			if (memberId > 0) {
+			if (memberId > 0 && RoleUtil.is(request, "USER")) {
 				request.setAttribute("cartCount", Integer.valueOf(cartDAO.countQuantity(memberId)));
 			}
 		} catch (SQLException e) {

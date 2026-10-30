@@ -234,7 +234,7 @@ public class DevService {
 			conn = DBUtil.beginTransaction();
 			configDAO.updateValue(conn, ConfigDAO.SHOP_STATUS, next);
 			adminLogDAO.insert(conn, devId, AdminLogDAO.MODE_DEV, AdminLogDAO.SHOP_STATUS_TOGGLE,
-					"system_config", null, current + " -> " + next);
+					"system_config", null, ConfigDAO.SHOP_STATUS + ": " + current + " -> " + next);
 			DBUtil.commit(conn);
 		} catch (SQLException e) {
 			DBUtil.rollback(conn);
@@ -253,14 +253,19 @@ public class DevService {
 				&& !"OPEN".equals(value) && !"MAINTENANCE".equals(value)) {
 			throw new ServiceException("SHOP_STATUS 는 OPEN 또는 MAINTENANCE 만 가능합니다.");
 		}
+		String before = configDAO.findValue(key);
+		/* 점검 모드 키는 토글과 같은 action 으로, 나머지 설정은 별도 action 으로 남긴다. */
+		String action = ConfigDAO.SHOP_STATUS.equals(key)
+				? AdminLogDAO.SHOP_STATUS_TOGGLE : AdminLogDAO.CONFIG_UPDATE;
+
 		Connection conn = null;
 		try {
 			conn = DBUtil.beginTransaction();
 			if (configDAO.updateValue(conn, key, value) == 0) {
 				throw new ServiceException("설정 키를 찾을 수 없습니다: " + key);
 			}
-			adminLogDAO.insert(conn, devId, AdminLogDAO.MODE_DEV, AdminLogDAO.SHOP_STATUS_TOGGLE,
-					"system_config", null, key + " = " + value);
+			adminLogDAO.insert(conn, devId, AdminLogDAO.MODE_DEV, action,
+					"system_config", null, key + ": " + before + " -> " + value);
 			DBUtil.commit(conn);
 		} catch (SQLException e) {
 			DBUtil.rollback(conn);
@@ -359,23 +364,39 @@ public class DevService {
 	/* ---------------- 계정 전환 ---------------- */
 
 	/*
-	  login-as.
+	  login-as (ERD § 5.4).
 
-	  ★ 감사 구멍이 하나 열린다 (ERD § 8 쟁점 7). 전환한 뒤의 조작은
-	    admin_log.member_id 에 "전환된 회원" 으로 찍혀 실제 행위자가 사라진다.
-	    그래서 전환 시점에 detail 에 impersonated_by 를 남긴다 —
-	    /dev/log 가 이 값을 보여주면 추적이 복원된다 (CRUD.md § 6-2).
+	  대상은 활동 중인 USER · ADMIN 만. 탈퇴 회원은 로그인할 수 없는 계정이므로
+	  전환으로 우회하지 않는다. DEV 끼리 전환할 이유는 없다.
+	  전환 뒤의 조작 기록에는 AdminLogDAO 가 impersonated_by 를 자동으로 붙인다.
 	*/
 	public MemberDTO loginAs(int devId, int targetMemberId) throws SQLException {
 		MemberDTO target = memberDAO.findById(targetMemberId);
 		if (target == null) {
 			throw new ServiceException("회원을 찾을 수 없습니다.");
 		}
+		if ("LEFT".equals(target.getStatus())) {
+			throw new ServiceException("탈퇴한 회원으로는 전환할 수 없습니다.");
+		}
+		if ("DEV".equals(target.getRole())) {
+			throw new ServiceException("개발자 계정으로는 전환할 수 없습니다.");
+		}
 		adminLogDAO.insert(devId, AdminLogDAO.MODE_DEV, AdminLogDAO.LOGIN_AS,
 				"member", Integer.valueOf(targetMemberId),
 				"impersonated_by=" + devId + " target=" + target.getLoginId()
 				+ " role=" + target.getRole());
 		return target;
+	}
+
+	/* 복귀 — 기록 주체는 원래 DEV 다 (mode = 'DEV'). */
+	public MemberDTO returnFromLoginAs(int devId, int fromMemberId) throws SQLException {
+		MemberDTO dev = memberDAO.findById(devId);
+		if (dev == null || !"DEV".equals(dev.getRole())) {
+			throw new ServiceException("원래 개발자 계정을 찾을 수 없습니다.");
+		}
+		adminLogDAO.insert(devId, AdminLogDAO.MODE_DEV, AdminLogDAO.LOGIN_AS_RETURN,
+				"member", Integer.valueOf(fromMemberId), "복귀: #" + fromMemberId + " -> " + dev.getLoginId());
+		return dev;
 	}
 
 	/* ---------------- 조회 ---------------- */

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import shop.dto.MemberDTO;
 import shop.service.MemberService;
 import shop.service.ServiceException;
+import shop.util.RoleUtil;
 import shop.util.StringUtil;
 
 /* 2 · 3번 회원가입 · 로그인 (CRUD.md § 2) */
@@ -95,11 +96,26 @@ public class MemberServlet extends BaseServlet {
 			}
 			setLoginMember(request, member);
 
-			if (!StringUtil.isEmpty(returnUrl) && returnUrl.startsWith(request.getContextPath())) {
-				/* 열린 리다이렉트를 막는다 — 컨텍스트 안의 경로만 허용한다. */
+			/*
+			  착지는 역할이 정한다 (ERD § 5.2).
+			      USER  → 원래 페이지 또는 메인
+			      ADMIN → /admin/dashboard,  DEV → /dev/
+			  ADMIN · DEV 는 returnUrl 을 무시한다 — 고객 화면으로 돌아갈 이유가 없다.
+			  단 자기 영역(/admin · /dev) 에서 튕겨 온 경우는 그리로 돌려보낸다.
+			*/
+			String ctx = request.getContextPath();
+			boolean safe = !StringUtil.isEmpty(returnUrl) && returnUrl.startsWith(ctx + "/");
+			String role = member.getRole();
+			if ("USER".equals(role)) {
+				if (safe) {
+					response.sendRedirect(returnUrl);
+				} else {
+					redirect(request, response, "/");
+				}
+			} else if (safe && returnUrl.startsWith(ctx + ("ADMIN".equals(role) ? "/admin/" : "/dev/"))) {
 				response.sendRedirect(returnUrl);
 			} else {
-				redirect(request, response, "/");
+				redirect(request, response, RoleUtil.homeOf(role));
 			}
 		} catch (ServiceException e) {
 			request.setAttribute("errorMessage", e.getMessage());

@@ -32,7 +32,7 @@ public class ProductService {
 	}
 
 	public List<CategoryDTO> findAllCategories() throws SQLException {
-		return categoryDAO.findAll();
+		return categoryDAO.findAllOrdered();
 	}
 
 	public CategoryDTO findCategory(int categoryId) throws SQLException {

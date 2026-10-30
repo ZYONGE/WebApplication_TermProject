@@ -61,6 +61,23 @@ public class CategoryDAO {
 		return roots;
 	}
 
+	/*
+	  셀렉트 · 표용 평면 목록 — 부모 바로 아래에 그 자식이 오도록 트리 순서로 편다.
+
+	  findAll() 은 sort_order 순이라 자식도 1부터 세는 데이터에서는
+	  "의류 · 상의 · 스니커즈 · 모자 · 신발 · 하의 …" 처럼 부모가 섞인다.
+	  화면 4곳(상품목록 필터 · 관리자 상품 필터 · 상품 등록 팝업 · 카테고리 관리)이
+	  모두 이 메서드 하나를 쓴다.
+	*/
+	public List<CategoryDTO> findAllOrdered() throws SQLException {
+		List<CategoryDTO> ordered = new ArrayList<CategoryDTO>();
+		for (CategoryDTO root : findTree()) {
+			ordered.add(root);
+			ordered.addAll(root.getChildren());
+		}
+		return ordered;
+	}
+
 	public CategoryDTO findById(int categoryId) throws SQLException {
 		String sql = "SELECT category_id, parent_id, name, sort_order"
 				   + "  FROM category WHERE category_id = ?";

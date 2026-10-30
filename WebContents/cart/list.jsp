@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<c:set var="pageCss" value="cart" />
 <%@ include file="/common/header.jsp" %>
 
 <h2>장바구니</h2>
@@ -43,7 +44,13 @@
 						<button type="submit" class="btn btn_small">변경</button>
 					</form>
 				</td>
-				<td class="col_total"><fmt:formatNumber value="${item.lineTotal}" pattern="#,##0" />원</td>
+				<%-- 주문 대상에서 빠진 줄은 합계에 들어가지 않는다 — 금액을 보이면 합산된 것으로 읽힌다 --%>
+				<td class="col_total">
+					<c:choose>
+						<c:when test="${item.orderable}"><fmt:formatNumber value="${item.lineTotal}" pattern="#,##0" />원</c:when>
+						<c:otherwise>- (합계 제외)</c:otherwise>
+					</c:choose>
+				</td>
 				<td class="col_state">
 					<c:choose>
 						<c:when test="${item.status != '판매중'}">판매 중지</c:when>

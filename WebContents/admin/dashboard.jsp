@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<c:set var="pageCss" value="admin" />
 <%@ include file="/common/header.jsp" %>
 
 <ul class="admin_nav">
@@ -35,7 +36,8 @@
 		<c:forEach var="d" items="${deliveryCounts}">
 			<tr>
 				<td><c:out value="${d.deliveryStatus}" /></td>
-				<td><a href="${ctx}/admin/orders?deliveryStatus=${d.deliveryStatus}">${d.orderCount}건</a></td>
+				<%-- 집계 뷰는 정상 주문만 센다. 링크도 같은 조건을 실어야 숫자와 목록이 맞는다. --%>
+				<td><a href="${ctx}/admin/orders?deliveryStatus=${d.deliveryStatus}&orderStatus=정상">${d.orderCount}건</a></td>
 			</tr>
 		</c:forEach>
 	</tbody>

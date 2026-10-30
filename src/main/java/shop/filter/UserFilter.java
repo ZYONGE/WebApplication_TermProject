@@ -12,18 +12,20 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import shop.util.RoleUtil;
 import shop.util.WebUtil;
 
 /*
-  로그인이 필요한 영역 — /cart/*, /order/*, /mypage/*, /wish/*
+  구매 경로 — role = 'USER' 만 (ERD § 5.5).
+      /cart/*  /order/*  /mypage/*  /wish/*
+  (리뷰 작성 · 수정 · 삭제와 문의 작성은 /mypage/review · /mypage/qna 로 들어온다)
 
-  ERD § 5 의 필터 목록에는 없다. 거기서 정한 것은 권한(ADMIN · DEV) 경계이고,
-  이쪽은 "로그인 여부" 경계라 성격이 다르다. 서블릿마다 같은 검사를 반복하는 대신
-  한 군데로 모았다 — 빠뜨린 서블릿이 생기지 않는다.
+  비로그인 → 로그인 화면 (돌아올 주소를 붙인다)
+  ADMIN · DEV → 각자의 홈. 관리자 · 개발자는 고객 활동을 하지 않는다.
 
-  돌아갈 주소를 쿼리로 넘겨 로그인 후 원래 화면으로 복귀시킨다.
+  상품상세에서 구매 버튼을 숨기는 것은 화면 처리일 뿐이고, 막는 것은 이 필터다.
 */
-public class LoginFilter implements Filter {
+public class UserFilter implements Filter {
 
 	public void init(FilterConfig config) throws ServletException {
 	}
@@ -33,9 +35,15 @@ public class LoginFilter implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 
-		if (!WebUtil.isLogin(req)) {
+		String role = RoleUtil.role(req);
+		if (role == null) {
 			String back = URLEncoder.encode(WebUtil.currentPath(req), "UTF-8");
 			res.sendRedirect(req.getContextPath() + "/member/login?returnUrl=" + back);
+			return;
+		}
+		if (!"USER".equals(role)) {
+			req.getSession().setAttribute("flashError", "구매 · 마이페이지는 일반 회원 계정으로만 이용할 수 있습니다.");
+			res.sendRedirect(req.getContextPath() + RoleUtil.homeOf(role));
 			return;
 		}
 		chain.doFilter(request, response);

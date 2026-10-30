@@ -68,6 +68,7 @@
 | 날짜 | 작업 | 산출물 |
 |---|---|---|
 | 2026-10-29 | 샌드박스 배선 1차 — 디자인 없이 기능 골격 전체 구현 | Java 82개 · JSP 39개 · JS 2개 (아래 집계) |
+| 2026-10-30 | 3개 역할 완전 격리 (ERD § 5 개정) + 테스터 지적 높음 3건(J-1 · J-3 · J-7) | 필터 재구성 · login-as 재작성 · 역할 변경 경로 제거 · 실행 검증 완료 |
 
 **산출물 집계**
 
@@ -103,6 +104,7 @@ UI/UX 세션이 값을 채우면 **JSP 수정 없이** 그대로 적용된다.
 | UI/UX | `js/ui.js` 를 임시로 작성했다(팝업 open/close 2개). **UI 트랙 소유 파일이므로 가져가거나 교체해 달라.** 배선은 `window.openPopup(id)` / `closePopup(id)` 두 개만 쓴다 | ⬜ |
 | UI/UX | 팝업을 `<dialog>` 로 구현했다(§ 8-7). `components/popup.css` 작성 시 `popup` · `popup_head` · `popup_body` · `popup_foot` · `popup_close` 를 `dialog` 요소 기준으로 잡아 달라 | ⬜ |
 | UI/UX | 마크업에서 쓴 클래스 중 부록 B 에 없는 것: `page_header_util` · `page_header_notice` · `page_nav` · `page_search` · `admin_nav` · `my_nav` · `qna_answer` · `order_timeline` · `toast_error` · `formtable_form` · `prod_*` · `cart_sum` · `notice_*`. D-09 접두어 규칙에는 맞지만 목록에는 없다 — 추가 확정 필요 | ⬜ |
+| ERD | 설정 변경 action 이 없다 — 샌드박스는 임시 `CONFIG_UPDATE` 사용 (§ 8-17 J-13) | ⬜ |
 | ERD | `admin_log.action` 어휘에 **`REVIEW_DELETE` 가 없다.** CRUD.md § 3 의 35번(관리자 리뷰관리)은 `log` 에 **C** 를 요구하는데 쓸 action 이 없어 임의로 추가했다 | ⬜ |
 | ERD | `ShopFilter` 통과 목록(§ 5)에 **`/member/login` 을 더해야 한다.** 현재 목록대로면 점검 모드를 켠 뒤 로그아웃한 관리자가 다시 들어올 수 없다 (§ 8-2) | ⬜ |
 | ERD | DTO 필드 계약(§ 7)에 표시용 조인 필드 4개를 더했다 — `OrderDTO.loginId` · `memberName` · `itemCount` · `firstProductName`. `v_admin_order` 가 이미 주는 값이고 관리자 목록 제목("티셔츠 외 2건")에 필요하다 | ⬜ |
@@ -201,6 +203,38 @@ Mermaid 탭은 만들지 않고, 다이어그램은 사용자가 **이미지로 
 현재 `/dev/erd` 는 실제 스키마 조회(컬럼 · 제약 · CHECK)만 구현된 상태로 **그대로 유지**한다.
 `mermaid.min.js` 반입 요청(§ 7)은 철회 대상이다. 이미지는 `images/**`(UI 트랙)에 두고 `erd.jsp` 상단에서 참조한다.
 
+### 8-16. 3개 역할 완전 격리 — ERD § 5 개정 반영 (2026-10-30)
+| 결정 (정본 ERD § 5) | 구현 |
+|---|---|
+| 구매 경로는 USER 만 | `LoginFilter` → **`UserFilter`** 로 교체. `/cart/*` `/order/*` `/mypage/*` `/wish/*`. 비로그인 → 로그인, ADMIN · DEV → 각자 홈 |
+| `/admin/*` 는 ADMIN 만 (DEV 도 거부) | `AdminFilter`. 비로그인 시 `returnUrl` 도 붙인다 (테스터 J-9 동시 해소) |
+| `/dev/*` 는 DEV 만 · 복귀만 예외 | `DevFilter` 는 **현재 세션 역할**로 판정. `/dev/loginAs/return` 만 `impersonatorId` 로 판정 |
+| 거부 시 역할 홈으로 | `RoleUtil.homeOf()` — ADMIN `/admin/dashboard` · DEV `/dev/` · USER `/` |
+| 로그인 착지 | USER → returnUrl 또는 메인 / ADMIN · DEV → 홈 (자기 영역 returnUrl 만 허용) |
+| 장바구니 배지는 USER 만 | `BaseServlet.fillHeaderModel` 에서 역할 검사 후 조회 |
+| 상품상세 구매 컨트롤 | ADMIN · DEV 에게 "구매는 일반 회원 계정으로만 가능합니다" 만 표시. 방어는 UserFilter |
+| 역할 불변 | `changeRole` · `MemberDAO.updateRole` · `MEMBER_ROLE_CHANGE` **코드 삭제**. 26번은 `leaveMember`(USER 대상 탈퇴 처리 + `MEMBER_LEAVE`)만 |
+| login-as | 세션 회원을 대상 계정으로 **교체**, 원래 DEV 는 `impersonatorId`. 대상은 ACTIVE 인 USER · ADMIN 만 (탈퇴 · DEV 제외 — 테스터 J-6 일부 해소) |
+| `impersonated_by` 기록 | `AuditContext`(ThreadLocal) 를 `BaseServlet.service()` 가 싣고 `AdminLogDAO` 가 자동 부착 — 호출부가 빠뜨릴 수 없다 |
+| 복귀 기록 | `LOGIN_AS_RETURN` 을 원래 DEV 로 (mode='DEV') |
+| 주문 취소 로그 | 고객 본인 취소는 `admin_log` 미기록, 관리자 취소만 `ORDER_CANCEL` |
+| 상품 노출 조건 (§ 2.4) | **이미 구현돼 있었다** (`ProductDAO.ON_SALE` · `isOnSale` · 장바구니 `isOrderable`). 변경 없음 |
+
+실행 검증 (Tomcat, 비로그인 · USER · ADMIN · DEV 4계정 × 8경로): 전부 의도대로. 전환 중 `/dev` · `/admin` 차단, 복귀 경로만 통과, 복귀 후 `/dev` 정상.
+테스터 J-7(전환 중 /dev 개방 · 감사 로그 행위자 오기록)은 이것으로 해소됐다.
+
+### 8-17. 테스터 지적 높음 처리 — J-1 · J-3
+- **J-1 카테고리 순서**: 원인은 4곳이 `sort_order` 평면 목록을 그대로 출력한 것(자식도 1부터 셈). `CategoryDAO.findAllOrdered()`(트리를 부모-자식 순으로 편 목록) 하나를 4곳이 공유. 결과: 의류 / 상의 / 하의 / 신발 / 스니커즈 / 액세서리 / 모자 / 벨트
+- **J-3 대시보드**: 링크에 `&orderStatus=정상` 추가 — 집계 뷰와 같은 조건
+- 중간 · 낮음 처리 (2026-10-30):
+  - **J-4** 장바구니에서 주문 대상이 아닌 줄의 합계 칸을 `- (합계 제외)` 로
+  - **J-5** 답변 팝업에 문의번호 · 상품명 · 문의 내용 표시
+  - **J-6** 역할 격리 작업에서 해소 — LEFT 회원은 처리 폼 없음 · 계정 전환 대상 제외, 탈퇴 처리 기능 신설
+  - **J-8** 주문관리 처리 후 원래 검색 조건 유지 (`returnQuery` — 경로 고정 · 쿼리만 수용 · `orderId` 제외)
+  - **J-11** 카테고리 번호 입력란을 숨기고 "신규 등록 / 수정 중 #N" 표시. **리프 카테고리만 허용 규칙은 보류** — ERD 에 없는 규칙이고 대분류 상품도 목록 필터가 정상 처리한다. 필요하면 ERD 결정 후 반영
+  - **J-13** 주문내역에 마이페이지 탭바 추가 · 설정 변경 로그를 `키: 이전 -> 이후` 형식으로 통일, `SHOP_STATUS` 외 키는 임시 action `CONFIG_UPDATE` 로 분리 (ERD 어휘 추가 요청 중). 문의 목록 오름차순은 답변 대기열 의도라 유지
+- 처리하지 않음: J-2 (ERD · 스키마 결정 대기) · J-10 (사실 아님 — flashError 존재) · J-12 (제출 전 제거)
+
 ---
 
 ## 9. 화면 목록 + URL 매핑 (이 트랙의 기록)
@@ -256,7 +290,7 @@ Mermaid 탭은 만들지 않고, 다이어그램은 사용자가 **이미지로 
 | 31 | dev 데이터 브라우저 | GET | `/dev/data` | `DevDataServlet` |
 | 32 | dev 설계 보기 | GET | `/dev/erd` | `DevErdServlet` |
 | 33 | dev 데이터 관리 | GET · POST | `/dev/seed` | `DevSeedServlet` |
-| 34 | dev 계정 전환 | GET · POST | `/dev/loginAs` | `DevLoginAsServlet` |
+| 34 | dev 계정 전환 | GET · POST | `/dev/loginAs` · `/dev/loginAs/return` | `DevLoginAsServlet` |
 | 36 | dev 감사 로그 | GET | `/dev/log` | `DevLogServlet` |
 
 ### 9.3 팝업 7종 — 부모 화면에 포함 (별도 라우트 없음)
@@ -283,6 +317,6 @@ Mermaid 탭은 만들지 않고, 다이어그램은 사용자가 **이미지로 
 | 1 | `EncodingFilter` | `/*` | UTF-8 |
 | 2 | `JspDirectAccessFilter` | `/*` (REQUEST만) | `.jsp` 직접 접근 차단 (§ 8-3) |
 | 3 | `ShopFilter` | `/*` | 점검 모드 — **AdminFilter 보다 먼저** |
-| 4 | `LoginFilter` | `/cart/*` `/order/*` `/mypage/*` `/wish/*` | 로그인 필요 (신설 · § 7) |
-| 5 | `AdminFilter` | `/admin/*` | `role IN ('ADMIN','DEV')` |
-| 6 | `DevFilter` | `/dev/*` | `role = 'DEV'` (전환 중이면 `devOrigin` 으로 판정) |
+| 4 | `UserFilter` | `/cart/*` `/order/*` `/mypage/*` `/wish/*` | role='USER' — ADMIN · DEV 는 각자 홈으로 (§ 8-16) |
+| 5 | `AdminFilter` | `/admin/*` | role='ADMIN' (DEV 도 거부) |
+| 6 | `DevFilter` | `/dev/*` | role='DEV'. `/dev/loginAs/return` 만 `impersonatorId` 로 판정 |
