@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>상품 관리 — 청사진</title>
+<!-- admin/products.jsp 대응. pages/admin.css + pagination.css + popup.css 확인용. -->
+<link rel="stylesheet" href="../css/base/reset.css">
+<link rel="stylesheet" href="../css/base/variables.css">
+<link rel="stylesheet" href="../css/base/layout.css">
+<link rel="stylesheet" href="../css/components/button.css">
+<link rel="stylesheet" href="../css/components/form.css">
+<link rel="stylesheet" href="../css/components/card.css">
+<link rel="stylesheet" href="../css/components/table.css">
+<link rel="stylesheet" href="../css/components/pagination.css">
+<link rel="stylesheet" href="../css/components/popup.css">
+<link rel="stylesheet" href="../css/pages/admin.css">
+</head>
+<body>
+<div class="wrap">
+<header class="page_header">
+	<h1><a href="#">SHOP</a></h1>
+	<ul class="page_header_util"><li>홍길동님</li><li><a href="#">마이페이지</a></li><li><a href="#">장바구니 (3)</a></li></ul>
+	<nav class="page_nav"><ul><li><a href="#">전체상품</a></li><li><a href="#">의류</a></li><li><a href="#">공지사항</a></li></ul></nav>
+</header>
+<main class="page_content">
+
+<ul class="admin_nav">
+	<li><a href="#">대시보드</a></li><li><a href="#">상품</a></li><li><a href="#">카테고리</a></li>
+	<li><a href="#">주문·배송</a></li><li><a href="#">회원</a></li><li><a href="#">문의답변</a></li>
+	<li><a href="#">리뷰</a></li><li><a href="#">공지</a></li>
+</ul>
+
+<h2>상품 관리</h2>
+
+<form class="admin_filter" action="#" method="get">
+	<select name="categoryId"><option>전체 카테고리</option><option>의류</option></select>
+	<select name="status"><option>전체 상태</option><option>판매중</option><option>숨김</option></select>
+	<input type="text" name="keyword" placeholder="상품명">
+	<button type="submit" class="btn">검색</button>
+	<button type="button" class="btn btn_primary">상품 등록</button>
+</form>
+
+<table class="listtable">
+	<thead class="listtable_head">
+		<tr><th class="col_no">번호</th><th class="col_name">상품명</th><th class="col_price">가격</th>
+		    <th class="col_qty">재고</th><th class="col_state">상태</th><th class="col_action">관리</th></tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td class="col_no">1</td><td class="col_name">기본 티셔츠</td><td class="col_price">19,000원</td>
+			<td class="col_qty">24</td><td class="col_state">판매중</td>
+			<td class="col_action">
+				<button type="button" class="btn btn_small">수정</button>
+				<button type="button" class="btn btn_danger btn_small">숨김</button>
+			</td>
+		</tr>
+		<tr><td colspan="6" class="empty">조건에 맞는 상품이 없습니다.</td></tr>
+	</tbody>
+</table>
+
+<div class="paging">
+	<a class="paging_prev" href="#">이전</a>
+	<strong class="paging_num on">1</strong>
+	<a class="paging_num" href="#">2</a>
+	<a class="paging_num" href="#">3</a>
+	<a class="paging_next" href="#">다음</a>
+</div>
+
+<dialog id="productPopup" class="popup" open>
+	<form class="popup_form" action="#" method="post">
+		<h3 class="popup_head" id="productPopupTitle">상품 등록</h3>
+		<div class="popup_body">
+			<table class="formtable">
+				<tr><th><label for="name">상품명 <span class="required">*</span></label></th>
+				    <td><input type="text" id="name" class="field"></td></tr>
+				<tr><th><label for="price">가격 <span class="required">*</span></label></th>
+				    <td><input type="text" id="price" class="field"></td></tr>
+				<tr><th><label for="thumbnail">대표 이미지</label></th>
+				    <td><input type="file" id="thumbnail" class="field"></td></tr>
+			</table>
+			<p class="field_help">이미지는 /upload 에 저장되고 웹에서는 /upload/파일명 으로 참조합니다.</p>
+		</div>
+		<div class="popup_foot">
+			<button type="submit" class="btn btn_primary">저장</button>
+			<button type="button" class="btn btn_sub popup_close">닫기</button>
+		</div>
+	</form>
+</dialog>
+
+</main>
+<footer class="page_footer"><p>배선 동작 확인용 골격입니다.</p></footer>
+</div>
+</body>
+</html>

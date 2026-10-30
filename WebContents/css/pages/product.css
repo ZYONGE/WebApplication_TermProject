@@ -1,1 +1,99 @@
-/* 상품 — 목록, 상세 */
+@charset "utf-8";
+
+/*
+  상품 — 목록, 상세
+  소유 접두어: prod_* (DECISIONS.md D-09)
+  사용 중: prod_filter (list) / prod_detail · prod_gallery · prod_desc ·
+           prod_buy · prod_wish · prod_review · prod_qna (view)
+*/
+
+/*목록 상단 필터 — 입력 영역*/
+.prod_filter {
+	margin-bottom: var(--space-lg);
+	padding-top: var(--space-sm);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-md);
+	background-color: var(--bp-input);
+	border: 1px solid var(--bp-input-line);
+}
+
+.prod_filter label {
+	margin-right: var(--space-xs);
+	margin-left: var(--space-sm);
+	font-size: var(--font-size-small);
+}
+
+/*상세*/
+
+.prod_detail {
+	margin-bottom: var(--space-xl);
+	padding-bottom: var(--space-lg);
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: var(--color-border);
+}
+
+/*대표 이미지 + 추가 이미지 — 이미지 슬롯 묶음*/
+.prod_gallery {
+	margin-bottom: var(--space-md);
+	padding-top: var(--space-md);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-md);
+	padding-left: var(--space-md);
+	background-color: var(--bp-image);
+	border: 1px solid var(--bp-image-line);
+}
+
+.prod_gallery img {
+	width: 240px;
+	height: 240px;
+	margin-right: var(--space-sm);
+	object-fit: cover;
+	border: 1px solid var(--bp-image-line);
+}
+
+.prod_gallery p {
+	font-size: var(--font-size-small);
+	color: var(--color-text-weak);
+}
+
+.prod_desc {
+	margin-top: var(--space-md);
+	margin-bottom: var(--space-md);
+	padding-top: var(--space-md);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-md);
+	padding-left: var(--space-md);
+	border: 1px solid var(--color-border);
+}
+
+/*담기 · 찜 — 액션 영역*/
+.prod_buy, .prod_wish {
+	display: inline-block;
+	margin-right: var(--space-sm);
+	margin-top: var(--space-sm);
+	padding-top: var(--space-sm);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-md);
+	background-color: var(--bp-action);
+	border: 1px solid var(--bp-action-line);
+}
+
+.prod_buy label {
+	margin-right: var(--space-xs);
+	font-size: var(--font-size-small);
+}
+
+.prod_buy input[type="number"] {
+	width: 72px;
+	margin-right: var(--space-sm);
+	padding-top: var(--space-xs);
+	padding-left: var(--space-xs);
+	border: 1px solid var(--bp-input-line);
+}
+
+.prod_review, .prod_qna {
+	margin-bottom: var(--space-xl);
+}

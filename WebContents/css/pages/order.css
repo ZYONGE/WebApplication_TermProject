@@ -1,1 +1,61 @@
-/* 주문 — 주문서, 주문완료, 주문내역 */
+@charset "utf-8";
+
+/*
+  주문 — 주문서, 주문완료, 주문내역, 주문상세
+  소유 접두어: order_* (DECISIONS.md D-09)
+  사용 중: order_form · order_method (form.jsp) / order_timeline (view.jsp)
+*/
+
+/*주문서 전체 — 사용자가 값을 넣는 영역*/
+.order_form {
+	padding-top: var(--space-md);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-md);
+	padding-left: var(--space-md);
+	background-color: var(--bp-input);
+	border: 1px solid var(--bp-input-line);
+}
+
+.order_form h3 {
+	margin-top: var(--space-lg);
+	margin-bottom: var(--space-sm);
+	padding-bottom: var(--space-xs);
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: var(--bp-input-line);
+}
+
+/*결제수단 — 라디오 묶음*/
+.order_method {
+	padding-top: var(--space-sm);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-md);
+	background-color: var(--color-surface);
+	border: 1px solid var(--bp-input-line);
+}
+
+.order_method label {
+	margin-right: var(--space-lg);
+}
+
+/*
+  배송 상태 이력 — 시간순 목록.
+  상태가 몇 번 바뀌었는지가 보여야 하므로 줄마다 선을 둔다.
+*/
+.order_timeline {
+	margin-top: var(--space-sm);
+	padding-left: var(--space-md);
+	border-left-width: 3px;
+	border-left-style: solid;
+	border-left-color: var(--bp-data-line);
+}
+
+.order_timeline li {
+	padding-top: var(--space-xs);
+	padding-bottom: var(--space-xs);
+	font-size: var(--font-size-small);
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: var(--color-border);
+}

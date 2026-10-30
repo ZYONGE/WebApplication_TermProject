@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>마이페이지 — 청사진</title>
+<!-- mypage/index.jsp 대응. pages/mypage.css 확인용. -->
+<link rel="stylesheet" href="../css/base/reset.css">
+<link rel="stylesheet" href="../css/base/variables.css">
+<link rel="stylesheet" href="../css/base/layout.css">
+<link rel="stylesheet" href="../css/components/button.css">
+<link rel="stylesheet" href="../css/components/form.css">
+<link rel="stylesheet" href="../css/components/card.css">
+<link rel="stylesheet" href="../css/components/table.css">
+<link rel="stylesheet" href="../css/components/pagination.css">
+<link rel="stylesheet" href="../css/components/popup.css">
+<link rel="stylesheet" href="../css/pages/mypage.css">
+</head>
+<body>
+<div class="wrap">
+<header class="page_header">
+	<h1><a href="#">SHOP</a></h1>
+	<ul class="page_header_util"><li>홍길동님</li><li><a href="#">마이페이지</a></li><li><a href="#">장바구니 (3)</a></li></ul>
+	<nav class="page_nav"><ul><li><a href="#">전체상품</a></li><li><a href="#">의류</a></li><li><a href="#">공지사항</a></li></ul></nav>
+</header>
+<main class="page_content">
+
+<ul class="my_nav">
+	<li><a href="#">마이페이지</a></li><li><a href="#">정보수정</a></li><li><a href="#">배송지</a></li>
+	<li><a href="#">찜 목록</a></li><li><a href="#">내 리뷰</a></li><li><a href="#">내 문의</a></li>
+	<li><a href="#">주문 내역</a></li>
+</ul>
+
+<h2>마이페이지</h2>
+
+<table class="formtable">
+	<tr><th>아이디</th><td>user01</td></tr>
+	<tr><th>이름</th><td>홍길동</td></tr>
+	<tr><th>이메일</th><td>user01@example.com</td></tr>
+	<tr><th>가입일</th><td>2026-09-01</td></tr>
+	<tr><th>찜한 상품</th><td>4개</td></tr>
+</table>
+
+<h3>최근 주문</h3>
+<table class="listtable">
+	<thead class="listtable_head">
+		<tr><th class="col_no">주문번호</th><th class="col_date">주문일</th>
+		    <th class="col_total">결제금액</th><th class="col_state">배송상태</th></tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td class="col_no"><a href="#">20261030-0001</a></td>
+			<td class="col_date">2026-10-28</td>
+			<td class="col_total">41,000원</td>
+			<td class="col_state">배송중</td>
+		</tr>
+		<tr><td colspan="4" class="empty">주문 내역이 없습니다.</td></tr>
+	</tbody>
+</table>
+
+<h3>내가 쓴 글</h3>
+<p>리뷰 2건 / 문의 1건</p>
+
+</main>
+<footer class="page_footer"><p>배선 동작 확인용 골격입니다.</p></footer>
+</div>
+</body>
+</html>

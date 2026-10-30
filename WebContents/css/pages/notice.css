@@ -1,0 +1,58 @@
+@charset "utf-8";
+
+/*
+  공지사항 — 목록, 상세
+  소유 접두어: notice_* (DECISIONS.md D-09)
+  사용 중: notice_search (list.jsp) / notice_view · notice_content (view.jsp)
+
+  ⚠ 이 파일은 DECISIONS.md 작성 시점에 없던 것이다.
+    계약은 라우팅 페이지를 7개(main · member · product · cart · order · mypage · admin)로
+    잡았는데, JSP 배선이 notice/ 라우트를 추가해 8개가 됐다.
+    접두어 표(D-09)에 notice_* 행을 추가해야 한다. (보고 항목 G-2)
+*/
+
+/*목록 상단 검색*/
+.notice_search {
+	margin-bottom: var(--space-lg);
+	padding-top: var(--space-sm);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-md);
+	background-color: var(--bp-input);
+	border: 1px solid var(--bp-input-line);
+}
+
+.notice_search input[type="text"] {
+	margin-right: var(--space-sm);
+	padding-top: var(--space-xs);
+	padding-right: var(--space-sm);
+	padding-bottom: var(--space-xs);
+	padding-left: var(--space-sm);
+	border: 1px solid var(--bp-input-line);
+}
+
+/*상세*/
+
+.notice_view {
+	margin-bottom: var(--space-lg);
+	padding-top: var(--space-md);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-md);
+	padding-left: var(--space-md);
+	border: 1px solid var(--color-border);
+}
+
+.notice_view h2 {
+	padding-bottom: var(--space-sm);
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: var(--color-border-strong);
+}
+
+/*본문 — 줄바꿈이 그대로 보여야 한다*/
+.notice_content {
+	margin-top: var(--space-md);
+	padding-top: var(--space-md);
+	padding-bottom: var(--space-md);
+	white-space: pre-wrap;
+}

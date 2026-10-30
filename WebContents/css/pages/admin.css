@@ -1,1 +1,46 @@
-/* 관리자 — 상품/주문/회원 관리 */
+@charset "utf-8";
+
+/*
+  관리자 — 상품/주문/회원/문의/리뷰/공지 관리
+  소유 접두어: admin_* (DECISIONS.md D-09)
+  사용 중: admin_nav (admin 8개 + dev 7개 화면) / admin_filter (admin 6개 + dev 3개)
+
+  ⚠ dev/*.jsp 7개도 이 두 클래스를 그대로 쓴다. dev 전용 접두어를 만들지 않은 것은
+    올바른 판단이다 — 같은 모양이면 같은 클래스를 쓰는 것이 D-09 의 취지다.
+*/
+
+.admin_nav {
+	margin-bottom: var(--space-lg);
+	padding-top: var(--space-sm);
+	padding-right: var(--space-sm);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-sm);
+	background-color: var(--bp-nav);
+	border: 1px solid var(--bp-nav-line);
+}
+
+.admin_nav li {
+	display: inline-block;
+	margin-right: var(--space-md);
+	font-size: var(--font-size-small);
+}
+
+/*목록 상단 검색 · 필터 — 입력 영역*/
+.admin_filter {
+	margin-bottom: var(--space-lg);
+	padding-top: var(--space-sm);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-md);
+	background-color: var(--bp-input);
+	border: 1px solid var(--bp-input-line);
+}
+
+.admin_filter select, .admin_filter input[type="text"] {
+	margin-right: var(--space-sm);
+	padding-top: var(--space-xs);
+	padding-right: var(--space-sm);
+	padding-bottom: var(--space-xs);
+	padding-left: var(--space-sm);
+	border: 1px solid var(--bp-input-line);
+}

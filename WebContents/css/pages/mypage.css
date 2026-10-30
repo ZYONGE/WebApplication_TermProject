@@ -1,1 +1,25 @@
-/* 마이페이지 */
+@charset "utf-8";
+
+/*
+  마이페이지 — 소유 접두어: my_* (DECISIONS.md D-09)
+  사용 중: my_nav (index · edit · address · wishlist · review · qna 6개 화면 공통)
+
+  admin_nav 와 같은 모양의 좌우 내비다. 두 클래스를 합치지 않은 이유는
+  JSP 가 각각 다른 이름으로 내보내고 있기 때문이다 — 계약을 바꾸려면 PM 을 거친다.
+*/
+
+.my_nav {
+	margin-bottom: var(--space-lg);
+	padding-top: var(--space-sm);
+	padding-right: var(--space-sm);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-sm);
+	background-color: var(--bp-nav);
+	border: 1px solid var(--bp-nav-line);
+}
+
+.my_nav li {
+	display: inline-block;
+	margin-right: var(--space-md);
+	font-size: var(--font-size-small);
+}

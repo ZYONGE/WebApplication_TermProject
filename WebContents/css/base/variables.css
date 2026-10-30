@@ -1,1 +1,68 @@
-/* 색상, 폰트, 간격 등 디자인 토큰 (:root 변수) */
+@charset "utf-8";
+
+/*
+  디자인 토큰 — :root 단일 정의 지점 (DECISIONS.md D-02)
+
+  ★ 이 파일의 값은 전부 청사진(blueprint) 값이다. 미감을 위한 선택이 아니다.
+    바탕은 흰색으로 두고, 색은 "같은 속성의 개체를 구분하는 표식"으로만 쓴다.
+    컨셉이 전달되면 이 파일만 교체한다 (D-01 · D-04).
+*/
+
+:root {
+	/*바탕 — 흰색 기준*/
+	--color-bg: #ffffff;
+	--color-surface: #ffffff;
+	--color-text: #1a1a1a;
+	--color-text-weak: #6b6b6b;
+	--color-text-inverse: #ffffff;
+	--color-border: #d4d4d4;
+	--color-border-strong: #8c8c8c;
+
+	/*역할색 — 컨셉 대기. 무채색 임시값이다 (D-04)*/
+	--color-primary: #333333;       /* TODO: 컨셉 */
+	--color-primary-dark: #1a1a1a;  /* TODO: 컨셉 */
+	--color-primary-light: #f2f2f2; /* TODO: 컨셉 */
+	--color-accent: #444444;        /* TODO: 컨셉 */
+	--color-danger: #8c3b3b;
+	--color-success: #3b6b45;
+
+	/*
+	  청사진 표식 — 객체 종류별 구분색. 컨셉 전달 시 전부 삭제된다.
+	    image  이미지 슬롯      input  입력 슬롯
+	    action 액션(버튼)       data   데이터 목록
+	    popup  팝업 영역        nav    내비게이션 · 유틸
+	    state  상태 표시(배지 · 토스트 · 빈 상태)
+	*/
+	--bp-image: #eef3fa;
+	--bp-image-line: #9fb6d4;
+	--bp-input: #eef6ef;
+	--bp-input-line: #9cc0a2;
+	--bp-action: #fbf1e8;
+	--bp-action-line: #d6a373;
+	--bp-data: #f1f3f5;
+	--bp-data-line: #aeb6bd;
+	--bp-popup: #f3eff8;
+	--bp-popup-line: #b09ec8;
+	--bp-nav: #faf6e8;
+	--bp-nav-line: #cbb87a;
+	--bp-state: #fbeef0;
+	--bp-state-line: #cf9aa4;
+
+	/*타이포 — 실습 관례 기준값 (DECISIONS.md 부록 A)*/
+	--font-base: "Apple SD Gothic Neo", "맑은 고딕", "나눔고딕", "돋움", Dotum, sans-serif;
+	--font-size-base: 15px;
+	--font-size-small: 12px;
+	--font-size-title: 20px;
+	--line-height-base: 160%;
+
+	/*간격 — 4px 배수 스케일 (D-05)*/
+	--space-xs: 4px;
+	--space-sm: 8px;
+	--space-md: 16px;
+	--space-lg: 24px;
+	--space-xl: 44px;
+
+	/*레이아웃 — 고정폭 중앙정렬 (D-06)*/
+	--layout-width: 1200px;
+	--layout-side-width: 228px;
+}

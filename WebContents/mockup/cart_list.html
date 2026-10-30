@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>장바구니 — 청사진</title>
+<!-- cart/list.jsp 대응. pages/cart.css + table.css(col_* · soldout · empty) 확인용. -->
+<link rel="stylesheet" href="../css/base/reset.css">
+<link rel="stylesheet" href="../css/base/variables.css">
+<link rel="stylesheet" href="../css/base/layout.css">
+<link rel="stylesheet" href="../css/components/button.css">
+<link rel="stylesheet" href="../css/components/form.css">
+<link rel="stylesheet" href="../css/components/card.css">
+<link rel="stylesheet" href="../css/components/table.css">
+<link rel="stylesheet" href="../css/components/pagination.css">
+<link rel="stylesheet" href="../css/components/popup.css">
+<link rel="stylesheet" href="../css/pages/cart.css">
+</head>
+<body>
+<div class="wrap">
+<header class="page_header">
+	<h1><a href="#">SHOP</a></h1>
+	<ul class="page_header_util"><li>홍길동님</li><li><a href="#">마이페이지</a></li><li><a href="#">장바구니 (3)</a></li></ul>
+	<nav class="page_nav"><ul><li><a href="#">전체상품</a></li><li><a href="#">의류</a></li><li><a href="#">공지사항</a></li></ul></nav>
+</header>
+<p class="toast toast_error">주문할 수 없는 상품이 1건 있습니다. 합계에서 제외했습니다.</p>
+<main class="page_content">
+
+<h2>장바구니</h2>
+
+<table class="listtable cart_table">
+	<thead class="listtable_head">
+		<tr>
+			<th class="col_name">상품</th><th class="col_price">단가</th><th class="col_qty">수량</th>
+			<th class="col_total">합계</th><th class="col_state">상태</th><th class="col_action">삭제</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td class="col_name"><a href="#">기본 티셔츠</a></td>
+			<td class="col_price">19,000원</td>
+			<td class="col_qty">
+				<form action="#" method="post">
+					<input type="number" name="quantity" value="2" min="1" max="99">
+					<button type="submit" class="btn btn_small">변경</button>
+				</form>
+			</td>
+			<td class="col_total">38,000원</td>
+			<td class="col_state">주문 가능</td>
+			<td class="col_action">
+				<form action="#" method="post"><button type="submit" class="btn btn_danger btn_small">삭제</button></form>
+			</td>
+		</tr>
+		<tr class="soldout">
+			<td class="col_name"><a href="#">품절된 상품</a></td>
+			<td class="col_price">12,000원</td>
+			<td class="col_qty">
+				<form action="#" method="post">
+					<input type="number" name="quantity" value="1" min="1" max="99">
+					<button type="submit" class="btn btn_small">변경</button>
+				</form>
+			</td>
+			<td class="col_total">12,000원</td>
+			<td class="col_state">품절</td>
+			<td class="col_action">
+				<form action="#" method="post"><button type="submit" class="btn btn_danger btn_small">삭제</button></form>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<table class="formtable cart_sum">
+	<tr><th>상품 합계</th><td>38,000원</td></tr>
+	<tr><th>배송비</th><td>3,000원
+		<span class="field_help">50,000원 이상 무료배송</span></td></tr>
+	<tr><th>결제 예정 금액</th><td>41,000원</td></tr>
+</table>
+
+<div class="btnstyle">
+	<a class="btn btn_sub" href="#">계속 쇼핑</a>
+	<a class="btn btn_primary" href="#">주문하기</a>
+</div>
+
+</main>
+<footer class="page_footer"><p>배선 동작 확인용 골격입니다.</p></footer>
+</div>
+</body>
+</html>

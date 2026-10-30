@@ -1,1 +1,41 @@
-/* 페이지네이션 */
+@charset "utf-8";
+
+/*
+  페이지네이션 — 소유 접두어: paging* (DECISIONS.md D-09)
+  사용 중: paging / paging_num / paging_prev / paging_next / on
+  마크업은 common/paging.jsp 가 내보낸다.
+*/
+
+.paging {
+	margin-top: var(--space-md);
+	padding-top: var(--space-sm);
+	padding-bottom: var(--space-sm);
+	text-align: center;
+}
+
+.paging a, .paging strong {
+	display: inline-block;
+	min-width: 32px;
+	margin-right: var(--space-xs);
+	margin-left: var(--space-xs);
+	padding-top: var(--space-xs);
+	padding-right: var(--space-sm);
+	padding-bottom: var(--space-xs);
+	padding-left: var(--space-sm);
+	text-align: center;
+	text-decoration: none;
+	border: 1px solid var(--color-border);
+}
+
+.paging_prev, .paging_next {
+	background-color: var(--bp-nav);
+	border-color: var(--bp-nav-line);
+}
+
+/*현재 페이지 — 어디에 있는지가 보여야 한다*/
+.paging .on {
+	font-weight: bold;
+	background-color: var(--bp-data);
+	border-color: var(--bp-data-line);
+	border-width: 2px;
+}

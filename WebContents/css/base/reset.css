@@ -1,1 +1,49 @@
-/* 브라우저 기본 스타일 초기화 */
+@charset "utf-8";
+
+/*
+  브라우저 기본 스타일 초기화 — 청사진에 필요한 최소한만 둔다.
+  장식은 넣지 않는다.
+*/
+
+body {
+	margin: 0px;
+	padding: 0px;
+	font-family: var(--font-base);
+	font-size: var(--font-size-base);
+	line-height: var(--line-height-base);
+	color: var(--color-text);
+	background-color: var(--color-bg);
+}
+
+h1, h2, h3, p, ul, ol, table, figure {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+ul, ol {
+	padding-left: 0px;
+	list-style-type: none;
+}
+
+img {
+	border: 0px;
+	vertical-align: middle;
+}
+
+a {
+	color: var(--color-text);
+}
+
+table {
+	border-collapse: collapse;
+}
+
+input, select, textarea, button {
+	font-family: inherit;
+	font-size: inherit;
+}
+
+/*청사진에서는 입력칸이 어디까지인지 보여야 하므로 box-sizing 을 통일한다*/
+input, select, textarea {
+	box-sizing: border-box;
+}

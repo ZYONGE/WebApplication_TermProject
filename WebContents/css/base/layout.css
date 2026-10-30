@@ -1,1 +1,147 @@
-/* 공통 레이아웃 — header, nav, footer, container */
+@charset "utf-8";
+
+/*
+  공통 레이아웃 — wrap · page_header · page_nav · page_content · page_footer
+  소유 접두어: wrap, container, page_* (DECISIONS.md D-09)
+
+  header.jsp / footer.jsp 가 내보내는 골격을 그대로 받는다.
+  구조가 보이도록 영역마다 선을 두르고, 내비 · 유틸은 nav 표식색으로 묶는다.
+*/
+
+.wrap {
+	width: var(--layout-width);
+	margin-top: 0px;
+	margin-right: auto;
+	margin-bottom: 0px;
+	margin-left: auto;
+}
+
+/*상단*/
+
+.page_header {
+	padding-top: var(--space-md);
+	padding-bottom: var(--space-md);
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: var(--color-border-strong);
+}
+
+.page_header h1 {
+	font-size: var(--font-size-title);
+}
+
+.page_header h1 a {
+	text-decoration: none;
+}
+
+/*로그인 · 장바구니 · 관리자 — 유틸 묶음*/
+.page_header_util {
+	margin-top: var(--space-sm);
+	padding-top: var(--space-xs);
+	padding-right: var(--space-sm);
+	padding-bottom: var(--space-xs);
+	padding-left: var(--space-sm);
+	background-color: var(--bp-nav);
+	border: 1px solid var(--bp-nav-line);
+}
+
+.page_header_util li {
+	display: inline-block;
+	margin-right: var(--space-md);
+	font-size: var(--font-size-small);
+}
+
+/*dev 계정 전환 · 점검 모드 안내 — 상태 표식색*/
+.page_header_notice {
+	margin-top: var(--space-sm);
+	padding-top: var(--space-xs);
+	padding-right: var(--space-sm);
+	padding-bottom: var(--space-xs);
+	padding-left: var(--space-sm);
+	font-size: var(--font-size-small);
+	background-color: var(--bp-state);
+	border: 1px solid var(--bp-state-line);
+}
+
+.page_nav {
+	margin-top: var(--space-sm);
+	padding-top: var(--space-sm);
+	padding-right: var(--space-sm);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-sm);
+	background-color: var(--bp-nav);
+	border: 1px solid var(--bp-nav-line);
+}
+
+.page_nav > ul > li {
+	display: inline-block;
+	margin-right: var(--space-md);
+	vertical-align: top;
+}
+
+/*2단 카테고리 — 하위 목록이 있다는 사실이 보여야 한다*/
+.page_nav > ul > li > ul {
+	margin-top: var(--space-xs);
+	padding-left: var(--space-sm);
+	border-left-width: 1px;
+	border-left-style: solid;
+	border-left-color: var(--bp-nav-line);
+}
+
+.page_nav > ul > li > ul > li {
+	font-size: var(--font-size-small);
+}
+
+.page_search {
+	margin-top: var(--space-sm);
+	padding-top: var(--space-sm);
+	padding-right: var(--space-sm);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-sm);
+	background-color: var(--bp-input);
+	border: 1px solid var(--bp-input-line);
+}
+
+.page_search label {
+	margin-right: var(--space-sm);
+	font-size: var(--font-size-small);
+}
+
+.page_search input[type="text"] {
+	width: 240px;
+	padding-top: var(--space-xs);
+	padding-right: var(--space-sm);
+	padding-bottom: var(--space-xs);
+	padding-left: var(--space-sm);
+	border: 1px solid var(--bp-input-line);
+}
+
+/*중앙*/
+
+.page_content {
+	display: block;
+	padding-top: var(--space-lg);
+	padding-bottom: var(--space-xl);
+}
+
+.page_content h2 {
+	margin-bottom: var(--space-md);
+	font-size: var(--font-size-title);
+}
+
+.page_content h3 {
+	margin-top: var(--space-lg);
+	margin-bottom: var(--space-sm);
+}
+
+/*하단*/
+
+.page_footer {
+	padding-top: var(--space-md);
+	padding-bottom: var(--space-md);
+	font-size: var(--font-size-small);
+	color: var(--color-text-weak);
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: var(--color-border-strong);
+}

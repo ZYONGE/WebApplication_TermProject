@@ -1,1 +1,44 @@
-/* 메인 페이지 */
+@charset "utf-8";
+
+/*
+  메인 페이지 — 소유 접두어: main_* (DECISIONS.md D-09)
+  사용 중: main_notice (main.jsp) / main_new (main.jsp) / main_maintenance (maintenance.jsp)
+*/
+
+.main_notice {
+	margin-bottom: var(--space-xl);
+	padding-top: var(--space-md);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-md);
+	padding-left: var(--space-md);
+	border: 1px solid var(--color-border);
+}
+
+.main_notice li {
+	padding-top: var(--space-xs);
+	padding-bottom: var(--space-xs);
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: var(--color-border);
+}
+
+.main_notice li span {
+	margin-left: var(--space-sm);
+	font-size: var(--font-size-small);
+	color: var(--color-text-weak);
+}
+
+.main_new {
+	margin-bottom: var(--space-xl);
+}
+
+/*점검 모드 안내 — 일반 사용자가 보는 유일한 화면이다*/
+.main_maintenance {
+	padding-top: var(--space-xl);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-xl);
+	padding-left: var(--space-md);
+	text-align: center;
+	background-color: var(--bp-state);
+	border: 1px solid var(--bp-state-line);
+}

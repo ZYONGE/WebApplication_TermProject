@@ -1,1 +1,55 @@
-/* 버튼 */
+@charset "utf-8";
+
+/*
+  버튼 — 소유 접두어: btn* (DECISIONS.md D-09)
+  사용 중인 변종: btn / btn_primary / btn_sub / btn_danger / btn_small
+
+  JSP 는 <button class="btn"> 과 <a class="btn"> 두 형태로 쓴다.
+  두 요소가 같은 모양이어야 하므로 inline-block 으로 맞춘다.
+*/
+
+.btn {
+	display: inline-block;
+	padding-top: var(--space-xs);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-xs);
+	padding-left: var(--space-md);
+	font-size: var(--font-size-base);
+	line-height: var(--line-height-base);
+	color: var(--color-text);
+	text-align: center;
+	text-decoration: none;
+	background-color: var(--bp-action);
+	border: 1px solid var(--bp-action-line);
+	cursor: pointer;
+}
+
+/*주 동작 — 테두리를 굵게 해 한 화면에서 무엇이 주 동작인지 보이게 한다*/
+.btn_primary {
+	border-width: 2px;
+	font-weight: bold;
+}
+
+/*보조 동작 — 목록으로, 계속 쇼핑 등*/
+.btn_sub {
+	background-color: var(--color-bg);
+}
+
+/*파괴적 동작 — 삭제, 취소*/
+.btn_danger {
+	color: var(--color-danger);
+	border-color: var(--color-danger);
+}
+
+/*표 안에 들어가는 작은 버튼*/
+.btn_small {
+	padding-right: var(--space-sm);
+	padding-left: var(--space-sm);
+	font-size: var(--font-size-small);
+}
+
+.btn[disabled] {
+	color: var(--color-text-weak);
+	border-style: dashed;
+	cursor: default;
+}

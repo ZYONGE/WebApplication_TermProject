@@ -1,1 +1,139 @@
-/* 목록 테이블 — 장바구니, 주문내역, 관리자 목록 */
+@charset "utf-8";
+
+/*
+  목록 테이블 — 소유 접두어: listtable*, col_* (DECISIONS.md D-09)
+  사용 중: listtable / listtable_head / empty / col_* 12종
+
+  목록은 data 표식색으로 묶는다. 실습 관례(#mylist · #qaboard)의
+  "상 · 하단 굵은 선" 을 그대로 승계한다.
+*/
+
+.listtable {
+	width: 100%;
+	border-top-width: 3px;
+	border-top-style: solid;
+	border-top-color: var(--bp-data-line);
+	border-bottom-width: 2px;
+	border-bottom-style: solid;
+	border-bottom-color: var(--bp-data-line);
+}
+
+.listtable_head th {
+	padding-top: var(--space-sm);
+	padding-right: var(--space-sm);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-sm);
+	text-align: left;
+	font-weight: bold;
+	background-color: var(--bp-data);
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: var(--bp-data-line);
+}
+
+.listtable td {
+	padding-top: var(--space-sm);
+	padding-right: var(--space-sm);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-sm);
+	text-align: left;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: var(--color-border);
+}
+
+/*주문 불가 줄 — 지우지 않고 표시만 한다 (CRUD.md § 2)*/
+.listtable tr.soldout td {
+	color: var(--color-text-weak);
+	border-bottom-style: dashed;
+}
+
+/*
+  취소된 주문 행 — JSP 가 조건부로 붙인다 (order/list.jsp · admin/orders.jsp).
+  soldout(재고가 없어 주문 대상에서 빠진 줄)과 구분돼야 하므로
+  점선이 아니라 바탕을 깔아 "끝난 줄"로 읽히게 한다.
+*/
+.listtable tr.disabled td {
+	color: var(--color-text-weak);
+	background-color: var(--bp-data);
+}
+
+/*데이터가 없을 때 — 목록 안의 빈 상태와 카드 목록의 빈 상태 양쪽에 쓰인다*/
+.empty {
+	padding-top: var(--space-lg);
+	padding-bottom: var(--space-lg);
+	font-size: var(--font-size-small);
+	color: var(--color-text-weak);
+	text-align: center;
+	background-color: var(--bp-state);
+	border: 1px solid var(--bp-state-line);
+}
+
+/*열 폭 — 어느 칸에 무엇이 들어오는지가 보여야 한다*/
+
+.col_no {
+	width: 120px;
+}
+
+.col_name {
+	width: auto;
+}
+
+.col_content {
+	width: auto;
+}
+
+.col_date {
+	width: 110px;
+}
+
+.col_price {
+	width: 100px;
+}
+
+.col_qty {
+	width: 120px;
+}
+
+.col_total {
+	width: 110px;
+}
+
+.col_state {
+	width: 100px;
+}
+
+.col_action {
+	width: 90px;
+}
+
+.col_writer {
+	width: 100px;
+}
+
+.col_rating {
+	width: 80px;
+}
+
+.col_addr {
+	width: auto;
+}
+
+/*
+  답변 블록 — 문의 목록의 질문 칸 안에 들어간다.
+  ⚠ admin/qna · mypage/qna · product/view 세 페이지가 함께 쓰는데
+    DECISIONS.md D-09 의 어느 접두어에도 속하지 않는다. 임시로 여기에 둔다.
+    (보고 항목 G-4 — PM 결정 필요)
+*/
+.qna_answer {
+	margin-top: var(--space-sm);
+	padding-top: var(--space-sm);
+	padding-right: var(--space-sm);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-sm);
+	font-size: var(--font-size-small);
+	background-color: var(--bp-data);
+	border-left-width: 3px;
+	border-left-style: solid;
+	border-left-color: var(--bp-data-line);
+}

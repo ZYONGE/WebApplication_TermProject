@@ -1,1 +1,97 @@
-/* 입력폼 — input, select, checkbox, 검증 메시지 */
+@charset "utf-8";
+
+/*
+  입력폼 — 소유 접두어: formtable, field* (DECISIONS.md D-09)
+  사용 중: formtable / formtable_form / field / field_help / required / btnstyle
+
+  폼은 table 마크업을 쓴다 (D-11). th = 레이블, td = 입력.
+  입력 영역은 input 표식색으로 묶어 "사용자가 값을 넣는 곳"을 한눈에 구분한다.
+*/
+
+/*폼을 감싸는 form 요소 — 입력 영역의 경계*/
+.formtable_form {
+	padding-top: var(--space-md);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-md);
+	padding-left: var(--space-md);
+	background-color: var(--bp-input);
+	border: 1px solid var(--bp-input-line);
+}
+
+.formtable {
+	width: 100%;
+	background-color: var(--color-surface);
+	border: 1px solid var(--bp-input-line);
+}
+
+.formtable th {
+	width: var(--layout-side-width);
+	padding-top: var(--space-sm);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-md);
+	text-align: left;
+	font-weight: bold;
+	background-color: var(--bp-input);
+	border-right-width: 1px;
+	border-right-style: solid;
+	border-right-color: var(--bp-input-line);
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: var(--bp-input-line);
+}
+
+.formtable td {
+	padding-top: var(--space-sm);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-md);
+	text-align: left;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: var(--bp-input-line);
+}
+
+/*입력칸 — 어디까지가 입력 가능 영역인지 보여야 한다*/
+.field {
+	width: 100%;
+	padding-top: var(--space-xs);
+	padding-right: var(--space-sm);
+	padding-bottom: var(--space-xs);
+	padding-left: var(--space-sm);
+	background-color: var(--color-bg);
+	border: 1px solid var(--bp-input-line);
+}
+
+textarea.field {
+	line-height: var(--line-height-base);
+}
+
+/*보조 설명 — 값이 아니라 안내라는 것이 구분돼야 한다*/
+.field_help {
+	display: block;
+	margin-top: var(--space-xs);
+	font-size: var(--font-size-small);
+	color: var(--color-text-weak);
+}
+
+/*필수 입력 표시*/
+.required {
+	color: var(--color-danger);
+	font-weight: bold;
+}
+
+/*폼 하단 버튼 행 — 실습 관례의 .btnstyle 을 승계한다*/
+.btnstyle {
+	margin-top: var(--space-md);
+	padding-top: var(--space-md);
+	padding-bottom: var(--space-md);
+	text-align: center;
+	background-color: var(--bp-action);
+	border: 1px solid var(--bp-action-line);
+}
+
+.btnstyle .btn {
+	margin-right: var(--space-xs);
+	margin-left: var(--space-xs);
+}

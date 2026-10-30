@@ -1,1 +1,96 @@
-/* 팝업 / 모달 / 토스트 */
+@charset "utf-8";
+
+/*
+  팝업 / 토스트 — 소유 접두어: popup*, toast* (DECISIONS.md D-09)
+  사용 중: popup / popup_form / popup_head / popup_body / popup_foot / popup_close
+           toast / toast_error
+
+  ★ O-02(별창 vs 인페이지 모달) 는 이 샌드박스에서 사실상 결정됐다.
+    JSP 가 HTML 표준 <dialog> + showModal() 로 구현했으므로 인페이지 모달이다.
+    별창(window.open) 마크업은 한 곳도 없다. 보고 항목 참조.
+
+  팝업 영역은 popup 표식색으로 묶는다. 라우팅 페이지와 팝업을 구분해
+  개발한다는 공지 항목 5 가 화면에서도 보여야 한다.
+*/
+
+.popup {
+	width: 640px;
+	padding: 0px;
+	background-color: var(--color-surface);
+	border: 2px solid var(--bp-popup-line);
+}
+
+.popup::backdrop {
+	background-color: rgba(0, 0, 0, 0.4);
+}
+
+/*팝업 안의 form — 팝업 전체를 감싸는 경우가 많다*/
+.popup_form {
+	margin: 0px;
+	padding: 0px;
+}
+
+.popup_head {
+	margin: 0px;
+	padding-top: var(--space-sm);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-md);
+	font-size: var(--font-size-base);
+	font-weight: bold;
+	background-color: var(--bp-popup);
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: var(--bp-popup-line);
+}
+
+.popup_body {
+	padding-top: var(--space-md);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-md);
+	padding-left: var(--space-md);
+}
+
+.popup_body label {
+	display: inline-block;
+	margin-bottom: var(--space-xs);
+	font-size: var(--font-size-small);
+}
+
+.popup_foot {
+	padding-top: var(--space-sm);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-md);
+	text-align: right;
+	background-color: var(--bp-popup);
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: var(--bp-popup-line);
+}
+
+/*닫기 — btn 과 함께 붙는 보조 클래스다 (단독 사용 아님)*/
+.popup_close {
+	margin-left: var(--space-xs);
+}
+
+/*
+  토스트 — flashMessage / flashError 를 한 번만 보여준다.
+  header.jsp 가 page_content 밖, 헤더 바로 아래에 내보낸다.
+*/
+.toast {
+	margin-top: var(--space-sm);
+	margin-bottom: var(--space-sm);
+	padding-top: var(--space-sm);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-md);
+	background-color: var(--bp-state);
+	border: 1px solid var(--bp-state-line);
+}
+
+.toast_error {
+	color: var(--color-danger);
+	border-width: 2px;
+	border-color: var(--color-danger);
+}

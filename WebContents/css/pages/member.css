@@ -1,1 +1,15 @@
-/* 회원 — 로그인, 회원가입 */
+@charset "utf-8";
+
+/*
+  회원 — 로그인, 회원가입
+  소유 접두어: member_* (DECISIONS.md D-09)
+
+  ⚠ 비어 있는 것이 맞다.
+    member/login.jsp 와 member/join.jsp 는 page_* 레이아웃과
+    components/form.css(formtable_form · formtable · field · field_help · required)
+    만으로 구성되어 있고, member_* 접두어 클래스를 하나도 쓰지 않는다.
+
+    즉 회원 화면은 전용 스타일이 필요하지 않다. 컨셉이 와서 로그인 화면을
+    따로 꾸미기로 결정되면 그때 이 파일을 채운다.
+    (보고 항목 G-3)
+*/
