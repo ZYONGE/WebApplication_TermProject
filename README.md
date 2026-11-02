@@ -63,7 +63,7 @@
 
 ## Project Overview
 
-> 이 브랜치(`zyonge_Sandbox`)는 **실험용**이다. 임의로 정한 ERD로 프론트 → 배선 → DB 전 구간을 먼저 구현해 보는 곳이며, 제출 산출물인 `main` 에는 병합하지 않는다.
+> 이 브랜치(`zyonge_LLMIntegration`)는 **LLM API 연동 실험용**이다. `zyonge_Sandbox` 의 구현을 그대로 가져와 LLM API 삽입을 개발하며, 제출 산출물인 `main` 에는 병합하지 않는다.
 
 - **아키텍처**: Servlet(Controller) · Service · DAO · DTO 4계층 MVC + 역할별 Filter 체인, 뷰는 JSP + JSTL
 - **DB 연동**: Tomcat JNDI DataSource(`jdbc/shop`, commons-dbcp 커넥션 풀) · MySQL 9.6 · 스키마 `webapplication_sandbox`
@@ -478,7 +478,7 @@ mysql -D webapplication_sandbox < sql/data.sql
 
 ### Eclipse 설정
 
-1. `File > Import > Existing Projects into Workspace` 로 이 폴더를 연다. 프로젝트명은 `WebApplication_TermProject_Sandbox` 라 `main` 체크아웃과 동시에 Import 할 수 있다.
+1. `File > Import > Existing Projects into Workspace` 로 이 폴더를 연다. 프로젝트명은 `WebApplication_TermProject_LLM` 라 `main` 체크아웃과 동시에 Import 할 수 있다.
 2. `WebContents/META-INF/context.xml.example` 을 `context.xml` 로 복사하고 스키마명 · 계정 · 비밀번호를 채운다.
 3. Tomcat 9.0 런타임에 프로젝트를 추가한다.
 
@@ -488,7 +488,7 @@ mysql -D webapplication_sandbox < sql/data.sql
 2. 아래 주소로 접속한다.
 
 ```
-http://localhost:8080/WebApplication_TermProject_Sandbox/
+http://localhost:8080/WebApplication_TermProject_LLM/
 ```
 
 | 샘플 계정 | 역할 | 비밀번호 |
