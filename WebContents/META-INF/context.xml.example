@@ -11,6 +11,10 @@
     - main 프로젝트와 데이터를 공유하지 않는다. 실험이 main 의 DB를 건드릴 수 없도록 분리한 것이다.
     - 수업 실습 DB(web)도 쓰지 않는다. 실습 테이블과 섞이지 않는다.
     - 생성 스크립트는 sql/00_create_database.sql (관리자 계정으로 1회 실행, 이미 적용됨)
+
+  LLM 설정 (zyonge_LLMIntegration 전용) — shop.llm.OllamaClient 가 JNDI 로 읽는다.
+    - 수업 실습용 Ollama 서버(GPU)와 모델 gemma3:12b. 키가 필요 없다.
+    - 학교망 밖에서는 접속되지 않을 수 있다. 주소가 바뀌면 이 값만 고친다.
 -->
 <Context>
   <Resource
@@ -28,4 +32,9 @@
       testOnBorrow="true"
       removeAbandonedOnBorrow="true"
       removeAbandonedTimeout="60" />
+
+  <Environment name="llm/ollamaUrl" type="java.lang.String" override="false"
+      value="http://220.149.119.234:31434/api/generate" />
+  <Environment name="llm/ollamaModel" type="java.lang.String" override="false"
+      value="gemma3:12b" />
 </Context>
