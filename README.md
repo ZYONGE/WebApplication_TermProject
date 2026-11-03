@@ -77,7 +77,7 @@
 | DB Schema | 🟢 구축 완료 | FK 21 · CHECK 8 · UNIQUE 9, ERD 대조 불일치 0 |
 | JSP 배선 | 🟢 전 화면 배선 | 자바 클래스 84 · JSP 39 · 필터 6, Tomcat 실행 검증 완료 |
 | UI / UX | 🟡 청사진 | CSS 17개 · 목업 8개. 디자인 컨셉(색·타이포 값) 전달 대기 |
-| **LLM API** | ⬜ 착수 전 | 이 브랜치에서 개발하는 유일한 영역. 공급자 · 기능 목록 결정 대기 ([docs/tracks/LLM.md](docs/tracks/LLM.md)) |
+| **LLM API** | 🟡 클라이언트 이식 | 이 브랜치에서 개발하는 유일한 영역. 수업 Ollama 서버(`gemma3:12b`) 연결, 기능 목록 결정 대기 ([docs/tracks/LLM.md](docs/tracks/LLM.md)) |
 
 위 4개 영역(ERD · DB Schema · JSP 배선 · UI)은 샌드박스에서 가져온 기반 구현이며, 표의 상태는 샌드박스 시점 기록이다. 이 브랜치에서는 고치지 않는다.
 
@@ -448,7 +448,7 @@ WebApplication_TermProject/
 │   ├── js/               # ui.js(팝업) · validate.js(폼 검증)
 │   ├── images/ · upload/ # 정적 이미지 · 업로드 (upload 는 git 제외)
 │   ├── META-INF/         # context.xml.example (context.xml 은 git 제외)
-│   └── WEB-INF/          # web.xml · lib/ (라이브러리 6개)
+│   └── WEB-INF/          # web.xml · lib/ (라이브러리 7개, gson 포함)
 ├── sql/                  # 00_create_database · schema · data
 ├── docs/                 # ERD · CRUD · STATUS · tracks/LLM.md
 └── README.md
@@ -467,6 +467,8 @@ WebApplication_TermProject/
 | Dynamic Web Module | 4.0 |
 | MySQL | 9.6.0 |
 | MySQL Connector/J | 9.7.0 |
+| Gson | 2.15.0 (LLM JSON 처리) |
+| LLM 서버 | 수업 실습용 Ollama · `gemma3:12b` (학교망) |
 | IDE | Eclipse IDE for Enterprise Java and Web Developers 4.39 (2026-03) |
 | DB Client | DBeaver, HeidiSQL |
 
@@ -484,7 +486,7 @@ mysql -D webapplication_sandbox < sql/data.sql
 ### Eclipse 설정
 
 1. `File > Import > Existing Projects into Workspace` 로 이 폴더를 연다. 프로젝트명은 `WebApplication_TermProject_LLM` 라 `main` 체크아웃과 동시에 Import 할 수 있다.
-2. `WebContents/META-INF/context.xml.example` 을 `context.xml` 로 복사하고 스키마명 · 계정 · 비밀번호를 채운다. LLM API 키는 같은 파일의 `<Environment>` 에만 넣는다 (git 제외).
+2. `WebContents/META-INF/context.xml.example` 을 `context.xml` 로 복사하고 스키마명 · 계정 · 비밀번호를 채운다. LLM 서버 주소 · 모델은 같은 파일의 `<Environment>`(`llm/ollamaUrl` · `llm/ollamaModel`)에 예시 값이 들어 있다.
 3. Tomcat 9.0 런타임에 프로젝트를 추가한다.
 
 ### Run
