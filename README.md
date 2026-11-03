@@ -77,7 +77,7 @@
 | DB Schema | 🟢 구축 완료 | FK 21 · CHECK 8 · UNIQUE 9, ERD 대조 불일치 0 |
 | JSP 배선 | 🟢 전 화면 배선 | 자바 클래스 84 · JSP 39 · 필터 6, Tomcat 실행 검증 완료 |
 | UI / UX | 🟡 청사진 | CSS 17개 · 목업 8개. 디자인 컨셉(색·타이포 값) 전달 대기 |
-| **LLM API** | 🟡 클라이언트 이식 | 이 브랜치에서 개발하는 유일한 영역. 수업 Ollama 서버(`gemma3:12b`) 연결, 기능 목록 결정 대기 ([docs/tracks/LLM.md](docs/tracks/LLM.md)) |
+| **LLM API** | 🟡 클라이언트 이식 | 이 브랜치에서 개발하는 유일한 영역. 수업 Ollama 서버(`gemma3:12b`) 연결. 기능 3종 확정 — 상품 설명 요약 · 리뷰 요약 · 연관 검색 ([docs/tracks/LLM.md](docs/tracks/LLM.md)) |
 
 위 4개 영역(ERD · DB Schema · JSP 배선 · UI)은 샌드박스에서 가져온 기반 구현이며, 표의 상태는 샌드박스 시점 기록이다. 이 브랜치에서는 고치지 않는다.
 
@@ -429,12 +429,13 @@ erDiagram
 ```
 WebApplication_TermProject/
 ├── src/main/java/shop/
-│   ├── controller/       # Servlet 24 + BaseServlet
+│   ├── controller/       # Servlet 24 + BaseServlet + LlmServlet
 │   ├── service/          # 업무 규칙 · 트랜잭션
 │   ├── dao/              # SQL 실행
 │   ├── dto/              # 화면 데이터 객체
 │   ├── filter/           # Encoding · JspDirectAccess · Shop · User · Admin · Dev
-│   ├── llm/              # LLM API 클라이언트 · 프롬프트 · JSON 처리 (LLM API)
+│   ├── llm/              # LLM API — OllamaClient · LlmCache
+│   │   └── prompt/       # 기능별 프롬프트 (설명 요약 · 리뷰 요약 · 연관 검색)
 │   └── util/             # DBUtil(JNDI) · Paging · RoleUtil 등
 ├── WebContents/          # 웹 루트
 │   ├── main.jsp · maintenance.jsp
@@ -445,7 +446,7 @@ WebApplication_TermProject/
 │   ├── llm/              # LLM 화면 (LLM API)
 │   ├── css/              # base · components · pages + DECISIONS.md
 │   ├── mockup/           # 정적 HTML 목업
-│   ├── js/               # ui.js(팝업) · validate.js(폼 검증)
+│   ├── js/               # ui.js(팝업) · validate.js(폼 검증) · llm.js(LLM 비동기 호출)
 │   ├── images/ · upload/ # 정적 이미지 · 업로드 (upload 는 git 제외)
 │   ├── META-INF/         # context.xml.example (context.xml 은 git 제외)
 │   └── WEB-INF/          # web.xml · lib/ (라이브러리 7개, gson 포함)
