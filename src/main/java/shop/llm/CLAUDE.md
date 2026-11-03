@@ -5,6 +5,7 @@
 - **역할**: LLM API 모델을 이식하고, 그 기능 로직을 짜고, JSP 화면에 연결한다. ERD · DB 스키마 · UI 디자인은 하지 않는다.
 - **쓰기**: `src/main/java/shop/llm/**` · `Llm*` 접두어의 controller · service · dto · `WebContents/llm/**` · `js/llm.js` · `web.xml` · `META-INF/context.xml(.example)` · `docs/tracks/LLM.md`
 - **최소 수정 허용**: 기존 JSP · 서블릿에 LLM 진입점(링크 · 팝업 · 호출 한 줄)을 붙이는 것. 고친 파일은 `docs/tracks/LLM.md` 의 기존 파일 수정 기록에 남긴다.
+- **구조**: 공통(`OllamaClient` · `LlmException` · `LlmCache`)은 이 디렉터리, 기능별 프롬프트는 `prompt/`, 업무 흐름은 `service/LlmService`, JSON 엔드포인트는 `controller/LlmServlet`, 화면 쪽은 `js/llm.js`. 파일 지도는 `docs/tracks/LLM.md` § 2.
 - **읽기만**: `docs/ERD.md` · `docs/CRUD.md` · `sql/**` · `css/**`(클래스명은 `css/DECISIONS.md`) · `mockup/**` · `js/ui.js` · 기존 Java · JSP (기반 구현)
 - **규칙**
   - LLM 서버는 수업 실습용 Ollama(`/api/generate`, 모델 `gemma3:12b`, `stream=false`)다. 호출은 `OllamaClient.generate(prompt)` 하나로만 한다.
