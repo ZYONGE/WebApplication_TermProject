@@ -370,13 +370,26 @@ public class MermaidErd {
 
 	/* ---------------- SVG ---------------- */
 
+	/* 원본 크기 그대로 — 이미지 파일로 내려보낼 때 */
 	public String toSvg() {
+		return toSvg(false);
+	}
+
+	/*
+	  fit = true 면 폭을 감싸는 영역에 맞춘다 (width 100%, 높이는 viewBox 비율로 자동).
+	  페이지에 직접 넣을 때 쓴다 — 원본 폭이 화면보다 넓어도 가로 스크롤이 생기지 않는다.
+	*/
+	public String toSvg(boolean fit) {
 		double[] size = layout();
 		assignAnchors();
 
 		StringBuilder svg = new StringBuilder();
-		svg.append("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"").append(fmt(size[0]))
-		   .append("\" height=\"").append(fmt(size[1])).append("\" viewBox=\"0 0 ")
+		svg.append("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"")
+		   .append(fit ? "100%" : fmt(size[0])).append('"');
+		if (!fit) {
+			svg.append(" height=\"").append(fmt(size[1])).append('"');
+		}
+		svg.append(" viewBox=\"0 0 ")
 		   .append(fmt(size[0])).append(' ').append(fmt(size[1]))
 		   .append("\" font-family=\"'Apple SD Gothic Neo','Malgun Gothic',sans-serif\" font-size=\"")
 		   .append(fmt(FONT)).append("\">\n");

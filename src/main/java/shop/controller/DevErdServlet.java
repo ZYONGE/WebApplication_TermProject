@@ -53,6 +53,8 @@ public class DevErdServlet extends BaseServlet {
 				MermaidErd erd = MermaidErd.parse(source[0]);
 				request.setAttribute("erdEntityCount", Integer.valueOf(erd.entityCount()));
 				request.setAttribute("erdRelationCount", Integer.valueOf(erd.relationCount()));
+				/* 페이지에는 화면 폭에 맞춘 SVG 를 직접 넣는다. 원본 크기는 diagram.svg 로 연다. */
+				request.setAttribute("erdSvg", erd.toSvg(true));
 			}
 
 			request.setAttribute("columns", devService.findSchemaColumns());

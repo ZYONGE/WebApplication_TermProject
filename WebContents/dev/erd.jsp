@@ -29,10 +29,14 @@
 	<c:otherwise>
 		<p class="field_help">
 			원본: <c:out value="${erdOrigin}" /> · 엔티티 ${erdEntityCount}개 · 관계 ${erdRelationCount}개
-			· <a href="${ctx}/dev/erd/diagram.svg" target="_blank">새 탭에서 이미지로 열기</a>
+			· 그림을 누르면 원본 크기로 열립니다
 		</p>
+		<%--
+		  화면 폭에 맞춘 SVG 를 그대로 넣는다 (width 100%, 높이는 비율대로).
+		  서버가 만든 마크업이고 이름 · 라벨은 MermaidErd 가 이스케이프하므로 c:out 을 쓰지 않는다.
+		--%>
 		<div class="dev_erd">
-			<img src="${ctx}/dev/erd/diagram.svg" alt="ERD 다이어그램">
+			<a href="${ctx}/dev/erd/diagram.svg" target="_blank" title="원본 크기로 보기">${erdSvg}</a>
 		</div>
 	</c:otherwise>
 </c:choose>

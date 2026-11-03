@@ -16,7 +16,7 @@
 | 트랜잭션 | 결제(7테이블) · 주문 취소 · 배송 전이 · 배송지 기본값 · 관리자/dev 조작 + `admin_log` |
 | 계정 전환 | 세션 교체 + `impersonatorId`, 전환 중 로그에 `impersonated_by` 자동 부착 |
 | 팝업 | `<dialog>` + `ui.js` 임시본 (`openPopup` · `closePopup`) |
-| ERD 그림 (`/dev/erd`) | README 의 mermaid 블록을 서버가 SVG 로 그림 (`MermaidErd`, `/dev/erd/diagram.svg`). README 를 못 읽는 배포(Eclipse)는 사본 `shop/util/erd.mmd` 사용 — README ERD 수정 시 함께 맞춘다 |
+| ERD 그림 (`/dev/erd`) | README 의 mermaid 블록을 서버가 SVG 로 그림 (`MermaidErd`). 페이지에는 폭 맞춤 SVG 를 직접 넣고, 누르면 원본 크기 `/dev/erd/diagram.svg`. README 를 못 읽는 배포(Eclipse)는 사본 `shop/util/erd.mmd` 사용 — README ERD 수정 시 함께 맞춘다 |
 | 검증 | javac 0 오류 · JspC 39 0 오류 · Tomcat 실행 (비로그인/USER/ADMIN/DEV × 주요 경로) |
 | 디자인 | CSS 미작성. 마크업은 `css/DECISIONS.md` 클래스명만 사용 |
 
@@ -77,7 +77,7 @@ ID 는 `docs/STATUS.md` PM 결정 대기 표를 따른다.
 | C1 | URL 매핑 확정 | § 2 가 JSP 측 기록 |
 | C2 · C3 | 팝업 방식 · doctype | `<dialog>` · HTML5. 별창이면 팝업이 라우트로 분리됨 |
 | C4 | DTO 계약 | `OrderDTO` 조인 필드 4개(`loginId` · `memberName` · `itemCount` · `firstProductName`) 추가됨. EL 예약어 프로퍼티명 금지 |
-| C5 | CSS 클래스 계약 보완 | 마크업 변경 대기. 신규 `dev_erd` (ERD 이미지 감싸개 — 원본 폭 약 1950px 라 1200px 레이아웃을 넘는다. 가로 스크롤 또는 축소 처리 필요) |
+| C5 | CSS 클래스 계약 보완 | 마크업 변경 대기. 신규 `dev_erd` (ERD 감싸개 — 그림은 SVG `width=100%` 로 이미 페이지 폭에 맞춘다. 스타일 지정은 불필요) |
 | C7 | `pageCss` 단일화 | 서블릿 · JSP 양쪽 설정 중 (JSP 값 우선) |
 | D1 | 리프 카테고리만 등록 | 미적용 (대분류 선택 가능) |
 | D2 | 고객 주문 목록 N+1 | 주문마다 `delivery` 조회 |
