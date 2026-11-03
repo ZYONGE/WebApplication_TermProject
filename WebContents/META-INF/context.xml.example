@@ -14,7 +14,8 @@
 
   LLM 설정 (zyonge_LLMIntegration 전용) — shop.llm.OllamaClient 가 JNDI 로 읽는다.
     - 수업 실습용 Ollama 서버(GPU)와 모델 gemma3:12b. 키가 필요 없다.
-    - 학교망 밖에서는 접속되지 않을 수 있다. 주소가 바뀌면 이 값만 고친다.
+    - 서버는 학교 IP 요청만 받는다. 앱은 docker/llm-tunnel 컨테이너가 연 localhost:31434 로 접속한다.
+    - 학교망 안에서 터널 없이 쓰려면 http://220.149.119.234:31434/api/generate 로 바꾼다.
 -->
 <Context>
   <Resource
@@ -34,7 +35,7 @@
       removeAbandonedTimeout="60" />
 
   <Environment name="llm/ollamaUrl" type="java.lang.String" override="false"
-      value="http://220.149.119.234:31434/api/generate" />
+      value="http://localhost:31434/api/generate" />
   <Environment name="llm/ollamaModel" type="java.lang.String" override="false"
       value="gemma3:12b" />
 </Context>

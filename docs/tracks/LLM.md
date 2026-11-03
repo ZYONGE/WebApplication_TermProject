@@ -56,7 +56,8 @@
 | 라이브러리 | 🟢 `WEB-INF/lib/gson-2.15.0.jar` 추가 |
 | `shop/llm/` 클라이언트 | 🟢 `OllamaClient.generate(prompt)` · `LlmException` — javac 통과 |
 | 기능 3종 파일 | 🟡 골격 — § 2 파일 지도. 전체 소스 javac 0 오류 |
-| `context.xml.example` `<Environment>` | 🟢 `llm/ollamaUrl` · `llm/ollamaModel` |
+| `context.xml.example` `<Environment>` | 🟢 `llm/ollamaUrl`(터널 `localhost:31434`) · `llm/ollamaModel` |
+| 접속 환경 | 🟡 Docker + 쿠버네티스로 개발 예정 · 구성은 강의 안내 대기. 임시 Docker 터널 골격만 있음 — § 8 |
 | 기능 목록 · 화면 위치 | 🟢 확정 — 상품 설명 요약 · 리뷰 요약 · 연관 검색 (STATUS L2) |
 | JSP 연결 | ⬜ 착수 전 |
 
@@ -135,3 +136,55 @@ LLM 진입점을 붙이려고 기반 구현 파일을 고친 경우만 적는다
 | PM | 공급자 · 모델 (L1) | 🟢 결정 — 수업 Ollama · `gemma3:12b` |
 | PM | 기능 목록과 붙일 화면 · 역할 (L2) | 🟢 결정 — § 5 |
 | PM | 호출 횟수 제한 방식 (L3) — 메모리 캐시 + 동시 2건 제한 제안 (§ 5) | 승인 대기 |
+| PM | Docker + 쿠버네티스 구성 (L4) — 클러스터 제공처 · 올릴 대상 · 접속 방법 (§ 8) | 강의 안내 대기 |
+
+## 8. LLM 서버 접속 환경
+
+수업 Ollama 서버(`220.149.119.234:31434`)는 **학교 IP 에서 온 요청만** 받는다. 이를 해결하려고 **Docker + 쿠버네티스(k8s)** 환경을 조성해 개발할 예정이다 (STATUS L4).
+
+**아직 정해지지 않은 것** — 강의 안내를 받은 뒤 정한다.
+
+| 항목 | 후보 |
+|---|---|
+| 클러스터 | 학교 제공 k8s 클러스터인지 여부 |
+| 올릴 대상 | 앱 전체(Tomcat + MySQL) / LLM 중계만 |
+| 필요한 것 | 컨테이너 이미지(Dockerfile) · k8s 매니페스트 · 이미지 저장소 · 접속 계정(kubeconfig) |
+
+앱 전체를 클러스터에 올리면 루트 `CLAUDE.md` § 2 의 "localhost 전용 · 배포 금지" 원칙을 PM 이 고쳐야 한다. LLM 중계만 올리면 중계 포트가 바깥에 열려 IP 제한이 사실상 풀리지 않도록 접근 제한을 함께 정한다.
+
+### 임시 골격 — Docker 터널
+
+k8s 구성이 정해지기 전에 만든 로컬 터널 골격이다. 앱이 `localhost:31434` 만 보게 하는 구조라 k8s 구성으로 바꿔도 Java 코드는 그대로 쓸 수 있다. 다만 학교 IP 를 얻는 자리가 비어 있어 지금은 학교망 밖에서 동작하지 않고, k8s 구성이 정해지면 바꾸거나 지운다.
+
+```
+Tomcat (OllamaClient) ──▶ 127.0.0.1:31434 ──▶ [llm-tunnel 컨테이너] ──(학교 IP 경로)──▶ Ollama 서버
+```
+
+- 앱은 `localhost:31434` 만 본다. 학교 IP 를 얻는 방법이 바뀌어도 Java · `context.xml` 은 그대로다.
+- 포트는 `127.0.0.1` 에만 연다. 같은 네트워크의 다른 기기에는 열지 않는다.
+- 학교망 안에서는 터널 없이 `context.xml` 의 `llm/ollamaUrl` 을 서버 주소로 바꿔 써도 된다.
+
+| 파일 | 내용 |
+|---|---|
+| `docker/llm-tunnel/compose.yaml` | 서비스 정의 · `127.0.0.1:31434` 공개 |
+| `docker/llm-tunnel/Dockerfile` | `alpine:3.20` + `socat` |
+| `docker/llm-tunnel/entrypoint.sh` | 1) 학교 IP 확보 (빈 자리) 2) 포워딩 |
+| `docker/llm-tunnel/.env.example` | 서버 주소 · 포트. `.env` 로 복사해 쓰고 git 에서 뺀다 |
+
+**쓰는 법**
+
+```bash
+cd docker/llm-tunnel
+cp .env.example .env
+docker compose up -d --build
+```
+
+**현재 상태**
+
+| 항목 | 상태 |
+|---|---|
+| compose 설정 검증 (`docker compose config`) | 🟢 통과 |
+| 이미지 빌드 · 실행 | ⬜ 미검증 — Docker Desktop 이 꺼져 있었다 |
+| 학교 IP 확보 방법 | ⬜ Docker + 쿠버네티스 구성 대기 (STATUS L4). 지금은 이 PC 의 IP 로 그대로 나가므로 학교망 밖에서는 응답이 없다 |
+
+k8s 구성이 정해지면 이 골격을 그에 맞게 바꾸거나 지운다.

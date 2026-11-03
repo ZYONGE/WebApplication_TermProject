@@ -1,0 +1,19 @@
+# LLM 서버 접속 터널 (zyonge_LLMIntegration 전용) — docs/tracks/LLM.md § 8
+#
+# 수업 Ollama 서버는 학교 IP 에서 온 요청만 받는다. 이 컨테이너가 호스트의
+# 127.0.0.1:31434 로 들어온 요청을 학교 IP 를 거쳐 Ollama 서버로 넘긴다.
+# 앱(context.xml llm/ollamaUrl)은 localhost 만 보면 된다. 학교 IP 를 얻는 방법은
+# entrypoint.sh 의 1) 자리 하나만 바꾸면 된다 (방법 미정 — STATUS L4).
+#
+#   cp .env.example .env      # 값 채우기 (.env 는 git 제외)
+#   docker compose up -d --build
+#   docker compose logs -f
+services:
+  llm-tunnel:
+    build: .
+    container_name: llm-tunnel
+    env_file: .env
+    # 내 PC 에서만 열린다. 같은 네트워크의 다른 기기에는 열지 않는다
+    ports:
+      - "127.0.0.1:31434:31434"
+    restart: unless-stopped
