@@ -1,5 +1,5 @@
 -- =============================================================
--- 샌드박스 스키마 DDL (zyonge_Sandbox 전용)
+-- 샌드박스 스키마 DDL (sandbox 전용)
 --
 --   대상 DB : webapplication_sandbox
 --   근거    : docs/ERD.md
