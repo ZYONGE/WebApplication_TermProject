@@ -1,4 +1,4 @@
-# LLM 서버 접속 터널 (zyonge_LLMIntegration 전용) — docs/tracks/LLM.md § 8
+# LLM 서버 접속 터널 (LLM_integration 전용) — docs/tracks/LLM.md § 8
 #
 # 수업 Ollama 서버는 학교 IP 에서 온 요청만 받는다. 이 컨테이너가 호스트의
 # 127.0.0.1:31434 로 들어온 요청을 학교 IP 를 거쳐 Ollama 서버로 넘긴다.

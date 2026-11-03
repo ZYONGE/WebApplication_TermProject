@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  DB 커넥션 풀 설정 예시 — 샌드박스 전용 (zyonge_Sandbox)
+  DB 커넥션 풀 설정 예시 — 샌드박스 전용 (sandbox)
 
   사용법: 이 파일을 같은 디렉터리에 context.xml 로 복사한 뒤 username / password 를 채운다.
           context.xml 은 .gitignore 로 추적 제외되므로 접속 정보가 커밋되지 않는다.
@@ -12,7 +12,7 @@
     - 수업 실습 DB(web)도 쓰지 않는다. 실습 테이블과 섞이지 않는다.
     - 생성 스크립트는 sql/00_create_database.sql (관리자 계정으로 1회 실행, 이미 적용됨)
 
-  LLM 설정 (zyonge_LLMIntegration 전용) — shop.llm.OllamaClient 가 JNDI 로 읽는다.
+  LLM 설정 (LLM_integration 전용) — shop.llm.OllamaClient 가 JNDI 로 읽는다.
     - 수업 실습용 Ollama 서버(GPU)와 모델 gemma3:12b. 키가 필요 없다.
     - 서버는 학교 IP 요청만 받는다. 앱은 docker/llm-tunnel 컨테이너가 연 localhost:31434 로 접속한다.
     - 학교망 안에서 터널 없이 쓰려면 http://220.149.119.234:31434/api/generate 로 바꾼다.

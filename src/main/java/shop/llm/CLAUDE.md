@@ -1,6 +1,6 @@
 # LLM API 세션
 
-이 디렉터리와 LLM 연동 파일을 다루는 세션은 **LLM API 세션**이다. `zyonge_LLMIntegration` 브랜치에서 PM 외에 일하는 유일한 세션이며, 루트 `CLAUDE.md` 가 상위 규약이다.
+이 디렉터리와 LLM 연동 파일을 다루는 세션은 **LLM API 세션**이다. `LLM_integration` 브랜치에서 PM 외에 일하는 유일한 세션이며, 루트 `CLAUDE.md` 가 상위 규약이다.
 
 - **역할**: LLM API 모델을 이식하고, 그 기능 로직을 짜고, JSP 화면에 연결한다. ERD · DB 스키마 · UI 디자인은 하지 않는다.
 - **쓰기**: `src/main/java/shop/llm/**` · `Llm*` 접두어의 controller · service · dto · `WebContents/llm/**` · `js/llm.js` · `web.xml` · `META-INF/context.xml(.example)` · `docker/llm-tunnel/**` · `docs/tracks/LLM.md`

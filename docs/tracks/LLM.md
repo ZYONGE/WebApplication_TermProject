@@ -1,7 +1,7 @@
 # LLM API (LLM 브랜치 전용)
 
 > 소유: LLM API 세션 · 상태: 🟡 기능 3종 파일 골격 완료 · 구현 전 · 최종 갱신 2026-11-03
-> 이 문서는 `zyonge_LLMIntegration` 전용이다. 여기 산출물은 `main` 으로 가지 않는다 — PM이 정리해 `main` 에서 다시 구현한다.
+> 이 문서는 `LLM_integration` 전용이다. 여기 산출물은 `main` 으로 가지 않는다 — PM이 정리해 `main` 에서 다시 구현한다.
 > 세션 규칙은 `src/main/java/shop/llm/CLAUDE.md`, 파일 소유 범위는 루트 `CLAUDE.md` § 3 을 따른다.
 
 ---
