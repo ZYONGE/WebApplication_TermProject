@@ -450,6 +450,7 @@ WebApplication_TermProject/
 │   ├── images/ · upload/ # 정적 이미지 · 업로드 (upload 는 git 제외)
 │   ├── META-INF/         # context.xml.example (context.xml 은 git 제외)
 │   └── WEB-INF/          # web.xml · lib/ (라이브러리 7개, gson 포함)
+├── docker/llm-tunnel/    # LLM 서버 접속 임시 터널 골격 (Docker + 쿠버네티스 구성 전까지)
 ├── sql/                  # 00_create_database · schema · data
 ├── docs/                 # ERD · CRUD · STATUS · tracks/LLM.md
 └── README.md
@@ -469,7 +470,8 @@ WebApplication_TermProject/
 | MySQL | 9.6.0 |
 | MySQL Connector/J | 9.7.0 |
 | Gson | 2.15.0 (LLM JSON 처리) |
-| LLM 서버 | 수업 실습용 Ollama · `gemma3:12b` (학교망) |
+| LLM 서버 | 수업 실습용 Ollama · `gemma3:12b` (학교 IP 만 허용) |
+| Docker · 쿠버네티스 | 학교 IP 전용 LLM 서버 접속용 개발 환경 (예정, 구성 미정) |
 | IDE | Eclipse IDE for Enterprise Java and Web Developers 4.39 (2026-03) |
 | DB Client | DBeaver, HeidiSQL |
 
@@ -489,6 +491,7 @@ mysql -D webapplication_sandbox < sql/data.sql
 1. `File > Import > Existing Projects into Workspace` 로 이 폴더를 연다. 프로젝트명은 `WebApplication_TermProject_LLM` 라 `main` 체크아웃과 동시에 Import 할 수 있다.
 2. `WebContents/META-INF/context.xml.example` 을 `context.xml` 로 복사하고 스키마명 · 계정 · 비밀번호를 채운다. LLM 서버 주소 · 모델은 같은 파일의 `<Environment>`(`llm/ollamaUrl` · `llm/ollamaModel`)에 예시 값이 들어 있다.
 3. Tomcat 9.0 런타임에 프로젝트를 추가한다.
+4. LLM 서버는 학교 IP 요청만 받는다. 학교망 밖 개발 환경은 Docker + 쿠버네티스로 조성할 예정이며, 그 전까지 임시 터널 골격 `docker/llm-tunnel` 이 있다 ([docs/tracks/LLM.md](docs/tracks/LLM.md) § 8).
 
 ### Run
 

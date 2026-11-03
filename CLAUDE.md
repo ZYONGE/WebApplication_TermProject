@@ -12,11 +12,12 @@
 - 웹 루트 `WebContents/` · 소스 `src/main/java/shop/{controller,service,dao,dto,util}` · 출력 `build/classes`
 - Context Root `WebApplication_TermProject_LLM` → `http://localhost:8080/WebApplication_TermProject_LLM/`
 - 라이브러리는 `WEB-INF/lib` 의 7개만 쓴다 (connector-j · dbcp · pool · JSTL · cos.jar · gson). gson 2.15.0은 LLM 요청 · 응답 JSON 처리용으로 이 브랜치에서만 추가했다
+- LLM 서버는 학교 IP 요청만 받는다. Docker + 쿠버네티스 환경을 조성해 개발할 예정이다(구성은 강의 안내 대기, STATUS L4). 그 전까지 임시로 `docker/llm-tunnel` 골격을 둔다
 - 스펙 기준은 `README.md`
 
 ## 2. 원칙
 
-- localhost 전용. 외부 API · CDN · 원격 폰트 · 실결제 · 소셜 로그인 · 배포는 금지한다. 예외는 `zyonge_LLMIntegration` 의 LLM API 호출(수업 실습용 Ollama 서버 · `gemma3:12b`) 하나뿐이다.
+- localhost 전용. 외부 API · CDN · 원격 폰트 · 실결제 · 소셜 로그인 · 배포는 금지한다. 예외는 `zyonge_LLMIntegration` 의 LLM API 호출(수업 실습용 Ollama 서버 · `gemma3:12b`) 하나뿐이다. 앱은 `llm/ollamaUrl` 로만 부르며, 지금 값은 임시 터널 `localhost:31434` 다.
 - 평가 기준은 **프론트 → 배선 → DB 흐름이 끊기지 않는 것**이다. LLM 기능도 이 흐름 위에 얹는다.
 - 테이블 · 컬럼 · CSS · 목업을 새로 만들지 않는다. LLM 기능은 기존 스키마와 기존 CSS 클래스(`css/DECISIONS.md`) 위에 얹는다.
 - UI는 라우팅 페이지와 팝업을 구분해 만든다. 팝업은 기존 `<dialog>` 패턴을 쓴다.
@@ -27,7 +28,7 @@
 
 | 세션 | 소유 파일 | 문서 |
 |---|---|---|
-| **LLM API** | `src/main/java/shop/llm/**` · `Llm*` 접두어 controller · service · dto · `WebContents/llm/**` · `js/llm.js` · `web.xml` · `META-INF/context.xml(.example)` | `docs/tracks/LLM.md`, 세션 규칙 `src/main/java/shop/llm/CLAUDE.md` |
+| **LLM API** | `src/main/java/shop/llm/**` · `Llm*` 접두어 controller · service · dto · `WebContents/llm/**` · `js/llm.js` · `web.xml` · `META-INF/context.xml(.example)` · `docker/llm-tunnel/**` | `docs/tracks/LLM.md`, 세션 규칙 `src/main/java/shop/llm/CLAUDE.md` |
 | PM | `CLAUDE.md` · `docs/STATUS.md` · `README.md` · `.gitignore` · Eclipse 설정 · `WEB-INF/lib` | — |
 
 - 그 밖의 파일(`docs/ERD.md` · `docs/CRUD.md` · `sql/**` · `css/**` · `mockup/**` · `images/**` · 기존 Java · JSP · JS)은 샌드박스 `a835e26` 에서 가져온 **기반 구현**이다. 이 브랜치에서는 읽기만 한다.
@@ -57,5 +58,5 @@
 
 - `main`: 골격과 규약만 있다.
 - `zyonge_Sandbox`: 4개 트랙(UI · JSP 배선 · ERD · DB Schema)이 작업 중이다. 그 트랙들의 문서와 결정 대기 항목은 샌드박스에 있다.
-- `zyonge_LLMIntegration`: 샌드박스 `a835e26` 에서 갈라졌다. LLM API 세션은 Ollama 클라이언트(`shop/llm/OllamaClient`)까지 옮겼고, 기능 목록 결정을 기다린다.
+- `zyonge_LLMIntegration`: 샌드박스 `a835e26` 에서 갈라졌다. LLM API 세션은 Ollama 클라이언트와 기능 3종 골격을 만들었다. 학교 IP 인증 문제는 Docker + 쿠버네티스 환경으로 풀 예정이며 구성은 미정이다.
 - 진행과 PM 결정 대기 항목은 `docs/STATUS.md` 에 있다.
