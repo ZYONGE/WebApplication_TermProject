@@ -63,7 +63,7 @@
 
 ## Project Overview
 
-> 이 브랜치(`zyonge_LLMIntegration`)는 **LLM API 연동 전용 특수목적 브랜치**다. `zyonge_Sandbox` 의 구현을 그대로 가져와 **LLM API 모델 이식 · 기능 로직 · JSP 연결만** 개발한다. ERD · DB · UI 3계층은 개발하지 않으며(샌드박스 `a835e26` 시점 그대로), 제출 산출물인 `main` 에는 병합하지 않는다.
+> 이 브랜치(`LLM_integration`)는 **LLM API 연동 전용 특수목적 브랜치**다. `sandbox` 의 구현을 그대로 가져와 **LLM API 모델 이식 · 기능 로직 · JSP 연결만** 개발한다. ERD · DB · UI 3계층은 개발하지 않으며(샌드박스 `a835e26` 시점 그대로), 제출 산출물인 `main` 에는 병합하지 않는다.
 
 - **아키텍처**: Servlet(Controller) · Service · DAO · DTO 4계층 MVC + 역할별 Filter 체인, 뷰는 JSP + JSTL
 - **DB 연동**: Tomcat JNDI DataSource(`jdbc/shop`, commons-dbcp 커넥션 풀) · MySQL 9.6 · 스키마 `webapplication_sandbox`

@@ -1,6 +1,6 @@
 # 현황 보드
 
-> PM만 수정한다. 이 브랜치(`zyonge_LLMIntegration`)는 LLM 개발만을 위해 존재하므로 LLM API 세션만 다룬다. 상세는 `docs/tracks/LLM.md`.
+> PM만 수정한다. 이 브랜치(`LLM_integration`)는 LLM 개발만을 위해 존재하므로 LLM API 세션만 다룬다. 상세는 `docs/tracks/LLM.md`.
 > 기반 구현(ERD · DB · JSP · UI)은 샌드박스 `a835e26` 그대로이며, 그 트랙들의 현황과 결정 대기는 샌드박스 `docs/STATUS.md` 에 있다.
 
 ## LLM API
