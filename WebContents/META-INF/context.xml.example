@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  DB 커넥션 풀 설정 예시 — 샌드박스 전용 (zyonge_Sandbox)
+  DB 커넥션 풀 설정 예시 — 샌드박스 전용 (sandbox)
 
   사용법: 이 파일을 같은 디렉터리에 context.xml 로 복사한 뒤 username / password 를 채운다.
           context.xml 은 .gitignore 로 추적 제외되므로 접속 정보가 커밋되지 않는다.
