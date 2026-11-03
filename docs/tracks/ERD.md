@@ -1,5 +1,7 @@
 # 트랙 3 — ERD 설계 (샌드박스)
 
+> **LLM 브랜치(`zyonge_LLMIntegration`)에서는 동결이다.** 이 문서는 샌드박스 `a835e26` 시점의 기록이며 이 브랜치에서는 갱신하지 않는다. 이 브랜치의 작업은 트랙 5(`docs/tracks/LLM.md`)만 한다.
+
 > 소유: ERD 세션 · 쓰기: `docs/ERD.md` · `docs/CRUD.md` · 이 문서 · 갱신 2026-10-30
 
 ## 현재 상태

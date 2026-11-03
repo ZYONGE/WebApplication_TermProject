@@ -2,6 +2,8 @@
 
 이 디렉터리에서 `ERD.md` · `CRUD.md` 를 다루는 세션은 **ERD 트랙**이다. 루트 `CLAUDE.md` 가 상위 규약이다. PM 세션은 이 문서 대신 루트 규약을 따른다.
 
+> LLM 브랜치(`zyonge_LLMIntegration`)에서는 이 트랙이 동결이라 이 세션을 열지 않는다. 이 브랜치의 작업은 `src/main/java/shop/llm/CLAUDE.md` 의 LLM API 트랙이 한다.
+
 - **역할**: 화면에서 입력된 값이 어느 테이블에 저장되고 어느 화면에서 다시 쓰이는지 설계한다. DDL과 Java DTO는 작성하지 않는다.
 - **쓰기**: `docs/ERD.md` · `docs/CRUD.md` · `docs/tracks/ERD.md` 셋뿐이다.
 - **읽기만**: `docs/STATUS.md`(PM) · 다른 트랙 문서 · `sql/**` · `css/**` · `mockup/**` · `src/main/java/shop/**`
