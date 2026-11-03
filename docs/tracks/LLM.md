@@ -1,8 +1,8 @@
-# 트랙 5 — LLM API (LLM 브랜치 전용)
+# LLM API (LLM 브랜치 전용)
 
 > 소유: LLM API 세션 · 상태: ⬜ 착수 전 · 최종 갱신 2026-11-03
 > 이 문서는 `zyonge_LLMIntegration` 전용이다. 여기 산출물은 `main` 으로 가지 않는다 — PM이 정리해 `main` 에서 다시 구현한다.
-> 세션 규칙은 `src/main/java/shop/llm/CLAUDE.md`, 파일 소유 범위는 루트 `CLAUDE.md` 의 트랙 표를 따른다.
+> 세션 규칙은 `src/main/java/shop/llm/CLAUDE.md`, 파일 소유 범위는 루트 `CLAUDE.md` § 3 을 따른다.
 
 ---
 
@@ -12,12 +12,12 @@
 
 | 한다 | 하지 않는다 |
 |---|---|
-| LLM API 클라이언트 (`shop/llm/`) | ERD · CRUD 변경 (트랙 3 동결) |
-| LLM 기능의 Service · Servlet · DTO (`Llm*`) | DDL · 샘플 데이터 변경 (트랙 4 동결) |
-| LLM 화면 · 팝업 JSP, 기존 화면에 진입점 연결 | CSS · 목업 · 디자인 토큰 (트랙 1 동결) |
-| 키 · 모델 설정 (`context.xml` `<Environment>`) | LLM과 무관한 배선 수정 (트랙 2 동결) |
+| LLM API 클라이언트 (`shop/llm/`) | ERD · CRUD 변경 |
+| LLM 기능의 Service · Servlet · DTO (`Llm*`) | DDL · 샘플 데이터 변경 |
+| LLM 화면 · 팝업 JSP, 기존 화면에 진입점 연결 | CSS · 목업 · 디자인 토큰 |
+| 키 · 모델 설정 (`context.xml` `<Environment>`) | LLM과 무관한 배선 수정 |
 
-나머지 4개 트랙의 산출물은 샌드박스 `a835e26` 시점 그대로이며 이 브랜치에서는 읽기만 한다.
+기반 구현(ERD · DB · JSP · UI)은 샌드박스 `a835e26` 시점 그대로이며 이 브랜치에서는 읽기만 한다.
 
 ## 2. 작업 위치
 
@@ -43,7 +43,7 @@
 
 ## 4. 기존 파일 수정 기록
 
-LLM 진입점을 붙이려고 다른 트랙 소유 파일을 고친 경우만 적는다. `main` 재구현 때 이 표가 이식 목록이 된다.
+LLM 진입점을 붙이려고 기반 구현 파일을 고친 경우만 적는다. `main` 재구현 때 이 표가 이식 목록이 된다.
 
 | 파일 | 수정 내용 | 커밋 |
 |---|---|---|

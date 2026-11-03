@@ -63,7 +63,7 @@
 
 ## Project Overview
 
-> 이 브랜치(`zyonge_LLMIntegration`)는 **LLM API 연동 전용 특수목적 브랜치**다. `zyonge_Sandbox` 의 구현을 그대로 가져와 **LLM API 모델 이식 · 기능 로직 · JSP 연결만** 개발한다. ERD · DB · UI 3계층은 개발하지 않으며(샌드박스 `a835e26` 시점으로 동결), 제출 산출물인 `main` 에는 병합하지 않는다.
+> 이 브랜치(`zyonge_LLMIntegration`)는 **LLM API 연동 전용 특수목적 브랜치**다. `zyonge_Sandbox` 의 구현을 그대로 가져와 **LLM API 모델 이식 · 기능 로직 · JSP 연결만** 개발한다. ERD · DB · UI 3계층은 개발하지 않으며(샌드박스 `a835e26` 시점 그대로), 제출 산출물인 `main` 에는 병합하지 않는다.
 
 - **아키텍처**: Servlet(Controller) · Service · DAO · DTO 4계층 MVC + 역할별 Filter 체인, 뷰는 JSP + JSTL
 - **DB 연동**: Tomcat JNDI DataSource(`jdbc/shop`, commons-dbcp 커넥션 풀) · MySQL 9.6 · 스키마 `webapplication_sandbox`
@@ -77,9 +77,9 @@
 | DB Schema | 🟢 구축 완료 | FK 21 · CHECK 8 · UNIQUE 9, ERD 대조 불일치 0 |
 | JSP 배선 | 🟢 전 화면 배선 | 자바 클래스 84 · JSP 39 · 필터 6, Tomcat 실행 검증 완료 |
 | UI / UX | 🟡 청사진 | CSS 17개 · 목업 8개. 디자인 컨셉(색·타이포 값) 전달 대기 |
-| **LLM API** | ⬜ 착수 전 | 이 브랜치 전용 트랙 5. 공급자 · 기능 목록 결정 대기 ([docs/tracks/LLM.md](docs/tracks/LLM.md)) |
+| **LLM API** | ⬜ 착수 전 | 이 브랜치에서 개발하는 유일한 영역. 공급자 · 기능 목록 결정 대기 ([docs/tracks/LLM.md](docs/tracks/LLM.md)) |
 
-위 4개 트랙(ERD · DB Schema · JSP 배선 · UI)은 이 브랜치에서 동결이며, 표의 상태는 샌드박스 시점 기록이다.
+위 4개 영역(ERD · DB Schema · JSP 배선 · UI)은 샌드박스에서 가져온 기반 구현이며, 표의 상태는 샌드박스 시점 기록이다. 이 브랜치에서는 고치지 않는다.
 
 PM 결정 대기 항목은 [docs/STATUS.md](docs/STATUS.md)에 있다.
 
@@ -434,7 +434,7 @@ WebApplication_TermProject/
 │   ├── dao/              # SQL 실행
 │   ├── dto/              # 화면 데이터 객체
 │   ├── filter/           # Encoding · JspDirectAccess · Shop · User · Admin · Dev
-│   ├── llm/              # LLM API 클라이언트 · 프롬프트 · JSON 처리 (LLM 트랙)
+│   ├── llm/              # LLM API 클라이언트 · 프롬프트 · JSON 처리 (LLM API)
 │   └── util/             # DBUtil(JNDI) · Paging · RoleUtil 등
 ├── WebContents/          # 웹 루트
 │   ├── main.jsp · maintenance.jsp
@@ -442,15 +442,15 @@ WebApplication_TermProject/
 │   ├── member/ product/ cart/ order/ mypage/ notice/
 │   ├── admin/            # 관리자 화면
 │   ├── dev/              # 개발자 화면
-│   ├── llm/              # LLM 화면 (LLM 트랙)
+│   ├── llm/              # LLM 화면 (LLM API)
 │   ├── css/              # base · components · pages + DECISIONS.md
-│   ├── mockup/           # 정적 HTML 목업 (UI 트랙)
+│   ├── mockup/           # 정적 HTML 목업
 │   ├── js/               # ui.js(팝업) · validate.js(폼 검증)
 │   ├── images/ · upload/ # 정적 이미지 · 업로드 (upload 는 git 제외)
 │   ├── META-INF/         # context.xml.example (context.xml 은 git 제외)
 │   └── WEB-INF/          # web.xml · lib/ (라이브러리 6개)
 ├── sql/                  # 00_create_database · schema · data
-├── docs/                 # ERD · CRUD · STATUS · tracks/ (트랙별 현황)
+├── docs/                 # ERD · CRUD · STATUS · tracks/LLM.md
 └── README.md
 ```
 
