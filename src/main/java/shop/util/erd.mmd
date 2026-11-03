@@ -1,0 +1,178 @@
+%% README.md 의 ERD mermaid 블록 사본 — /dev/erd 대체 원본
+%% Eclipse 배포에서는 README 가 웹앱 밖이라 서버가 못 읽는다. 그때 이 파일을 쓴다.
+%% README 의 ERD 를 고치면 이 파일도 같은 내용으로 맞춘다 (화면에 어느 원본인지 표시된다).
+erDiagram
+  MEMBER ||--o{ ADDRESS : "배송지"
+  MEMBER ||--o{ CART : "담기"
+  MEMBER ||--o{ WISHLIST : "찜"
+  MEMBER ||--o{ ORDERS : "주문"
+  MEMBER ||--o{ REVIEW : "작성"
+  MEMBER ||--o{ QNA : "문의"
+  MEMBER ||--o{ DELIVERY_HISTORY : "상태변경"
+  MEMBER ||--o{ ADMIN_LOG : "조작"
+  CATEGORY ||--o{ CATEGORY : "하위"
+  CATEGORY ||--o{ PRODUCT : "분류"
+  PRODUCT ||--o{ PRODUCT_IMAGE : "이미지"
+  PRODUCT ||--o{ CART : "담김"
+  PRODUCT ||--o{ WISHLIST : "찜됨"
+  PRODUCT ||--o{ ORDER_ITEM : "판매"
+  PRODUCT ||--o{ REVIEW : "평가"
+  PRODUCT ||--o{ QNA : "질문"
+  ORDERS ||--|{ ORDER_ITEM : "포함"
+  ORDERS ||--|| PAYMENT : "결제"
+  ORDERS ||--|| DELIVERY : "배송"
+  DELIVERY ||--|{ DELIVERY_HISTORY : "이력"
+  ORDER_ITEM ||--o| REVIEW : "구매후기"
+
+  MEMBER {
+    int member_id PK
+    varchar login_id UK
+    varchar password
+    varchar name
+    varchar email UK
+    varchar phone
+    enum role "USER/ADMIN/DEV"
+    enum status "ACTIVE/LEFT"
+    datetime created_at
+  }
+  ADDRESS {
+    int addr_id PK
+    int member_id FK
+    varchar addr_name
+    varchar receiver
+    varchar receiver_phone
+    varchar zipcode
+    varchar addr1
+    varchar addr2
+    enum is_default "Y/N"
+  }
+  CATEGORY {
+    int category_id PK
+    int parent_id FK
+    varchar name
+    int sort_order
+  }
+  PRODUCT {
+    int product_id PK
+    int category_id FK
+    varchar name
+    int price
+    int stock
+    text description
+    varchar thumbnail
+    enum status "판매중/숨김"
+    datetime created_at
+  }
+  PRODUCT_IMAGE {
+    int image_id PK
+    int product_id FK
+    varchar img_path
+    int sort_order
+  }
+  CART {
+    int cart_id PK
+    int member_id FK
+    int product_id FK
+    int quantity
+    datetime added_at
+  }
+  WISHLIST {
+    int member_id PK,FK
+    int product_id PK,FK
+    datetime created_at
+  }
+  ORDERS {
+    int order_id PK
+    varchar order_no UK
+    int member_id FK
+    int total_price
+    int delivery_fee
+    enum order_status "정상/취소"
+    varchar receiver
+    varchar receiver_phone
+    varchar zipcode
+    varchar addr1
+    varchar addr2
+    varchar delivery_memo
+    datetime ordered_at
+    datetime canceled_at
+  }
+  ORDER_ITEM {
+    int item_id PK
+    int order_id FK
+    int product_id FK
+    varchar product_name
+    int price
+    int quantity
+  }
+  PAYMENT {
+    int payment_id PK
+    int order_id FK,UK
+    enum method "카드/무통장/간편결제"
+    int amount
+    enum pay_status "완료/환불"
+    datetime paid_at
+    datetime refunded_at
+  }
+  DELIVERY {
+    int delivery_id PK
+    int order_id FK,UK
+    enum status "결제완료/상품준비/배송중/배송완료"
+    varchar courier
+    varchar tracking_no
+    datetime paid_at
+    datetime ready_at
+    datetime shipped_at
+    datetime delivered_at
+  }
+  DELIVERY_HISTORY {
+    int history_id PK
+    int delivery_id FK
+    enum prev_status
+    enum new_status
+    int changed_by FK
+    enum is_forced "Y/N"
+    datetime changed_at
+  }
+  REVIEW {
+    int review_id PK
+    int member_id FK
+    int product_id FK
+    int item_id FK,UK
+    tinyint rating
+    varchar content
+    datetime created_at
+  }
+  QNA {
+    int qna_id PK
+    int member_id FK
+    int product_id FK
+    varchar question
+    enum is_secret "Y/N"
+    varchar answer
+    datetime created_at
+    datetime answered_at
+  }
+  NOTICE {
+    int notice_id PK
+    varchar title
+    text content
+    int view_count
+    datetime created_at
+  }
+  SYSTEM_CONFIG {
+    varchar config_key PK
+    varchar config_value
+    varchar description
+    datetime updated_at
+  }
+  ADMIN_LOG {
+    int log_id PK
+    int member_id FK
+    enum mode "ADMIN/DEV"
+    varchar action
+    varchar target_table
+    int target_id
+    varchar detail
+    datetime created_at
+  }

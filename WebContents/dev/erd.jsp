@@ -17,16 +17,27 @@
 <h2>dev · 설계 보기</h2>
 
 <%--
-  업무 테이블을 읽지 않는다. information_schema 만 조회한다.
-  DATABASE() 를 쓰므로 스키마명 파라미터가 없고, 인젝션 표면도 없다 (ERD § 6.6).
-
-  ★ Mermaid 렌더링 탭은 빠져 있다. mermaid.min.js 가 저장소에 없고 CDN 로드는
-    금지돼 있다 (CLAUDE.md § 5 · ERD § 8 쟁점 8). 파일이 들어오면 탭을 더한다.
+  ERD 그림은 서버가 README 의 mermaid 블록을 SVG 로 그려 이미지로 내려준다 (DevErdServlet).
+  mermaid.js 를 쓰지 않으므로 CDN · 외부 파일 없이 오프라인에서 그대로 보인다.
+  아래 스키마 표는 information_schema 만 조회한다 — 업무 테이블을 읽지 않는다.
 --%>
-<p class="field_help">
-	ERD 다이어그램 탭은 mermaid.min.js 가 없어 제외했습니다.
-	아래는 실제 DB 에서 읽은 스키마입니다.
-</p>
+<h3>ERD 다이어그램</h3>
+<c:choose>
+	<c:when test="${empty erdEntityCount}">
+		<p class="empty">ERD 원본(README.md 의 mermaid 블록)을 찾지 못했습니다.</p>
+	</c:when>
+	<c:otherwise>
+		<p class="field_help">
+			원본: <c:out value="${erdOrigin}" /> · 엔티티 ${erdEntityCount}개 · 관계 ${erdRelationCount}개
+			· <a href="${ctx}/dev/erd/diagram.svg" target="_blank">새 탭에서 이미지로 열기</a>
+		</p>
+		<div class="dev_erd">
+			<img src="${ctx}/dev/erd/diagram.svg" alt="ERD 다이어그램">
+		</div>
+	</c:otherwise>
+</c:choose>
+
+<h2>실제 스키마 (information_schema)</h2>
 
 <h3>컬럼 (information_schema.columns)</h3>
 <table class="listtable">
