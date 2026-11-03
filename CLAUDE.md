@@ -1,6 +1,6 @@
 # CLAUDE.md — 프로젝트 규약
 
-> **이 폴더는 샌드박스(`zyonge_Sandbox`)다.** Eclipse 프로젝트명과 Context Root가 `WebApplication_TermProject_Sandbox` 라서 메인과 동시에 Import할 수 있다. 여기서는 `zyonge_Sandbox` 만 푸시한다.
+> **이 폴더는 샌드박스(`sandbox`)다.** Eclipse 프로젝트명과 Context Root가 `WebApplication_TermProject_Sandbox` 라서 메인과 동시에 Import할 수 있다. 여기서는 `sandbox` 만 푸시한다.
 
 웹프로그래밍응용 기말프로젝트 · JSP 쇼핑몰 · 3인(Jiyong Kim, Hawon Yoon, Minjun Kim). 규약은 PM 세션이 관리하며, 충돌이 있으면 PM에 확인한다.
 
@@ -14,7 +14,7 @@
 
 ## 2. 원칙
 
-- localhost 전용. 외부 API · CDN · 원격 폰트 · 실결제 · 소셜 로그인 · 배포는 금지한다. 예외는 `zyonge_LLMIntegration` 의 LLM API 호출 하나뿐이다.
+- localhost 전용. 외부 API · CDN · 원격 폰트 · 실결제 · 소셜 로그인 · 배포는 금지한다. 예외는 `LLM_integration` 의 LLM API 호출 하나뿐이다.
 - CSS/HTML은 순수 코드로, 손으로 쓴 듯 읽기 쉽게 쓴다. 빌드 도구 · npm · Sass는 쓰지 않는다.
 - 평가 기준은 **프론트 → 배선 → DB 흐름이 끊기지 않는 것**이다.
 - 디자인 컨셉은 PM이 전달한다. 그 전에는 토큰 **이름**만 확정하고 값은 확정하지 않는다.
@@ -43,8 +43,8 @@
 | 브랜치 | 폴더 | 용도 |
 |---|---|---|
 | `main` | `웹프로그래밍응용_기말프로젝트` | 제출 산출물 |
-| `zyonge_Sandbox` | `웹프로그래밍응용_기말프로젝트_Sandbox` (형제 폴더) | 실험. origin에 올라가 있다 |
-| `zyonge_LLMIntegration` | `웹프로그래밍응용_기말프로젝트_LLM` (형제 폴더) | LLM API 연동 실험. 샌드박스에서 갈라졌고 origin에 올라가 있다 |
+| `sandbox` | `웹프로그래밍응용_기말프로젝트_Sandbox` (형제 폴더) | 실험. origin에 올라가 있다 |
+| `LLM_integration` | `웹프로그래밍응용_기말프로젝트_LLM` (형제 폴더) | LLM API 연동 실험. 샌드박스에서 갈라졌고 origin에 올라가 있다 |
 
 - 위 세 브랜치 외에는 브랜치 · worktree를 만들지 않는다. 각 폴더는 자기 브랜치만 체크아웃하고 자기 브랜치만 푸시한다.
 - 샌드박스 · LLM 브랜치 결과는 `main` 에 **병합하지 않는다.** PM이 판단으로 정리해 `main` 에서 다시 구현한다.
@@ -57,6 +57,6 @@
 ## 5. 현재 상태
 
 - `main`: 골격과 규약만 있다. ERD · 스키마 · JSP · CSS는 비어 있다.
-- `zyonge_Sandbox`: 4개 트랙 모두 여기서 작업 중이다. 샌드박스의 `docs/ERD.md` 는 실험용 ERD다.
-- `zyonge_LLMIntegration`: 샌드박스 `a835e26` 에서 갈라졌다. LLM API 연동은 아직 착수 전이다.
+- `sandbox`: 4개 트랙 모두 여기서 작업 중이다. 샌드박스의 `docs/ERD.md` 는 실험용 ERD다.
+- `LLM_integration`: 샌드박스 `a835e26` 에서 갈라졌다. LLM API 연동은 아직 착수 전이다.
 - 트랙별 진행과 PM 결정 대기 항목은 `docs/STATUS.md` 에 있다.

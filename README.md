@@ -63,7 +63,7 @@
 
 ## Project Overview
 
-> 이 브랜치(`zyonge_Sandbox`)는 **실험용**이다. 임의로 정한 ERD로 프론트 → 배선 → DB 전 구간을 먼저 구현해 보는 곳이며, 제출 산출물인 `main` 에는 병합하지 않는다.
+> 이 브랜치(`sandbox`)는 **실험용**이다. 임의로 정한 ERD로 프론트 → 배선 → DB 전 구간을 먼저 구현해 보는 곳이며, 제출 산출물인 `main` 에는 병합하지 않는다.
 
 - **아키텍처**: Servlet(Controller) · Service · DAO · DTO 4계층 MVC + 역할별 Filter 체인, 뷰는 JSP + JSTL
 - **DB 연동**: Tomcat JNDI DataSource(`jdbc/shop`, commons-dbcp 커넥션 풀) · MySQL 9.6 · 스키마 `webapplication_sandbox`
