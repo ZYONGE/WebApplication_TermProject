@@ -188,3 +188,32 @@ docker compose up -d --build
 | 학교 IP 확보 방법 | ⬜ Docker + 쿠버네티스 구성 대기 (STATUS L4). 지금은 이 PC 의 IP 로 그대로 나가므로 학교망 밖에서는 응답이 없다 |
 
 k8s 구성이 정해지면 이 골격을 그에 맞게 바꾸거나 지운다.
+
+## 9. 합병 대비 — 다른 트랙에 넘길 작업
+
+LLM 브랜치 결과는 병합하지 않고 PM이 샌드박스 · `main` 에서 다시 구현한다 (루트 `CLAUDE.md` § 4). 그때 각 트랙이 할 작업을 미리 적는다. 판단 시점 2026-11-03.
+
+**기준점**
+
+- 샌드박스: 분기(`a835e26`) 뒤 커밋은 문서 1건뿐이다. 상품 화면 · DAO · `data.sql` · CSS · 라이브러리 변경과 미커밋 변경이 없어 충돌 위험이 낮다. 이식 직전에 다시 확인한다.
+- `main`: 골격만 있다. LLM 기능은 상품 · 리뷰 화면, DAO, 스키마 위에 얹히므로 4개 트랙의 기반 구현이 `main` 에 들어간 뒤에 옮긴다.
+
+**트랙별 작업**
+
+| 트랙 | 작업 | 시점 |
+|---|---|---|
+| DB | `data.sql` 샘플 보강 — 150자 넘는 상품 설명, 같은 상품의 리뷰 여러 건, 상품 수 확대. 리뷰는 `item_id` 가 구매 항목과 1:1 이라 `orders` · `order_item` · `payment` · `delivery` 를 맞춰 함께 늘린다 | 공통 · **없으면 F1 · F2 시연 불가** (현재 설명 9~14자, 리뷰 2건이 서로 다른 상품) |
+| DB | 쿠버네티스로 가면 MySQL 컨테이너 첫 기동 시 `schema.sql` · `data.sql` 자동 적재 순서 정리 | L4 결정 후 |
+| DB | (선택) 요약을 재시작 후에도 남기면 요약 저장 테이블 DDL | 저장 방식 결정 시 |
+| ERD | `CRUD.md` 에 `/llm/summary`(product · review R), `/llm/related`(product · category R) 행 추가 | 공통 |
+| ERD | URL 매핑 계약(C1)에 `/llm/*` 두 주소 추가. LLM 응답 DTO 를 만들면 `ERD.md` DTO 계약에 등재 | 공통 |
+| JSP | `shop/llm/**` · `LlmService` · `LlmServlet` 이식. `main` 에는 LLM 트랙이 없으므로 JSP 트랙 소유로 편입 | 공통 |
+| JSP | `ProductDAO` 에 연관 검색 후보용 "판매중 상품 전체(id · 이름 · 카테고리)" 조회 메서드 추가 | 공통 |
+| JSP | `product/view.jsp` · `product/list.jsp` 진입점 재적용 — § 6 기존 파일 수정 기록이 체크리스트 | 공통 |
+| JSP | `js/llm.js` 소유자 지정, `context.xml.example` 의 `<Environment>` 이식, 점검 모드에서 `/llm/*` 가 HTML 로 돌아올 때 `llm.js` 가 실패로 처리하는지 확인 | 공통 |
+| UI | 요약 상자 · "생성 중" 표시 · "AI 생성" 표시 · 연관 상품 구역 클래스 신설 → `DECISIONS.md` 계약 추가. 연관 상품 카드는 기존 `prodcard` · `prodlist` 재사용 | 공통 |
+| UI | `mockup/product_view.html` 에 요약 자리 2곳, 상품 목록 목업에 연관 검색 자리 추가 | 공통 |
+| PM | `CLAUDE.md` 원칙 개정 — 외부 API 예외(Gemma 서버), 라이브러리 7개(gson), Docker · 쿠버네티스, 앱을 클러스터에 올리면 "배포 금지" 개정 | 공통 |
+| PM | `WEB-INF/lib` gson 추가, `.gitignore` 에 `docker/llm-tunnel/.env`. `docker/` · k8s 파일을 `main` 에 넣을지 결정. L3 · L4 이관 | 공통 · L4 결정 후 |
+
+**순서**: ① DB 샘플 보강 (시연 여부가 걸리고 주문 데이터까지 얽혀 가장 크다) → ② UI 클래스 계약 (JSP 진입점 마크업이 이 이름을 쓴다) → ③ ERD · JSP 이식 → ④ PM 원칙 개정 (L4 에 묶임).
