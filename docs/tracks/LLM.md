@@ -45,8 +45,9 @@
 | `shop/service/Llm{Desc,Review,Related}Service.java` | F1 · F2 · F3 업무 흐름 (기능마다 1개) | ⬜ 2-0 에서 생성 |
 | `shop/controller/Llm{Desc,Review,Related}Servlet.java` | `/llm/desc` · `/llm/review` · `/llm/related` JSON (기능마다 1개) | ⬜ 2-0 에서 생성 |
 | `shop/dao/LlmProductDAO.java` | F3 후보 조회 — 판매중 상품 전체(id · 이름 · 카테고리) | ⬜ 2-0 에서 생성 (소유 범위 확장 필요) |
-| `tools/llm/mock/MockOllama.java` | 가짜 Ollama 서버 — LLM 이 있다고 가정하고 개발 | ⬜ 2-0 |
-| `tools/llm/*.sh` | 연결 확인 · 기능별 시험 스크립트 | ⬜ 단계 1 · 2 |
+| `tools/llm/OllamaBridge.java` | 점검용 중계 — Ollama 형식 요청을 USB 소형 모델(OpenAI 호환)로 넘긴다 (§ 11) | 🟢 검증 |
+| `tools/llm/start-local.sh` · `check-server.sh` | 점검 모델 시작 · 연결 확인 (USB · 학교 서버 공용) | 🟢 검증 |
+| `tools/llm/test-f{1,2,3}.sh` | 기능별 시험 스크립트 | ⬜ 2-F1 · F2 · F3 |
 | `WebContents/js/llm.js` | 비동기 호출 · 자리 채우기 | ⬜ 골격 |
 | `product/view.jsp` · `product/list.jsp` | 진입점 (기존 파일) | ⬜ 미수정 |
 
@@ -61,6 +62,7 @@
 | `shop/llm/` 클라이언트 | 🟢 `OllamaClient.generate(prompt)` · `LlmException` — javac 통과 |
 | 기능 3종 파일 | 🟡 골격 — § 2 파일 지도. 전체 소스 javac 0 오류 |
 | `context.xml.example` `<Environment>` | 🟢 `llm/ollamaUrl`(터널 `localhost:31434`) · `llm/ollamaModel` |
+| 점검용 모델 | 🟢 USB 소형 모델(Qwen3-4B) + Ollama 형식 중계 — `check-server.sh` PASS, `OllamaClient` 로 응답 · 연결 실패 처리 확인 (§ 11) |
 | 접속 환경 | 🟡 Docker + 쿠버네티스로 개발 예정 · 구성은 강의 안내 대기. 임시 Docker 터널 골격만 있음 — § 8 |
 | 기능 목록 · 화면 위치 | 🟢 확정 — 상품 설명 요약 · 리뷰 요약 · 연관 검색 (STATUS L2) |
 | JSP 연결 | ⬜ 착수 전 |
@@ -230,14 +232,15 @@ PM 지시(2026-11-04): 개발을 두 단계로 나누고 **두 단계를 병렬�
 | 단계 | 목표 | 끝난 상태 |
 |---|---|---|
 | **1. 실제 LLM 연결** | 학교 Gemma 서버에 실제로 닿는 경로를 만든다 (Docker + 쿠버네티스, STATUS L4) | `llm/ollamaUrl` 로 보낸 요청에 Gemma 가 답한다 · 연결 확인 스크립트 통과 |
-| **2. LLM 가정 구현** | 가짜 Ollama 서버를 두고 기능 3개를 구현하고 시험 스크립트를 확보한다 | 가짜 서버로 F1 · F2 · F3 가 화면까지 동작 · 기능별 시험 스크립트 통과 |
+| **2. LLM 가정 구현** | 학교 서버가 있다고 가정하고(Ollama 형식) 기능 3개를 구현하고 시험 스크립트를 확보한다. 점검은 USB 소형 모델로 한다 (§ 11) | USB 모델로 F1 · F2 · F3 가 화면까지 동작 · 기능별 시험 스크립트 통과 |
 
 ### 두 단계를 잇는 계약
 
-두 단계는 **`llm/ollamaUrl` 하나로만** 만난다. 단계 2 는 가짜 서버를, 단계 1 은 진짜 경로를 같은 주소(`http://localhost:31434/api/generate`)에 연다. 둘 다 끝나면 가짜 서버를 끄고 터널(또는 k8s 경로)을 켜는 것만으로 바뀐다 — Java · JSP 는 그대로다.
+두 단계는 **`llm/ollamaUrl` 하나로만** 만난다. 단계 2 는 USB 모델 중계를, 단계 1 은 진짜 경로를 같은 주소(`http://localhost:31434/api/generate`)에 연다. 둘 다 끝나면 중계를 끄고 터널(또는 k8s 경로)을 켜는 것만으로 바뀐다 — Java · JSP 는 그대로다.
 
-- 요청 · 응답 형식은 Ollama `/api/generate` 그대로다 (`model` · `prompt` · `stream=false`, F3 는 `format: "json"`). 가짜 서버도 이 형식을 지킨다.
-- 같은 포트를 쓰므로 가짜 서버와 터널은 동시에 켜지 않는다.
+- 요청 · 응답 형식은 Ollama `/api/generate` 그대로다 (`model` · `prompt` · `stream=false`, F3 는 `format: "json"`). 중계도 이 형식을 지킨다.
+- 같은 포트를 쓰므로 중계와 터널은 동시에 켜지 않는다.
+- 개발 기준은 학교 서버(Ollama · `gemma3:12b`)다. USB 모델에 맞춰 형식이나 프롬프트를 바꾸지 않는다.
 
 ### 단계 1 — 실제 LLM 연결
 
@@ -245,7 +248,7 @@ PM 지시(2026-11-04): 개발을 두 단계로 나누고 **두 단계를 병렬�
 |---|---|
 | `docker/**` · (예정) `k8s/**` · `context.xml.example` · `tools/llm/check-server.sh` | L4 구성 확정 → 터널 또는 k8s 경로 구현 → `check-server.sh` 로 `/api/tags` 와 짧은 생성 요청 확인 |
 
-Java 파일은 건드리지 않는다. L4(강의 안내)에 막혀 있으므로, 안내 전에는 확인 스크립트만 먼저 만든다.
+Java 파일은 건드리지 않는다. L4(강의 안내)에 막혀 있다. 확인 스크립트 `check-server.sh` 는 만들어 USB 중계로 검증했고, 학교 서버 경로가 생기면 같은 스크립트로 확인한다.
 
 ### 단계 2 — LLM 가정 구현
 
@@ -255,7 +258,6 @@ Java 파일은 건드리지 않는다. L4(강의 안내)에 막혀 있으므로,
 |---|---|
 | `shop/llm/OllamaClient.java` | `generate(prompt, json)` — JSON 응답 형식 옵션 추가 |
 | `shop/llm/LlmCache.java` | 메모리 캐시 · 동시 2건 제한 · 같은 키 중복 생성 방지 구현 |
-| `tools/llm/mock/MockOllama.java` | 가짜 서버. JDK 내장 `HttpServer` 로 31434 포트, `java MockOllama.java` 로 바로 실행 (라이브러리 · 빌드 없음). 프롬프트 머리표(`[F1]` · `[F2]` · `[F3]`)를 보고 기능별 고정 답을 돌려준다. 지연 시간 · 오류 응답도 흉내 낼 수 있게 한다 |
 | `js/llm.js` | 공통 로더 — `data-llm-url` 이 붙은 자리를 찾아 비동기로 채우고, 실패하면 숨긴다. 기능별 코드가 이 파일을 고치지 않게 한다 |
 | `product/view.jsp` · `product/list.jsp` | F1 · F2 · F3 자리 3곳과 `llm.js` 를 붙인다 (§ 6 에 기록) |
 | `LlmService` · `LlmServlet` 골격 | 기능별 파일 3쌍으로 나누고 지운다 |
@@ -264,12 +266,12 @@ Java 파일은 건드리지 않는다. L4(강의 안내)에 막혀 있으므로,
 
 | 기능 | 소유 파일 | 시험 스크립트 |
 |---|---|---|
-| F1 상품 설명 요약 | `prompt/DescSummaryPrompt` · `LlmDescService` · `LlmDescServlet`(`/llm/desc`) · 가짜 서버의 F1 답 파일 | `tools/llm/test-f1.sh` |
-| F2 리뷰 요약 | `prompt/ReviewSummaryPrompt` · `LlmReviewService` · `LlmReviewServlet`(`/llm/review`) · 가짜 서버의 F2 답 파일 | `tools/llm/test-f2.sh` |
-| F3 연관 검색 | `prompt/RelatedSearchPrompt` · `LlmRelatedService` · `LlmRelatedServlet`(`/llm/related`) · `LlmProductDAO` · 가짜 서버의 F3 답 파일 | `tools/llm/test-f3.sh` |
+| F1 상품 설명 요약 | `prompt/DescSummaryPrompt` · `LlmDescService` · `LlmDescServlet`(`/llm/desc`) | `tools/llm/test-f1.sh` |
+| F2 리뷰 요약 | `prompt/ReviewSummaryPrompt` · `LlmReviewService` · `LlmReviewServlet`(`/llm/review`) | `tools/llm/test-f2.sh` |
+| F3 연관 검색 | `prompt/RelatedSearchPrompt` · `LlmRelatedService` · `LlmRelatedServlet`(`/llm/related`) · `LlmProductDAO` | `tools/llm/test-f3.sh` |
 
-- 시험 스크립트는 가짜 서버를 켠 상태에서 엔드포인트를 `curl` 로 불러 호출 생략 조건 · 정상 응답 · 결과 검증(F1 문장 수, F3 후보 밖 id 제거) · 서버 오류 시 응답을 확인한다. 단계 1 이 끝나면 같은 스크립트를 진짜 서버로 다시 돌린다.
-- 샘플 데이터는 바꿀 수 없다(§ 9 DB). 지금 데이터로는 F1 · F2 가 "호출 생략" 경로만 탄다. 정상 경로는 가짜 서버와 시험 스크립트로 확인하고, 화면 시연은 § 9 의 DB 보강 뒤로 미룬다.
+- 시험 스크립트는 `start-local.sh` 로 USB 모델을 켠 상태에서 엔드포인트를 `curl` 로 불러 호출 생략 조건 · 정상 응답 · 결과 검증(F1 문장 수, F3 후보 밖 id 제거) · 서버 오류 시 응답을 확인한다. 단계 1 이 끝나면 같은 스크립트를 진짜 서버로 다시 돌린다.
+- 샘플 데이터는 바꿀 수 없다(§ 9 DB). 지금 데이터로는 F1 · F2 가 "호출 생략" 경로만 탄다. 정상 경로는 USB 모델과 시험 스크립트(입력을 스크립트에 직접 넣는다)로 확인하고, 화면 시연은 § 9 의 DB 보강 뒤로 미룬다.
 
 ### 병렬 진행 규칙
 
@@ -282,3 +284,47 @@ Java 파일은 건드리지 않는다. L4(강의 안내)에 막혀 있으므로,
 | # | 내용 |
 |---|---|
 | 소유 범위 | 루트 `CLAUDE.md` § 3 의 LLM 소유에 `tools/llm/**` 와 `Llm*` 접두어 DAO 를 더한다 |
+
+## 11. 점검용 로컬 모델 (USB)
+
+PM 지시(2026-11-04): 학교 서버(외부 API)를 받기 전까지, 구현한 기능의 점검은 **USB(`KM__JY`) 의 `LLM/` 폴더에 있는 소형 모델**로 한다. 기능 개발은 나중에 연결할 학교 서버 방식(Ollama `/api/generate`)을 그대로 따른다.
+
+| 항목 | 값 (USB `LLM/README.md` · `VERSIONS.md` 기준) |
+|---|---|
+| 모델 | Qwen3-4B-Instruct-2507 Q4_K_M (약 2.5GB, 한국어 가능, Apache 2.0) |
+| 실행기 | llama.cpp `llama-server` b12101 — USB 안의 실행 파일, PC 설치 없음 |
+| API | OpenAI 호환 `POST /v1/chat/completions` · 모델 이름 `local-test-4b` · `127.0.0.1` 전용 |
+| 메모리 | 약 5GB (모델 + 16K 컨텍스트) |
+
+USB 모델은 OpenAI 형식만 말하고 Ollama 주소(`/api/generate` · `/api/tags`)는 404 다 (실측). 그래서 앱 코드를 바꾸지 않고 **중계 하나**를 둔다.
+
+```
+OllamaClient ──▶ 127.0.0.1:31434 /api/generate ──▶ [OllamaBridge] ──▶ 127.0.0.1:8081 /v1/chat/completions (USB 모델)
+```
+
+- 포트: USB 모델 서버의 기본 8080 은 Tomcat(그리고 지금 이 PC 에서는 Docker)과 겹쳐 **8081** 로 띄운다. 중계는 `llm/ollamaUrl` 의 31434 에 연다 — `context.xml` 은 그대로다.
+- 변환: `prompt` → `messages[user]`, `format: "json"` → `response_format: json_object`, `temperature 0 · seed 42 · max_tokens 512` (USB README § 6), 응답 `choices[0].message.content` → `response`. 앱이 보내는 `gemma3:12b` 는 `local-test-4b` 로 바꾼다.
+- 상류 오류(컨텍스트 초과 HTTP 400 등)는 상태 코드를 그대로 넘겨 앱의 오류 처리를 점검할 수 있게 한다. USB 서버가 꺼져 있으면 502.
+- 중계는 점검 도구다. 앱(WAR)에 들어가지 않고, 라이브러리도 앱의 gson 을 빌려 쓴다.
+
+**쓰는 법**
+
+```bash
+tools/llm/start-local.sh     # USB 모델(8081) + 중계(31434), Ctrl+C 로 둘 다 종료
+tools/llm/check-server.sh    # 다른 터미널에서 연결 확인
+```
+
+처음 쓰는 맥이면 USB `LLM/README.md` 의 한 번만 할 절차(`chmod` · `xattr`)를 먼저 한다. USB 경로가 다르면 `LLM_USB=... tools/llm/start-local.sh`.
+
+**검증 기록 (2026-11-04, macOS arm64)**
+
+| 항목 | 결과 |
+|---|---|
+| USB 모델 기동 (`PORT=8081`) | 🟢 `/health` ok |
+| 중계 `/api/tags` · `/api/generate` | 🟢 200 — 짧은 상품 설명 3문장 요약 약 2.4초 |
+| `format: "json"` | 🟢 `{"ids":[1]}` 형태 JSON 응답 |
+| `OllamaClient.generate()` 를 중계 주소로 호출 | 🟢 답변 수신 |
+| 서버가 꺼진 주소로 호출 (USB 시나리오 3) | 🟢 `LlmException`("AI 서버에 연결하지 못했습니다.") + cause `ConnectException` |
+| `start-local.sh` → `check-server.sh` | 🟢 PASS, 종료 시 두 프로세스 모두 내려감 |
+
+**한계** — 점검은 "형식대로 동작하는가"까지다. 4B 모델이라 요약 품질 · 연관 검색 정확도는 학교 Gemma(12B)와 다르다. 품질 판단은 단계 1 이 끝난 뒤 같은 시험 스크립트를 학교 서버로 다시 돌려서 한다.

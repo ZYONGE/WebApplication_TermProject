@@ -11,6 +11,7 @@
 - **규칙**
   - LLM 서버는 수업 실습용 Ollama(`/api/generate`, 모델 `gemma3:12b`, `stream=false`)다. 호출은 `OllamaClient.generate(prompt)` 하나로만 한다.
   - HTTP는 JDK 17 `java.net.http.HttpClient`, JSON은 gson으로 한다. 그 밖의 라이브러리는 추가하지 않는다.
+  - 학교 서버를 받기 전까지 점검은 USB 소형 모델로 한다 — `tools/llm/start-local.sh` 를 띄우면 `localhost:31434` 가 USB 모델로 이어진다. 코드 · 프롬프트는 학교 서버(Ollama · `gemma3:12b`) 기준으로 쓰고, USB 모델에 맞춰 바꾸지 않는다 (`docs/tracks/LLM.md` § 11).
   - 서버는 학교 IP 요청만 받는다. Docker + 쿠버네티스 개발 환경으로 풀 예정이며(구성 미정), 지금 `llm/ollamaUrl` 은 임시 터널 `localhost:31434` 다 (`docs/tracks/LLM.md` § 8).
   - 서버 주소 · 모델명은 `META-INF/context.xml` 의 `<Environment>`(`llm/ollamaUrl` · `llm/ollamaModel`)에서 JNDI 로 읽는다. 소스에 적지 않는다.
   - 외부 호출은 이 패키지 안에서만 한다. 서블릿 · JSP 는 `Llm*Service` 를 거친다.
