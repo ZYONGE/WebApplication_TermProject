@@ -13,6 +13,7 @@
 - Context Root `WebApplication_TermProject_LLM` → `http://localhost:8080/WebApplication_TermProject_LLM/`
 - 라이브러리는 `WEB-INF/lib` 의 7개만 쓴다 (connector-j · dbcp · pool · JSTL · cos.jar · gson). gson 2.15.0은 LLM 요청 · 응답 JSON 처리용으로 이 브랜치에서만 추가했다
 - LLM 서버는 학교 IP 요청만 받는다. Docker + 쿠버네티스 환경을 조성해 개발할 예정이다(구성은 강의 안내 대기, STATUS L4). 그 전까지 임시로 `docker/llm-tunnel` 골격을 둔다
+- 학교 서버를 받기 전까지 기능 점검은 USB(`KM__JY/LLM`)의 소형 모델로 한다. `tools/llm/start-local.sh` 가 USB 모델(8081)과 Ollama 형식 중계(31434)를 띄운다. 개발은 학교 서버 방식(Ollama)을 기준으로 한다
 - 스펙 기준은 `README.md`
 
 ## 2. 원칙
