@@ -10,6 +10,7 @@
 | JSP 배선 | 샌드박스 | 전 화면 배선, 3역할 격리 반영, 화면 목록·URL 기록 완료 |
 | ERD | 샌드박스 | 17테이블 · 뷰 5 · CRUD 매트릭스 |
 | DB Schema | 샌드박스 | DDL · 샘플 데이터 적용 (스키마 `webapplication_sandbox`) |
+| LLM | `LLM_integration` 브랜치 | 리뷰 요약 · 상품설명 요약 · 연관검색어 작업 중 (샌드박스 소스에는 없음) |
 
 `main` 은 골격과 규약만 있다.
 
