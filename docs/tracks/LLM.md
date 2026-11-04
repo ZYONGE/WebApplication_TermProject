@@ -1,6 +1,6 @@
 # LLM API (LLM 브랜치 전용)
 
-> 소유: LLM API 세션 · 상태: 🟡 기능 3종 파일 골격 완료 · 구현 전 · 최종 갱신 2026-11-03
+> 소유: LLM API 세션 · 상태: 🟡 기능 3종 파일 골격 완료 · 2단계 병렬 개발 계획 확정(§ 10) · 최종 갱신 2026-11-04
 > 이 문서는 `LLM_integration` 전용이다. 여기 산출물은 `main` 으로 가지 않는다 — PM이 정리해 `main` 에서 다시 구현한다.
 > 세션 규칙은 `src/main/java/shop/llm/CLAUDE.md`, 파일 소유 범위는 루트 `CLAUDE.md` § 3 을 따른다.
 
@@ -29,7 +29,7 @@
 | 스크립트 | `WebContents/js/llm.js` (비동기 호출이 필요할 때만) |
 | 설정 | `META-INF/context.xml` `<Environment>` (git 제외) · 템플릿 `context.xml.example` |
 
-호출 흐름: `JSP → js/llm.js → LlmServlet → LlmService → shop.llm (캐시 · 프롬프트 · 클라이언트) → LLM API`. DB가 필요하면 Service가 기존 DAO를 읽기 전용으로 쓴다.
+호출 흐름: `JSP → js/llm.js → Llm{Desc|Review|Related}Servlet → 같은 이름의 Service → shop.llm (캐시 · 프롬프트 · 클라이언트) → LLM API`. DB가 필요하면 Service가 기존 DAO를 읽기 전용으로 쓴다.
 
 ### 파일 지도
 
@@ -41,8 +41,12 @@
 | `shop/llm/prompt/DescSummaryPrompt.java` | F1 상품 설명 요약 | ⬜ 골격 |
 | `shop/llm/prompt/ReviewSummaryPrompt.java` | F2 리뷰 요약 | ⬜ 골격 |
 | `shop/llm/prompt/RelatedSearchPrompt.java` | F3 연관 검색 | ⬜ 골격 |
-| `shop/service/LlmService.java` | F1 · F2 · F3 업무 흐름 | ⬜ 골격 |
-| `shop/controller/LlmServlet.java` | `/llm/summary` · `/llm/related` JSON | ⬜ 골격 (지금은 501 응답) |
+| `shop/service/LlmService.java` · `shop/controller/LlmServlet.java` | 골격 — 2-0 에서 아래 기능별 파일로 나누고 지운다 | ⬜ 골격 (지금은 501 응답) |
+| `shop/service/Llm{Desc,Review,Related}Service.java` | F1 · F2 · F3 업무 흐름 (기능마다 1개) | ⬜ 2-0 에서 생성 |
+| `shop/controller/Llm{Desc,Review,Related}Servlet.java` | `/llm/desc` · `/llm/review` · `/llm/related` JSON (기능마다 1개) | ⬜ 2-0 에서 생성 |
+| `shop/dao/LlmProductDAO.java` | F3 후보 조회 — 판매중 상품 전체(id · 이름 · 카테고리) | ⬜ 2-0 에서 생성 (소유 범위 확장 필요) |
+| `tools/llm/mock/MockOllama.java` | 가짜 Ollama 서버 — LLM 이 있다고 가정하고 개발 | ⬜ 2-0 |
+| `tools/llm/*.sh` | 연결 확인 · 기능별 시험 스크립트 | ⬜ 단계 1 · 2 |
 | `WebContents/js/llm.js` | 비동기 호출 · 자리 채우기 | ⬜ 골격 |
 | `product/view.jsp` · `product/list.jsp` | 진입점 (기존 파일) | ⬜ 미수정 |
 
@@ -101,7 +105,7 @@ PM이 전달한 3개 기능이다. 셋 다 공개 상품 화면에 붙고, 비�
 ### 공통 설계
 
 - **화면을 기다리게 하지 않는다.** 응답이 최대 180초라 서블릿 렌더 안에서 부르지 않는다. 페이지는 기존대로 즉시 그리고, `js/llm.js` 가 JSON 엔드포인트를 비동기로 불러 자리를 채운다. 실패하면 자리를 숨기고 기존 화면은 그대로 둔다.
-- **엔드포인트**: `/llm/summary?type=desc|review&productId=` · `/llm/related?keyword=` (정확 일치 매핑, 응답은 gson JSON). 서블릿 `LlmServlet`, 업무 `LlmService`.
+- **엔드포인트**: `/llm/desc?productId=` · `/llm/review?productId=` · `/llm/related?keyword=` (정확 일치 매핑, 응답은 gson JSON). 병렬 개발을 위해 기능마다 서블릿 · 서비스를 따로 둔다 (§ 10).
 - **캐시**: 테이블을 만들 수 없으므로 서버 메모리(`ConcurrentHashMap`)에 둔다. 키는 F1 = 상품 id + 설명 해시, F2 = 상품 id + 리뷰 수 + 최신 리뷰 시각, F3 = 정규화한 검색어. 원본이 바뀌면 키가 바뀌어 자동으로 다시 만든다. Tomcat 재시작 시 사라진다.
 - **동시 호출 제한 (L3 제안)**: 공용 GPU 서버라 동시에 2건까지만 보내고(`Semaphore`), 같은 키를 이미 생성 중이면 새로 보내지 않는다.
 - **개인정보**: 리뷰는 별점 · 본문만 보내고 작성자는 보내지 않는다.
@@ -137,6 +141,7 @@ LLM 진입점을 붙이려고 기반 구현 파일을 고친 경우만 적는다
 | PM | 기능 목록과 붙일 화면 · 역할 (L2) | 🟢 결정 — § 5 |
 | PM | 호출 횟수 제한 방식 (L3) — 메모리 캐시 + 동시 2건 제한 제안 (§ 5) | 승인 대기 |
 | PM | Docker + 쿠버네티스 구성 (L4) — 클러스터 제공처 · 올릴 대상 · 접속 방법 (§ 8) | 강의 안내 대기 |
+| PM | LLM 소유 범위에 `tools/llm/**` · `Llm*` DAO 추가 (§ 10) | 반영 — 루트 `CLAUDE.md` § 3 |
 
 ## 8. LLM 서버 접속 환경
 
@@ -205,10 +210,10 @@ LLM 브랜치 결과는 병합하지 않고 PM이 샌드박스 · `main` 에서 
 | DB | `data.sql` 샘플 보강 — 150자 넘는 상품 설명, 같은 상품의 리뷰 여러 건, 상품 수 확대. 리뷰는 `item_id` 가 구매 항목과 1:1 이라 `orders` · `order_item` · `payment` · `delivery` 를 맞춰 함께 늘린다 | 공통 · **없으면 F1 · F2 시연 불가** (현재 설명 9~14자, 리뷰 2건이 서로 다른 상품) |
 | DB | 쿠버네티스로 가면 MySQL 컨테이너 첫 기동 시 `schema.sql` · `data.sql` 자동 적재 순서 정리 | L4 결정 후 |
 | DB | (선택) 요약을 재시작 후에도 남기면 요약 저장 테이블 DDL | 저장 방식 결정 시 |
-| ERD | `CRUD.md` 에 `/llm/summary`(product · review R), `/llm/related`(product · category R) 행 추가 | 공통 |
+| ERD | `CRUD.md` 에 `/llm/desc`(product R) · `/llm/review`(review R) · `/llm/related`(product · category R) 행 추가 | 공통 |
 | ERD | URL 매핑 계약(C1)에 `/llm/*` 두 주소 추가. LLM 응답 DTO 를 만들면 `ERD.md` DTO 계약에 등재 | 공통 |
-| JSP | `shop/llm/**` · `LlmService` · `LlmServlet` 이식. `main` 에는 LLM 트랙이 없으므로 JSP 트랙 소유로 편입 | 공통 |
-| JSP | `ProductDAO` 에 연관 검색 후보용 "판매중 상품 전체(id · 이름 · 카테고리)" 조회 메서드 추가 | 공통 |
+| JSP | `shop/llm/**` · `Llm*` Service · Servlet · DAO 이식. `main` 에는 LLM 트랙이 없으므로 JSP 트랙 소유로 편입 | 공통 |
+| JSP | `LlmProductDAO` 를 `ProductDAO` 로 합칠지 결정 — 연관 검색 후보용 "판매중 상품 전체(id · 이름 · 카테고리)" 조회 메서드 추가 | 공통 |
 | JSP | `product/view.jsp` · `product/list.jsp` 진입점 재적용 — § 6 기존 파일 수정 기록이 체크리스트 | 공통 |
 | JSP | `js/llm.js` 소유자 지정, `context.xml.example` 의 `<Environment>` 이식, 점검 모드에서 `/llm/*` 가 HTML 로 돌아올 때 `llm.js` 가 실패로 처리하는지 확인 | 공통 |
 | UI | 요약 상자 · "생성 중" 표시 · "AI 생성" 표시 · 연관 상품 구역 클래스 신설 → `DECISIONS.md` 계약 추가. 연관 상품 카드는 기존 `prodcard` · `prodlist` 재사용 | 공통 |
@@ -217,3 +222,63 @@ LLM 브랜치 결과는 병합하지 않고 PM이 샌드박스 · `main` 에서 
 | PM | `WEB-INF/lib` gson 추가, `.gitignore` 에 `docker/llm-tunnel/.env`. `docker/` · k8s 파일을 `main` 에 넣을지 결정. L3 · L4 이관 | 공통 · L4 결정 후 |
 
 **순서**: ① DB 샘플 보강 (시연 여부가 걸리고 주문 데이터까지 얽혀 가장 크다) → ② UI 클래스 계약 (JSP 진입점 마크업이 이 이름을 쓴다) → ③ ERD · JSP 이식 → ④ PM 원칙 개정 (L4 에 묶임).
+
+## 10. 개발 단계와 병렬 분담
+
+PM 지시(2026-11-04): 개발을 두 단계로 나누고 **두 단계를 병렬로**, 단계 2 안의 기능 3개도 **병렬로** 개발한다.
+
+| 단계 | 목표 | 끝난 상태 |
+|---|---|---|
+| **1. 실제 LLM 연결** | 학교 Gemma 서버에 실제로 닿는 경로를 만든다 (Docker + 쿠버네티스, STATUS L4) | `llm/ollamaUrl` 로 보낸 요청에 Gemma 가 답한다 · 연결 확인 스크립트 통과 |
+| **2. LLM 가정 구현** | 가짜 Ollama 서버를 두고 기능 3개를 구현하고 시험 스크립트를 확보한다 | 가짜 서버로 F1 · F2 · F3 가 화면까지 동작 · 기능별 시험 스크립트 통과 |
+
+### 두 단계를 잇는 계약
+
+두 단계는 **`llm/ollamaUrl` 하나로만** 만난다. 단계 2 는 가짜 서버를, 단계 1 은 진짜 경로를 같은 주소(`http://localhost:31434/api/generate`)에 연다. 둘 다 끝나면 가짜 서버를 끄고 터널(또는 k8s 경로)을 켜는 것만으로 바뀐다 — Java · JSP 는 그대로다.
+
+- 요청 · 응답 형식은 Ollama `/api/generate` 그대로다 (`model` · `prompt` · `stream=false`, F3 는 `format: "json"`). 가짜 서버도 이 형식을 지킨다.
+- 같은 포트를 쓰므로 가짜 서버와 터널은 동시에 켜지 않는다.
+
+### 단계 1 — 실제 LLM 연결
+
+| 소유 | 작업 |
+|---|---|
+| `docker/**` · (예정) `k8s/**` · `context.xml.example` · `tools/llm/check-server.sh` | L4 구성 확정 → 터널 또는 k8s 경로 구현 → `check-server.sh` 로 `/api/tags` 와 짧은 생성 요청 확인 |
+
+Java 파일은 건드리지 않는다. L4(강의 안내)에 막혀 있으므로, 안내 전에는 확인 스크립트만 먼저 만든다.
+
+### 단계 2 — LLM 가정 구현
+
+**2-0 공통 선행** — 병렬로 들어가기 전에 한 번, 한 세션이 한다. 여러 기능이 같이 쓰는 파일을 여기서 끝내 두어 뒤에서 겹치지 않게 한다.
+
+| 파일 | 작업 |
+|---|---|
+| `shop/llm/OllamaClient.java` | `generate(prompt, json)` — JSON 응답 형식 옵션 추가 |
+| `shop/llm/LlmCache.java` | 메모리 캐시 · 동시 2건 제한 · 같은 키 중복 생성 방지 구현 |
+| `tools/llm/mock/MockOllama.java` | 가짜 서버. JDK 내장 `HttpServer` 로 31434 포트, `java MockOllama.java` 로 바로 실행 (라이브러리 · 빌드 없음). 프롬프트 머리표(`[F1]` · `[F2]` · `[F3]`)를 보고 기능별 고정 답을 돌려준다. 지연 시간 · 오류 응답도 흉내 낼 수 있게 한다 |
+| `js/llm.js` | 공통 로더 — `data-llm-url` 이 붙은 자리를 찾아 비동기로 채우고, 실패하면 숨긴다. 기능별 코드가 이 파일을 고치지 않게 한다 |
+| `product/view.jsp` · `product/list.jsp` | F1 · F2 · F3 자리 3곳과 `llm.js` 를 붙인다 (§ 6 에 기록) |
+| `LlmService` · `LlmServlet` 골격 | 기능별 파일 3쌍으로 나누고 지운다 |
+
+**2-F1 · 2-F2 · 2-F3 병렬** — 서로 파일이 겹치지 않는다.
+
+| 기능 | 소유 파일 | 시험 스크립트 |
+|---|---|---|
+| F1 상품 설명 요약 | `prompt/DescSummaryPrompt` · `LlmDescService` · `LlmDescServlet`(`/llm/desc`) · 가짜 서버의 F1 답 파일 | `tools/llm/test-f1.sh` |
+| F2 리뷰 요약 | `prompt/ReviewSummaryPrompt` · `LlmReviewService` · `LlmReviewServlet`(`/llm/review`) · 가짜 서버의 F2 답 파일 | `tools/llm/test-f2.sh` |
+| F3 연관 검색 | `prompt/RelatedSearchPrompt` · `LlmRelatedService` · `LlmRelatedServlet`(`/llm/related`) · `LlmProductDAO` · 가짜 서버의 F3 답 파일 | `tools/llm/test-f3.sh` |
+
+- 시험 스크립트는 가짜 서버를 켠 상태에서 엔드포인트를 `curl` 로 불러 호출 생략 조건 · 정상 응답 · 결과 검증(F1 문장 수, F3 후보 밖 id 제거) · 서버 오류 시 응답을 확인한다. 단계 1 이 끝나면 같은 스크립트를 진짜 서버로 다시 돌린다.
+- 샘플 데이터는 바꿀 수 없다(§ 9 DB). 지금 데이터로는 F1 · F2 가 "호출 생략" 경로만 탄다. 정상 경로는 가짜 서버와 시험 스크립트로 확인하고, 화면 시연은 § 9 의 DB 보강 뒤로 미룬다.
+
+### 병렬 진행 규칙
+
+- 단계 1 · 2-0 은 동시에 시작한다. 2-F1 · 2-F2 · 2-F3 는 2-0 이 커밋된 뒤 동시에 시작한다.
+- 모두 이 폴더 · 이 브랜치 하나에서 일한다 (새 브랜치 · worktree 금지, 루트 `CLAUDE.md` § 4). 그래서 **자기 표의 파일만** 고치고, 커밋은 자기 파일만 경로로 지정한다. 푸시는 PM 이 한다.
+- 표 밖의 파일(특히 공통 파일)을 고쳐야 하면 직접 고치지 말고 § 7 요청란에 적는다.
+
+### 필요한 PM 결정
+
+| # | 내용 |
+|---|---|
+| 소유 범위 | 루트 `CLAUDE.md` § 3 의 LLM 소유에 `tools/llm/**` 와 `Llm*` 접두어 DAO 를 더한다 |
