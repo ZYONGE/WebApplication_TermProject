@@ -429,7 +429,7 @@ erDiagram
 ```
 WebApplication_TermProject/
 ├── src/main/java/shop/
-│   ├── controller/       # Servlet 24 + BaseServlet + LlmServlet
+│   ├── controller/       # Servlet 24 + BaseServlet + Llm*Servlet
 │   ├── service/          # 업무 규칙 · 트랜잭션
 │   ├── dao/              # SQL 실행
 │   ├── dto/              # 화면 데이터 객체
@@ -450,6 +450,7 @@ WebApplication_TermProject/
 │   ├── images/ · upload/ # 정적 이미지 · 업로드 (upload 는 git 제외)
 │   ├── META-INF/         # context.xml.example (context.xml 은 git 제외)
 │   └── WEB-INF/          # web.xml · lib/ (라이브러리 7개, gson 포함)
+├── tools/llm/            # 가짜 Ollama 서버 · LLM 연결 확인 · 기능 시험 스크립트
 ├── docker/llm-tunnel/    # LLM 서버 접속 임시 터널 골격 (Docker + 쿠버네티스 구성 전까지)
 ├── sql/                  # 00_create_database · schema · data
 ├── docs/                 # ERD · CRUD · STATUS · tracks/LLM.md

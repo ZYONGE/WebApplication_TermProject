@@ -28,7 +28,7 @@
 
 | 세션 | 소유 파일 | 문서 |
 |---|---|---|
-| **LLM API** | `src/main/java/shop/llm/**` · `Llm*` 접두어 controller · service · dto · `WebContents/llm/**` · `js/llm.js` · `web.xml` · `META-INF/context.xml(.example)` · `docker/llm-tunnel/**` | `docs/tracks/LLM.md`, 세션 규칙 `src/main/java/shop/llm/CLAUDE.md` |
+| **LLM API** | `src/main/java/shop/llm/**` · `Llm*` 접두어 controller · service · dto · `WebContents/llm/**` · `js/llm.js` · `web.xml` · `META-INF/context.xml(.example)` · `docker/llm-tunnel/**` · `tools/llm/**` · `Llm*` 접두어 dao | `docs/tracks/LLM.md`, 세션 규칙 `src/main/java/shop/llm/CLAUDE.md` |
 | PM | `CLAUDE.md` · `docs/STATUS.md` · `README.md` · `.gitignore` · Eclipse 설정 · `WEB-INF/lib` | — |
 
 - 그 밖의 파일(`docs/ERD.md` · `docs/CRUD.md` · `sql/**` · `css/**` · `mockup/**` · `images/**` · 기존 Java · JSP · JS)은 샌드박스 `a835e26` 에서 가져온 **기반 구현**이다. 이 브랜치에서는 읽기만 한다.
@@ -58,5 +58,5 @@
 
 - `main`: 골격과 규약만 있다.
 - `sandbox`: 4개 트랙(UI · JSP 배선 · ERD · DB Schema)이 작업 중이다. 그 트랙들의 문서와 결정 대기 항목은 샌드박스에 있다.
-- `LLM_integration`: 샌드박스 `a835e26` 에서 갈라졌다. LLM API 세션은 Ollama 클라이언트와 기능 3종 골격을 만들었다. 학교 IP 인증 문제는 Docker + 쿠버네티스 환경으로 풀 예정이며 구성은 미정이다.
+- `LLM_integration`: 샌드박스 `a835e26` 에서 갈라졌다. LLM API 세션은 Ollama 클라이언트와 기능 3종 골격을 만들었다. 이후 개발은 단계 1(실제 LLM 연결)과 단계 2(가짜 서버로 기능 구현 · 시험 스크립트)를 병렬로, 단계 2 의 기능 3개도 병렬로 진행한다 (`docs/tracks/LLM.md` § 10). 학교 IP 인증 문제는 Docker + 쿠버네티스 환경으로 풀 예정이며 구성은 미정이다.
 - 진행과 PM 결정 대기 항목은 `docs/STATUS.md` 에 있다.
