@@ -1,6 +1,6 @@
 #!/bin/bash
 # LLM 연결 확인 — context.xml 의 llm/ollamaUrl 과 같은 주소에 Ollama 형식으로 묻는다.
-# 로컬 점검(USB 모델 + 중계)과 실제 학교 서버 연결 모두 이 스크립트로 확인한다. docs/tracks/LLM.md § 10 · 11
+# tools/llm/start-relay.sh 로 k8s 중계를 띄운 뒤 학교 서버 연결을 이 스크립트로 확인한다. docs/tracks/LLM.md § 8
 # 사용법: tools/llm/check-server.sh [생성 주소]   (기본 http://localhost:31434/api/generate)
 set -u
 URL="${1:-http://localhost:31434/api/generate}"

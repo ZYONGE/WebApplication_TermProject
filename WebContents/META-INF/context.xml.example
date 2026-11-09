@@ -14,8 +14,8 @@
 
   LLM 설정 (LLM_integration 전용) — shop.llm.OllamaClient 가 JNDI 로 읽는다.
     - 수업 실습용 Ollama 서버(GPU)와 모델 gemma3:12b. 키가 필요 없다.
-    - 서버는 학교 IP 요청만 받는다. 앱은 localhost:31434 로 접속한다 — 지금은 tools/llm/start-local.sh 의
-      점검용 중계(USB 소형 모델), 이후 docker/llm-tunnel 또는 k8s 경로가 같은 포트를 연다.
+    - 서버는 학교 IP 요청만 받는다. 앱은 localhost:31434 로 접속한다 — tools/llm/start-relay.sh 가
+      수업 GPU 클러스터의 중계 파드(k8s/llm-relay.yaml)로 port-forward 해 이 포트를 연다.
     - 학교망 안에서 터널 없이 쓰려면 http://220.149.119.234:31434/api/generate 로 바꾼다.
 -->
 <Context>
