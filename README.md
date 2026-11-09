@@ -450,8 +450,8 @@ WebApplication_TermProject/
 │   ├── images/ · upload/ # 정적 이미지 · 업로드 (upload 는 git 제외)
 │   ├── META-INF/         # context.xml.example (context.xml 은 git 제외)
 │   └── WEB-INF/          # web.xml · lib/ (라이브러리 7개, gson 포함)
-├── tools/llm/            # 점검용 중계(USB 모델) · LLM 연결 확인 · 기능 시험 스크립트
-├── docker/llm-tunnel/    # LLM 서버 접속 임시 터널 골격 (Docker + 쿠버네티스 구성 전까지)
+├── tools/llm/            # 중계 시작(start-relay) · LLM 연결 확인 · 기능 시험 스크립트
+├── k8s/                  # llm-relay.yaml — 수업 GPU 클러스터의 LLM 중계 파드
 ├── sql/                  # 00_create_database · schema · data
 ├── docs/                 # ERD · CRUD · STATUS · tracks/LLM.md
 └── README.md
@@ -492,8 +492,8 @@ mysql -D webapplication_sandbox < sql/data.sql
 1. `File > Import > Existing Projects into Workspace` 로 이 폴더를 연다. 프로젝트명은 `WebApplication_TermProject_LLM` 라 `main` 체크아웃과 동시에 Import 할 수 있다.
 2. `WebContents/META-INF/context.xml.example` 을 `context.xml` 로 복사하고 스키마명 · 계정 · 비밀번호를 채운다. LLM 서버 주소 · 모델은 같은 파일의 `<Environment>`(`llm/ollamaUrl` · `llm/ollamaModel`)에 예시 값이 들어 있다.
 3. Tomcat 9.0 런타임에 프로젝트를 추가한다.
-4. 학교 서버를 받기 전에는 USB(`KM__JY`) 의 소형 모델로 LLM 기능을 점검한다. `tools/llm/start-local.sh` 를 띄우면 앱이 `localhost:31434` 로 그 모델에 붙는다 ([docs/tracks/LLM.md](docs/tracks/LLM.md) § 11).
-5. LLM 서버는 학교 IP 요청만 받는다. 학교망 밖 개발 환경은 Docker + 쿠버네티스로 조성할 예정이며, 그 전까지 임시 터널 골격 `docker/llm-tunnel` 이 있다 ([docs/tracks/LLM.md](docs/tracks/LLM.md) § 8).
+4. LLM 서버는 학교 IP 요청만 받는다. 수업 GPU 클러스터의 kubeconfig 를 `~/.kube/config` 에 두고(`server: https://localhost:36443`), 클러스터 API SSH 터널을 연 뒤 `tools/llm/start-relay.sh` 를 띄우면 앱이 `localhost:31434` 로 학교 Ollama 에 붙는다. `kubectl` 은 Docker Desktop 에 들어 있는 것을 쓴다 ([docs/tracks/LLM.md](docs/tracks/LLM.md) § 8).
+5. 연결 확인은 `tools/llm/check-server.sh`. 로컬 LLM 은 쓰지 않는다.
 
 ### Run
 
