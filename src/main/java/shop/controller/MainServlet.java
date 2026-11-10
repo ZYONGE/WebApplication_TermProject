@@ -27,7 +27,7 @@ public class MainServlet extends BaseServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			request.setAttribute("pageTitle", "SHOP");
+			request.setAttribute("pageTitle", "윤라댄");
 			pageCss(request, "main");
 			request.setAttribute("notices", noticeService.findLatest(3));
 			/* 신상품 — 트랙은 아래 트랙 영역이 따로 보여주므로 낱개만 (두 영역이 같은 카드로 겹치지 않게) */

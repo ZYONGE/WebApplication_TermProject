@@ -94,21 +94,34 @@
 				               value="<c:out value='${editProduct.name}' />"></td></tr>
 				<tr><th><label for="productType">구분</label></th>
 				    <td>
-				    	<%-- 판매 이력이 생긴 뒤에는 구분을 바꿀 수 없다 (ERD § 8-15) — 서버가 거부한다 --%>
-				    	<select id="productType" name="productType" onchange="toggleTrackItems()">
-				    		<option value="SINGLE" ${editProduct.productType != 'TRACK' ? 'selected' : ''}>낱개 영양제</option>
+				    	<%--
+				    	  구분을 먼저 고른다 (필수). 고르기 전에는 카테고리를 고를 수 없다.
+				    	  판매 이력이 생긴 뒤에는 구분을 바꿀 수 없다 (ERD § 8-15) — 서버가 거부한다.
+				    	--%>
+				    	<select id="productType" name="productType" onchange="applyProductType()"
+				    	        data-rule="required" data-message="구분을 먼저 선택하세요.">
+				    		<option value="">구분 선택</option>
+				    		<option value="SINGLE" ${editProduct.productType == 'SINGLE' ? 'selected' : ''}>단일상품</option>
 				    		<option value="TRACK" ${editProduct.productType == 'TRACK' ? 'selected' : ''}>트랙 패키지</option>
 				    	</select>
-				    	<span class="field_help">낱개는 '낱개 영양제', 트랙은 '트랙 패키지' 밑 소분류에 등록합니다.</span>
+				    	<span class="field_help">단일상품 = 영양소 하나짜리 낱개 영양제, 트랙 패키지 = 여러 낱개를 1포에 묶은 상품</span>
 				    </td></tr>
 				<tr><th><label for="pCategoryId">카테고리</label></th>
 				    <td>
-				    	<select id="pCategoryId" name="categoryId">
-				    		<c:forEach var="cat" items="${categories}">
-				    			<option value="${cat.categoryId}"
-				    			        ${editProduct.categoryId == cat.categoryId ? 'selected' : ''}>
-				    				<c:if test="${not empty cat.parentId}">— </c:if><c:out value="${cat.name}" />
-				    			</option>
+				    	<%--
+				    	  대분류마다 optgroup — data-type 은 그 대분류 상품의 구분(데이터에서 읽음, 비었으면 양쪽).
+				    	  단일상품이면 '낱개 영양제' 쪽, 트랙 패키지면 '트랙 패키지' 쪽 소분류만 보인다. 소분류만 고를 수 있다.
+				    	--%>
+				    	<select id="pCategoryId" name="categoryId"
+				    	        data-rule="required" data-message="카테고리를 선택하세요. (구분을 먼저 고르면 고를 수 있습니다)">
+				    		<option value="">카테고리 선택</option>
+				    		<c:forEach var="root" items="${categoryTree}">
+				    			<optgroup label="<c:out value='${root.name}' />" data-type="${rootTypes[root.categoryId]}">
+				    				<c:forEach var="sub" items="${root.children}">
+				    					<option value="${sub.categoryId}"
+				    					        ${editProduct.categoryId == sub.categoryId ? 'selected' : ''}><c:out value="${sub.name}" /></option>
+				    				</c:forEach>
+				    			</optgroup>
 				    		</c:forEach>
 				    	</select>
 				    </td></tr>
@@ -189,11 +202,31 @@ function newProduct() {
 }
 
 /* 트랙 구성 칸은 트랙일 때만 보인다 */
-function toggleTrackItems() {
+/*
+  구분 → 카테고리 순서로 입력한다.
+    구분을 고르기 전: 카테고리 잠금
+    고른 뒤: 그 구분의 대분류(optgroup data-type) 밑 소분류만 보인다. 맞지 않는 값이 골라져 있으면 비운다.
+    트랙 패키지일 때만 트랙 구성 칸을 연다.
+  판정의 근거는 서버(AdminService.validateProduct)다. 여기는 입력 순서를 안내할 뿐이다.
+*/
+function applyProductType() {
 	var type = document.getElementById("productType").value;
+	var category = document.getElementById("pCategoryId");
+	category.disabled = (type === "");
+	var groups = category.querySelectorAll("optgroup");
+	for (var i = 0; i < groups.length; i++) {
+		var groupType = groups[i].getAttribute("data-type");
+		var show = type !== "" && (groupType === "" || groupType === type);
+		groups[i].hidden = !show;
+		groups[i].disabled = !show;
+	}
+	var picked = category.options[category.selectedIndex];
+	if (picked && picked.parentNode.disabled) {
+		category.value = "";
+	}
 	document.getElementById("trackItemsRow").hidden = (type !== "TRACK");
 }
-document.addEventListener("DOMContentLoaded", toggleTrackItems);
+document.addEventListener("DOMContentLoaded", applyProductType);
 
 <c:if test="${not empty editProduct or param.create == '1'}">
 document.addEventListener("DOMContentLoaded", function () {

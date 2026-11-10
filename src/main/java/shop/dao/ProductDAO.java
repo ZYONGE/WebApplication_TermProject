@@ -163,6 +163,35 @@ public class ProductDAO {
 				+ " AND p.product_type = ? AND p.product_id <> ?", args);
 	}
 
+	/*
+	  대분류별 상품 구분 — 상품 등록 팝업이 "구분을 고르면 그 구분의 카테고리만" 보여 줄 때 쓴다.
+	  키는 대분류 id, 값은 그 밑 상품의 구분(SINGLE / TRACK). 두 구분이 섞였거나 상품이 없으면 키가 없다.
+	  대분류 이름을 코드에 박지 않으려고 데이터에서 읽는다 (ERD § 8-12).
+	*/
+	public Map<Integer, String> findRootTypes() throws SQLException {
+		String sql = "SELECT IFNULL(c.parent_id, c.category_id) AS root_id,"
+				   + "       MIN(p.product_type) AS t1, MAX(p.product_type) AS t2"
+				   + "  FROM product p JOIN category c ON c.category_id = p.category_id"
+				   + " GROUP BY IFNULL(c.parent_id, c.category_id)";
+		Map<Integer, String> map = new LinkedHashMap<Integer, String>();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = DBUtil.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				if (rs.getString("t1").equals(rs.getString("t2"))) {
+					map.put(Integer.valueOf(rs.getInt("root_id")), rs.getString("t1"));
+				}
+			}
+			return map;
+		} finally {
+			DBUtil.close(rs, pstmt, conn);
+		}
+	}
+
 	/* 판매 이력 — product_type 은 이력이 생긴 뒤 바꾸지 않는다 (ERD § 8-15). */
 	public int countOrderItems(int productId) throws SQLException {
 		List<Object> args = new ArrayList<Object>();

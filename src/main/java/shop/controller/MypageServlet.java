@@ -109,6 +109,14 @@ public class MypageServlet extends BaseServlet {
 		request.setAttribute("recentOrders",
 				orderService.findMyOrders(memberId, 1, 5).getList());
 		request.setAttribute("wishCount", Integer.valueOf(mypageService.countWishlist(memberId)));
+		/* 고객 주소 — 기본 배송지(없으면 첫 배송지)와 등록 수 */
+		java.util.List<AddressDTO> addresses = mypageService.findAddresses(memberId);
+		AddressDTO mainAddr = mypageService.findDefaultAddress(memberId);
+		if (mainAddr == null && !addresses.isEmpty()) {
+			mainAddr = addresses.get(0);
+		}
+		request.setAttribute("mainAddr", mainAddr);
+		request.setAttribute("addressCount", Integer.valueOf(addresses.size()));
 		request.setAttribute("reviews", mypageService.findMyReviews(memberId));
 		request.setAttribute("qnaList", mypageService.findMyQna(memberId));
 		render(request, response, "/mypage/index.jsp");

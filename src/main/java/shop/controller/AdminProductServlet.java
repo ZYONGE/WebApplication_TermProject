@@ -57,6 +57,9 @@ public class AdminProductServlet extends BaseServlet {
 					param(request, "keyword"), param(request, "status"),
 					intParam(request, "page", 1), Paging.DEFAULT_SIZE));
 			request.setAttribute("categories", adminService.findCategories());
+			/* 등록 팝업 — 구분을 먼저 고르면 그 구분의 대분류 밑 소분류만 보인다 */
+			request.setAttribute("categoryTree", adminService.findCategoryTree());
+			request.setAttribute("rootTypes", adminService.findRootTypes());
 			/* 트랙 구성 체크 목록 — 숨김 · 재고 0 낱개도 고를 수 있다 (관리자 조회) */
 			request.setAttribute("singles", adminService.findAllSingles());
 			request.setAttribute("pageUrl", "/admin/products?");

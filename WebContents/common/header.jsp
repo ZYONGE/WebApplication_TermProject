@@ -5,7 +5,8 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title><c:out value="${empty pageTitle ? 'SHOP' : pageTitle}" /></title>
+<%-- 사이트명 '윤라댄' 은 임시 이름이다 (PM 결정 K9, 2026-11-10). 바꿀 때는 이 파일의 두 곳과 MainServlet 을 함께 고친다 --%>
+<title><c:out value="${empty pageTitle ? '윤라댄' : pageTitle}" /></title>
 <!--
   CSS 로드 순서는 CLAUDE.md § 3 Stage 1 이 정한 것이다.
     reset -> variables -> layout -> components/* -> pages/*
@@ -34,7 +35,7 @@
 <div class="wrap">
 
 <header class="page_header">
-	<h1><a href="${ctx}/">SHOP</a></h1>
+	<h1><a href="${ctx}/">윤라댄</a></h1>
 
 	<ul class="page_header_util">
 		<c:choose>
@@ -80,7 +81,7 @@
 
 	<nav class="page_nav">
 		<ul>
-			<li><a href="${ctx}/product/list">전체상품</a></li>
+			<li><a href="${ctx}/product/list">전체 영양제</a></li>
 			<c:forEach var="cat" items="${navCategories}">
 				<li>
 					<a href="${ctx}/product/list?categoryId=${cat.categoryId}"><c:out value="${cat.name}" /></a>
@@ -93,9 +94,9 @@
 					</c:if>
 				</li>
 			</c:forEach>
-			<%-- 조합 탭 — 다나와 "PC 견적 맞추기" 처럼 영양제를 한 화면에서 골라 맞춘다 (CONCEPT § 2) --%>
-			<li class="page_nav_custom"><a href="${ctx}/custom">조합 맞추기</a></li>
 			<li><a href="${ctx}/notice/list">공지사항</a></li>
+			<%-- 조합 탭 — 다나와 "PC 견적 맞추기" 처럼 영양제를 한 화면에서 골라 맞춘다 (CONCEPT § 2). 오른쪽 끝에 따로 둔다 --%>
+			<li class="page_nav_custom"><a href="${ctx}/custom">조합 맞추기</a></li>
 		</ul>
 	</nav>
 

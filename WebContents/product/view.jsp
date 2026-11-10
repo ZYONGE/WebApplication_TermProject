@@ -22,7 +22,6 @@
 	</div>
 
 	<div class="prod_info">
-		<p class="prod_cate"><span class="prodcard_badge">${product.typeLabel}</span> <c:out value="${product.categoryName}" /></p>
 		<h2><c:out value="${product.name}" /></h2>
 		<p class="prod_price">
 			1포 <strong><fmt:formatNumber value="${product.price}" pattern="#,##0" /></strong>원
@@ -69,14 +68,19 @@
 				1포 <fmt:formatNumber value="${product.price}" pattern="#,##0" />원 × <span data-days-count>${dayInit}</span>일
 				= <strong data-days-sum><fmt:formatNumber value="${product.price * dayInit}" pattern="#,##0" /></strong>원
 			</p>
-			<button type="submit" class="btn btn_primary">장바구니 담기</button>
+			<%--
+			  담기 · 찜을 한 줄 5:5 로. 폼 안에 폼을 둘 수 없어 찜 버튼은 form 속성으로 아래 찜 폼(prodWishForm)을 보낸다.
+			--%>
+			<div class="prod_actions">
+				<button type="submit" class="btn btn_primary">장바구니 담기</button>
+				<button type="submit" class="btn btn_sub" form="prodWishForm">${wished ? '찜 해제' : '찜하기'}</button>
+			</div>
 			<span class="field_help">같은 상품을 다시 담으면 일수를 새 값으로 바꿉니다.</span>
 		</form>
 
-		<form class="prod_wish" action="${ctx}/wish/toggle" method="post">
+		<form class="prod_wish" id="prodWishForm" action="${ctx}/wish/toggle" method="post">
 			<input type="hidden" name="productId" value="${product.productId}">
 			<input type="hidden" name="back" value="/product/view?productId=${product.productId}">
-			<button type="submit" class="btn btn_sub">${wished ? '찜 해제' : '찜하기'}</button>
 		</form>
 		</c:otherwise>
 		</c:choose>

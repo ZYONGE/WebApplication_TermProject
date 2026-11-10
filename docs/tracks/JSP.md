@@ -49,7 +49,7 @@ K 결정 반영: K3 쿼리 상태(`/custom?pick=&days=`) + `combo` 저장 둘 �
 - 장바구니 안내의 "30일분" 예시 → 상한 `MAX_INTAKE_DAYS` 표시, 금지 조합 입력 예시 문구 일반화, footer 의 "디자인 미적용" 문구, 주석의 의류 예시
 - `web.xml` 에 JSTL fmt 로케일 `ko_KR` 고정 — Accept-Language 가 없으면 금액 쉼표 · 날짜 형식이 빠지고 Timestamp 원문이 찍혔다
 
-그대로 둔 것: 사이트명 `SHOP` (K9 미정) · 로그인 화면 테스트 계정 안내 (M2) · 빠른 선택 7/14/30/60/90 (CONCEPT § 5 명세값)
+그대로 둔 것: 로그인 화면 테스트 계정 안내 (M2) · 빠른 선택 7/14/30/60/90 (CONCEPT § 5 명세값)
 
 ## 2. 화면 목록 · URL 매핑
 
@@ -108,7 +108,7 @@ K 결정 반영: K3 쿼리 상태(`/custom?pick=&days=`) + `combo` 저장 둘 �
 | 대상 | 내용 |
 |---|---|
 | PM | `README.md` 의 ERD mermaid 가 아직 17 엔티티다. `/dev/erd` 는 README 를 먼저 읽으므로 사본 `erd.mmd`(21 엔티티)와 어긋난다 — README 를 `docs/ERD.md` § 2 와 맞춰 달라 |
-| PM | K9 사이트명 결정 시 `common/header.jsp` · `MainServlet` 의 `SHOP` 교체 |
+| PM | ~~K9 사이트명~~ — 임시 이름 '윤라댄' 으로 교체 완료 (2026-11-10, `header.jsp` 2곳 · `MainServlet`) |
 | PM · DB | 로컬 DB 재적용 승인(P2 · K2) 후 실행 검증 — 비로그인/USER/ADMIN/DEV × `/custom` · `/cart/addAll` · `/mypage/combo` · `/admin/conflicts` · 상품등록(트랙) |
 
 ID 는 `docs/STATUS.md` PM 결정 대기 표를 따른다.

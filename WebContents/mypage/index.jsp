@@ -21,6 +21,26 @@
 	<tr><th>아이디</th><td><c:out value="${member.loginId}" /></td></tr>
 	<tr><th>이름</th><td><c:out value="${member.name}" /></td></tr>
 	<tr><th>이메일</th><td><c:out value="${member.email}" /></td></tr>
+	<tr><th>연락처</th><td><c:out value="${member.phone}" /></td></tr>
+	<%-- 고객 주소 — 기본 배송지. 없으면 첫 배송지, 하나도 없으면 등록 안내 --%>
+	<tr>
+		<th>주소</th>
+		<td>
+			<c:choose>
+				<c:when test="${not empty mainAddr}">
+					[<c:out value="${mainAddr.zipcode}" />] <c:out value="${mainAddr.addr1}" /> <c:out value="${mainAddr.addr2}" />
+					<span class="field_help">
+						<c:out value="${mainAddr.addrName}" /><c:if test="${mainAddr.isDefault == 'Y'}"> (기본 배송지)</c:if>
+						· 받는 사람 <c:out value="${mainAddr.receiver}" />
+						· 등록된 배송지 ${addressCount}곳 <a href="${ctx}/mypage/address">관리</a>
+					</span>
+				</c:when>
+				<c:otherwise>
+					등록된 주소가 없습니다. <a href="${ctx}/mypage/address">배송지 등록</a>
+				</c:otherwise>
+			</c:choose>
+		</td>
+	</tr>
 	<tr><th>가입일</th><td><fmt:formatDate value="${member.createdAt}" pattern="yyyy-MM-dd" /></td></tr>
 	<tr><th>찜한 상품</th><td>${wishCount}개</td></tr>
 </table>

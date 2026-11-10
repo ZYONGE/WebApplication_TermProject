@@ -81,6 +81,11 @@ public class AdminService {
 		return productDAO.findAnyPage(categoryId, type, keyword, status, page, size);
 	}
 
+	/* 상품 등록 팝업 — 대분류 id → 그 밑 상품 구분 */
+	public java.util.Map<Integer, String> findRootTypes() throws SQLException {
+		return productDAO.findRootTypes();
+	}
+
 	/* 트랙 구성 · 금지 조합에서 고를 낱개 전체 (숨김 · 재고 0 포함) */
 	public List<ProductDTO> findAllSingles() throws SQLException {
 		return productDAO.findAnyByType(ProductDAO.SINGLE);
