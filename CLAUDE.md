@@ -30,7 +30,7 @@
 | JSP 배선 | `**/*.jsp` · `src/main/java/shop/**` · `web.xml` · `META-INF/context.xml` · `js/validate.js` | `docs/tracks/JSP.md` |
 | ERD | `docs/ERD.md` · `docs/CRUD.md` | `docs/tracks/ERD.md` |
 | DB Schema | `sql/schema.sql` · `sql/data.sql` | `docs/tracks/SCHEMA.md` |
-| PM | `CLAUDE.md` · `docs/STATUS.md` · `README.md` · `.gitignore` · Eclipse 설정 · `WEB-INF/lib` | — |
+| PM | `CLAUDE.md` · `docs/STATUS.md` · `docs/CONCEPT.md` · `docs/IMPACT.md` · `README.md` · `.gitignore` · Eclipse 설정 · `WEB-INF/lib` | — |
 
 - 목업은 `mockup/` 에만 둔다. JSP 디렉터리와 섞지 않는다.
 - `common/header.jsp` · `footer.jsp` 는 JSP 소유다. UI는 `mockup/_layout.html` 로 마크업을 제시한다.
@@ -58,5 +58,6 @@
 
 - `main`: 골격과 규약만 있다. ERD · 스키마 · JSP · CSS는 비어 있다.
 - `sandbox`: 4개 트랙 모두 여기서 작업 중이다. 샌드박스의 `docs/ERD.md` 는 실험용 ERD다.
+- `sandbox` 컨셉: 의류 매장 → **커스텀 영양제 구매 사이트** 로 전환 중이다. 명세 · 결정 · 트랙별 영향은 `docs/CONCEPT.md` 가 기준이다.
 - `LLM_integration`: 샌드박스에서 갈라졌다. LLM 기능 3종(리뷰 요약 · 상품설명 요약 · 연관검색어)을 **이 브랜치에서 작업 중**이며, 샌드박스 소스에는 없다.
 - 트랙별 진행과 PM 결정 대기 항목은 `docs/STATUS.md` 에 있다.

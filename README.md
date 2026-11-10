@@ -65,6 +65,8 @@
 
 > 이 브랜치(`sandbox`)는 **실험용**이다. 임의로 정한 ERD로 프론트 → 배선 → DB 전 구간을 먼저 구현해 보는 곳이며, 제출 산출물인 `main` 에는 병합하지 않는다.
 
+- **컨셉**: 커스텀 영양제 구매 사이트 (의류 매장에서 전환 중). 사용자가 영양제 종류와 섭취 일수를 직접 골라 필요한 영양소만 구매한다. 판매 단위는 1포(하루분)이고, 낱개 영양제와 미리 구성한 트랙 패키지를 팔며, 함께 먹기를 권장하지 않는 조합에는 경고 문구를 띄운다. 상세는 [docs/CONCEPT.md](docs/CONCEPT.md). 아래 명세는 아직 전환 전(의류) 기준이다.
+
 - **아키텍처**: Servlet(Controller) · Service · DAO · DTO 4계층 MVC + 역할별 Filter 체인, 뷰는 JSP + JSTL
 - **DB 연동**: Tomcat JNDI DataSource(`jdbc/shop`, commons-dbcp 커넥션 풀) · MySQL 9.6 · 스키마 `webapplication_sandbox`
 - **인증 방식**: 세션 로그인 + 3역할 완전 격리(`USER` 구매 / `ADMIN` 상품·주문 관리 / `DEV` 데이터·상태 조작)
