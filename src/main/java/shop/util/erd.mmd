@@ -23,6 +23,13 @@ erDiagram
   ORDERS ||--|| DELIVERY : "배송"
   DELIVERY ||--|{ DELIVERY_HISTORY : "이력"
   ORDER_ITEM ||--o| REVIEW : "구매후기"
+  PRODUCT ||--o{ TRACK_ITEM : "트랙 구성"
+  PRODUCT ||--o{ TRACK_ITEM : "구성품"
+  PRODUCT ||--o{ SUPPLEMENT_CONFLICT : "상품A"
+  PRODUCT ||--o{ SUPPLEMENT_CONFLICT : "상품B"
+  MEMBER ||--o{ COMBO : "조합 저장"
+  COMBO ||--|{ COMBO_ITEM : "포함"
+  PRODUCT ||--o{ COMBO_ITEM : "선택됨"
 
   MEMBER {
     int member_id PK
@@ -55,6 +62,7 @@ erDiagram
   PRODUCT {
     int product_id PK
     int category_id FK
+    enum product_type "SINGLE/TRACK"
     varchar name
     int price
     int stock
@@ -104,6 +112,32 @@ erDiagram
     varchar product_name
     int price
     int quantity
+    varchar track_snapshot
+  }
+  TRACK_ITEM {
+    int track_id PK,FK
+    int item_id PK,FK
+    int sort_order
+  }
+  SUPPLEMENT_CONFLICT {
+    int conflict_id PK
+    int product_a FK
+    int product_b FK
+    varchar message
+    datetime created_at
+  }
+  COMBO {
+    int combo_id PK
+    int member_id FK
+    varchar name
+    int days
+    datetime created_at
+    datetime updated_at
+  }
+  COMBO_ITEM {
+    int combo_id PK,FK
+    int product_id PK,FK
+    int sort_order
   }
   PAYMENT {
     int payment_id PK

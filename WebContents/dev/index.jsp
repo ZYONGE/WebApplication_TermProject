@@ -43,7 +43,7 @@
 		<tr><td><a href="${ctx}/dev/state">상태 컨트롤러</a></td>
 		    <td>배송 · 주문 · 결제 상태 강제 변경, 재고 지정, 점검 모드 토글</td></tr>
 		<tr><td><a href="${ctx}/dev/data">데이터 브라우저</a></td>
-		    <td>허용 목록에 있는 17 테이블 + 뷰 5개 조회</td></tr>
+		    <td>허용 목록에 있는 ${tableCount} 테이블 + 뷰 ${viewCount}개 조회</td></tr>
 		<tr><td><a href="${ctx}/dev/erd">설계 보기</a></td>
 		    <td>information_schema 로 실제 스키마 · 제약 조회</td></tr>
 		<tr><td><a href="${ctx}/dev/seed">데이터 관리</a></td>

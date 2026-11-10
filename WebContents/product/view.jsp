@@ -4,9 +4,11 @@
 <c:set var="pageCss" value="product" />
 <%@ include file="/common/header.jsp" %>
 
+<%--
+  상단 2단 — 왼쪽 이미지 · 오른쪽 정보와 구매 (prod_detail 격자).
+  설명 · 트랙 구성 · 리뷰 · 문의는 그 아래 전체 폭.
+--%>
 <article class="prod_detail">
-	<h2><c:out value="${product.name}" /></h2>
-
 	<div class="prod_gallery">
 		<c:choose>
 			<c:when test="${not empty product.thumbnail}">
@@ -19,44 +21,124 @@
 		</c:forEach>
 	</div>
 
-	<table class="formtable">
-		<tr><th>카테고리</th><td><c:out value="${product.categoryName}" /></td></tr>
-		<tr><th>판매가</th><td><fmt:formatNumber value="${product.price}" pattern="#,##0" />원</td></tr>
-		<tr><th>재고</th><td>${product.stock}개</td></tr>
-		<tr>
-			<th>별점</th>
-			<td><fmt:formatNumber value="${product.avgRating}" pattern="0.0" /> / 5 (리뷰 ${product.reviewCount}건)</td>
-		</tr>
-	</table>
+	<div class="prod_info">
+		<p class="prod_cate"><span class="prodcard_badge">${product.typeLabel}</span> <c:out value="${product.categoryName}" /></p>
+		<h2><c:out value="${product.name}" /></h2>
+		<p class="prod_price">
+			1포 <strong><fmt:formatNumber value="${product.price}" pattern="#,##0" /></strong>원
+			<span class="field_help">1포 = 하루 섭취분</span>
+		</p>
 
-	<div class="prod_desc"><c:out value="${product.description}" /></div>
+		<table class="formtable prod_spec">
+			<tr><th>구분</th><td>${product.track ? '트랙 패키지 — 여러 영양제를 1포에 묶은 상품' : '낱개 영양제 — 1포에 한 가지 영양소 1회분'}</td></tr>
+			<tr><th>재고</th><td>${product.stock}포 (${product.stock}일분)</td></tr>
+			<tr>
+				<th>별점</th>
+				<td><fmt:formatNumber value="${product.avgRating}" pattern="0.0" /> / 5 (리뷰 ${product.reviewCount}건)</td>
+			</tr>
+		</table>
 
-	<%--
-	  구매 컨트롤은 USER 와 비로그인(누르면 로그인으로)에게만 보인다.
-	  ADMIN · DEV 에게 숨기는 것은 화면 처리일 뿐이고, 실제 방어는 UserFilter 다 (ERD § 5.3).
-	--%>
-	<c:choose>
-	<c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.role != 'USER'}">
-		<p class="field_help">구매는 일반 회원 계정으로만 가능합니다.</p>
-	</c:when>
-	<c:otherwise>
-	<form class="prod_buy" action="${ctx}/cart/add" method="post" data-validate>
-		<input type="hidden" name="productId" value="${product.productId}">
-		<input type="hidden" name="back" value="/product/view?productId=${product.productId}">
-		<label for="quantity">수량</label>
-		<input type="number" id="quantity" name="quantity" value="1" min="1" max="${product.stock}"
-		       data-rule="positiveInt">
-		<button type="submit" class="btn btn_primary">장바구니 담기</button>
-	</form>
+		<%--
+		  구매 컨트롤은 USER 와 비로그인(누르면 로그인으로)에게만 보인다.
+		  ADMIN · DEV 에게 숨기는 것은 화면 처리일 뿐이고, 실제 방어는 UserFilter 다 (ERD § 5.3).
+		--%>
+		<c:choose>
+		<c:when test="${not empty sessionScope.loginMember and sessionScope.loginMember.role != 'USER'}">
+			<p class="field_help">구매는 일반 회원 계정으로만 가능합니다.</p>
+		</c:when>
+		<c:otherwise>
+		<form class="prod_buy" action="${ctx}/cart/add" method="post" data-validate>
+			<input type="hidden" name="productId" value="${product.productId}">
+			<input type="hidden" name="back" value="/product/view?productId=${product.productId}">
+			<%-- 수량 = 섭취 일수(= 포 수). 빠른 선택 + 직접 입력. 상한은 MAX_INTAKE_DAYS 와 재고 중 작은 값 --%>
+			<c:set var="dayLimit" value="${product.stock < maxDays ? product.stock : maxDays}" />
+			<c:set var="dayInit" value="${dayLimit < defaultDays ? dayLimit : defaultDays}" />
+			<div class="prod_days">
+				<span class="prod_days_label">섭취 일수</span>
+				<c:forEach var="d" items="${quickDays}">
+					<c:if test="${d <= dayLimit}">
+						<button type="button" class="btn btn_small ${d == dayInit ? 'on' : ''}"
+						        data-days-value="${d}" data-days-target="quantity">${d}일</button>
+					</c:if>
+				</c:forEach>
+				<label for="quantity">직접 입력</label>
+				<input type="number" id="quantity" name="quantity" value="${dayInit}" min="1" max="${dayLimit}"
+				       data-rule="intakeDays" data-max="${dayLimit}">일
+			</div>
+			<p class="prod_days_total" data-days-total="quantity" data-price="${product.price}">
+				1포 <fmt:formatNumber value="${product.price}" pattern="#,##0" />원 × <span data-days-count>${dayInit}</span>일
+				= <strong data-days-sum><fmt:formatNumber value="${product.price * dayInit}" pattern="#,##0" /></strong>원
+			</p>
+			<button type="submit" class="btn btn_primary">장바구니 담기</button>
+			<span class="field_help">같은 상품을 다시 담으면 일수를 새 값으로 바꿉니다.</span>
+		</form>
 
-	<form class="prod_wish" action="${ctx}/wish/toggle" method="post">
-		<input type="hidden" name="productId" value="${product.productId}">
-		<input type="hidden" name="back" value="/product/view?productId=${product.productId}">
-		<button type="submit" class="btn btn_sub">${wished ? '찜 해제' : '찜하기'}</button>
-	</form>
-	</c:otherwise>
-	</c:choose>
+		<form class="prod_wish" action="${ctx}/wish/toggle" method="post">
+			<input type="hidden" name="productId" value="${product.productId}">
+			<input type="hidden" name="back" value="/product/view?productId=${product.productId}">
+			<button type="submit" class="btn btn_sub">${wished ? '찜 해제' : '찜하기'}</button>
+		</form>
+		</c:otherwise>
+		</c:choose>
+
+		<%-- 함께 드시지 말 것 — 담기 상자 아래에 둔다(담기 버튼이 첫 화면에 보이게). 트랙이면 구성품 전체 기준. 안내만 하고 구매를 막지 않는다 --%>
+		<c:if test="${not empty conflicts}">
+			<section class="warnbox">
+				<h3 class="warnbox_title">${product.track ? '이 트랙과 함께 드시지 마세요' : '이 영양제와 함께 드시지 마세요'}</h3>
+				<ul class="warnbox_list">
+					<c:forEach var="cf" items="${conflicts}">
+						<li class="warnbox_conflict">
+							<strong class="warnbox_label">동시 섭취 주의</strong>
+							<c:out value="${cf.productAName}" /> × <c:out value="${cf.productBName}" />
+							<span class="warnbox_msg"><c:out value="${cf.message}" /></span>
+						</li>
+					</c:forEach>
+				</ul>
+				<p class="warnbox_note">일반 정보이며 의학적 조언이 아닙니다. 복용 중인 약이 있다면 전문가와 상담하세요.</p>
+			</section>
+		</c:if>
+	</div>
 </article>
+
+<section class="prod_desc">
+	<h3>상품 설명</h3>
+	<p><c:out value="${product.description}" /></p>
+</section>
+
+<%-- 트랙 구성 — 1포에 구성 낱개가 1회분씩 들어 있다 (ERD § 7.1) --%>
+<c:if test="${product.track}">
+	<section class="prod_track">
+		<h3>트랙 구성 (1포 기준)</h3>
+		<table class="listtable">
+			<thead class="listtable_head">
+				<tr><th class="col_no">순서</th><th class="col_name">구성 영양제</th><th class="col_price">낱개 1포 가격</th></tr>
+			</thead>
+			<tbody>
+				<c:set var="singleSum" value="0" />
+				<c:forEach var="item" items="${product.trackItems}" varStatus="st">
+					<c:set var="singleSum" value="${singleSum + item.price}" />
+					<tr>
+						<td class="col_no">${st.count}</td>
+						<td class="col_name"><c:out value="${item.name}" /></td>
+						<td class="col_price"><fmt:formatNumber value="${item.price}" pattern="#,##0" />원</td>
+					</tr>
+				</c:forEach>
+				<c:if test="${empty product.trackItems}">
+					<tr><td colspan="3" class="empty">등록된 구성이 없습니다.</td></tr>
+				</c:if>
+			</tbody>
+		</table>
+		<c:if test="${not empty product.trackItems}">
+			<p class="field_help">
+				낱개로 따로 담으면 1포 <fmt:formatNumber value="${singleSum}" pattern="#,##0" />원,
+				트랙은 1포 <fmt:formatNumber value="${product.price}" pattern="#,##0" />원입니다.
+				<a href="${ctx}/custom?track=${product.productId}">조합 맞추기에서 불러와 고치기</a>
+			</p>
+		</c:if>
+	</section>
+</c:if>
+
+
 
 <section class="prod_review">
 	<h3>리뷰 (${product.reviewCount}건)</h3>
@@ -154,4 +236,5 @@
 		</div>
 	</form>
 </dialog>
+<script src="${ctx}/js/custom.js" defer></script>
 <%@ include file="/common/footer.jsp" %>

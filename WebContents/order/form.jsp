@@ -6,17 +6,20 @@
 
 <h2>주문서</h2>
 
+<%-- 결제 전에 경고를 다시 보여준다. 결제는 막지 않는다 (ERD § 7.1) --%>
+<%@ include file="/common/warnbox.jsp" %>
+
 <table class="listtable">
 	<thead class="listtable_head">
-		<tr><th class="col_name">상품</th><th class="col_price">단가</th>
-		    <th class="col_qty">수량</th><th class="col_total">합계</th></tr>
+		<tr><th class="col_name">상품</th><th class="col_price">1포 가격</th>
+		    <th class="col_qty">섭취 일수</th><th class="col_total">합계</th></tr>
 	</thead>
 	<tbody>
 		<c:forEach var="item" items="${items}">
 			<tr>
-				<td class="col_name"><c:out value="${item.productName}" /></td>
+				<td class="col_name"><span class="prodcard_badge">${item.typeLabel}</span> <c:out value="${item.productName}" /></td>
 				<td class="col_price"><fmt:formatNumber value="${item.price}" pattern="#,##0" />원</td>
-				<td class="col_qty">${item.quantity}</td>
+				<td class="col_qty">${item.quantity}일분 (${item.quantity}포)</td>
 				<td class="col_total"><fmt:formatNumber value="${item.lineTotal}" pattern="#,##0" />원</td>
 			</tr>
 		</c:forEach>

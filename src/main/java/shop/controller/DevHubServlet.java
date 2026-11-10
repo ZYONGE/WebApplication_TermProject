@@ -24,6 +24,8 @@ public class DevHubServlet extends BaseServlet {
 			request.setAttribute("pageTitle", "dev");
 			pageCss(request, "admin");
 			request.setAttribute("configs", configService.findAll());
+			request.setAttribute("tableCount", Integer.valueOf(shop.dao.DevDAO.tableCount()));
+			request.setAttribute("viewCount", Integer.valueOf(shop.dao.DevDAO.viewCount()));
 			render(request, response, "/dev/index.jsp");
 		} catch (SQLException e) {
 			throw wrap(e);

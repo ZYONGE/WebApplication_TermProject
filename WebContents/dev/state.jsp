@@ -49,7 +49,7 @@
 	<select name="productId">
 		<c:forEach var="p" items="${products}">
 			<option value="${p.productId}">
-				[${p.productId}] <c:out value="${p.name}" /> (현재 ${p.stock}개 · <c:out value="${p.status}" />)
+				[${p.productId}] <c:out value="${p.name}" /> (현재 ${p.stock}포 · <c:out value="${p.status}" />)
 			</option>
 		</c:forEach>
 	</select>

@@ -22,6 +22,8 @@
 <link rel="stylesheet" href="${ctx}/css/components/table.css">
 <link rel="stylesheet" href="${ctx}/css/components/pagination.css">
 <link rel="stylesheet" href="${ctx}/css/components/popup.css">
+<link rel="stylesheet" href="${ctx}/css/components/tab.css">
+<link rel="stylesheet" href="${ctx}/css/components/warnbox.css">
 <c:if test="${not empty pageCss}">
 <link rel="stylesheet" href="${ctx}/css/pages/${pageCss}.css">
 </c:if>
@@ -46,6 +48,7 @@
 				<c:choose>
 					<c:when test="${sessionScope.loginMember.role == 'USER'}">
 						<li><a href="${ctx}/mypage/">마이페이지</a></li>
+						<li><a href="${ctx}/mypage/combo">내 조합</a></li>
 						<li>
 							<a href="${ctx}/cart/list">장바구니<c:if test="${not empty cartCount and cartCount > 0}"> (${cartCount})</c:if></a>
 						</li>
@@ -90,12 +93,14 @@
 					</c:if>
 				</li>
 			</c:forEach>
+			<%-- 조합 탭 — 다나와 "PC 견적 맞추기" 처럼 영양제를 한 화면에서 골라 맞춘다 (CONCEPT § 2) --%>
+			<li class="page_nav_custom"><a href="${ctx}/custom">조합 맞추기</a></li>
 			<li><a href="${ctx}/notice/list">공지사항</a></li>
 		</ul>
 	</nav>
 
 	<form class="page_search" action="${ctx}/product/list" method="get">
-		<label for="headerKeyword">상품검색</label>
+		<label for="headerKeyword">영양제 검색</label>
 		<input type="text" id="headerKeyword" name="keyword" value="<c:out value='${param.keyword}' />">
 		<button type="submit" class="btn">검색</button>
 	</form>

@@ -3,7 +3,9 @@ package shop.controller;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.oreilly.servlet.MultipartRequest;
 import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
+import shop.dao.ProductDAO;
 import shop.dto.ProductDTO;
 import shop.service.AdminService;
 import shop.service.ServiceException;
@@ -27,6 +30,8 @@ import shop.util.WebUtil;
     (CLAUDE.md § 4.1 공유 지점).
   ★ multipart 요청은 request.getParameter() 가 동작하지 않는다. MultipartRequest
     객체에서 꺼내야 한다 — 그래서 등록 · 수정 경로만 처리가 다르다.
+  ★ 낱개 / 트랙 구분을 고른다. 트랙이면 구성 낱개(itemId 체크박스)를 함께 받아
+    track_item 을 한 트랜잭션으로 다시 넣는다 + TRACK_ITEM_SET (ERD § 7.1 트랙 구성).
 */
 @WebServlet(name = "AdminProductServlet", urlPatterns = { "/admin/products" })
 public class AdminProductServlet extends BaseServlet {
@@ -45,11 +50,15 @@ public class AdminProductServlet extends BaseServlet {
 			pageCss(request, "admin");
 
 			int categoryId = intParam(request, "categoryId", 0);
+			String type = param(request, "type");
 			request.setAttribute("pageData", adminService.findProducts(
 					categoryId > 0 ? Integer.valueOf(categoryId) : null,
+					ProductDAO.isType(type) ? type : null,
 					param(request, "keyword"), param(request, "status"),
 					intParam(request, "page", 1), Paging.DEFAULT_SIZE));
 			request.setAttribute("categories", adminService.findCategories());
+			/* 트랙 구성 체크 목록 — 숨김 · 재고 0 낱개도 고를 수 있다 (관리자 조회) */
+			request.setAttribute("singles", adminService.findAllSingles());
 			request.setAttribute("pageUrl", "/admin/products?");
 
 			int editId = intParam(request, "editId", 0);
@@ -104,6 +113,7 @@ public class AdminProductServlet extends BaseServlet {
 		ProductDTO product = new ProductDTO();
 		product.setProductId(WebUtil.toInt(multi.getParameter("productId"), 0));
 		product.setCategoryId(WebUtil.toInt(multi.getParameter("categoryId"), 0));
+		product.setProductType(trim(multi.getParameter("productType")));
 		product.setName(trim(multi.getParameter("name")));
 		product.setPrice(WebUtil.toInt(multi.getParameter("price"), 0));
 		product.setStock(WebUtil.toInt(multi.getParameter("stock"), 0));
@@ -117,13 +127,25 @@ public class AdminProductServlet extends BaseServlet {
 		}
 		product.setThumbnail(thumbnailPath);
 
+		/* 트랙 구성 — 낱개면 무시된다 */
+		List<Integer> itemIds = new ArrayList<Integer>();
+		String[] values = multi.getParameterValues("itemId");
+		if (values != null) {
+			for (String v : values) {
+				int id = WebUtil.toInt(v, 0);
+				if (id > 0) {
+					itemIds.add(Integer.valueOf(id));
+				}
+			}
+		}
+
 		int productId;
 		if (product.getProductId() > 0) {
-			adminService.updateProduct(adminId, product);
+			adminService.updateProduct(adminId, product, itemIds);
 			productId = product.getProductId();
 			flash(request, "상품을 수정했습니다.");
 		} else {
-			productId = adminService.createProduct(adminId, product);
+			productId = adminService.createProduct(adminId, product, itemIds);
 			flash(request, "상품을 등록했습니다.");
 		}
 

@@ -10,6 +10,7 @@ public class ProductDTO {
 	private int productId;
 	private int categoryId;
 	private String categoryName;
+	private String productType;
 	private String name;
 	private int price;
 	private int stock;
@@ -18,17 +19,30 @@ public class ProductDTO {
 	private String status;
 	private Timestamp createdAt;
 	private List<ProductImageDTO> images;
+	/* 트랙 구성 — 구성 낱개 목록. 낱개 상품이면 빈 목록이다 (ERD § 9) */
+	private List<ProductDTO> trackItems;
 	private double avgRating;
 	private int reviewCount;
 
 
 	public ProductDTO() {
 		this.images = new ArrayList<ProductImageDTO>();
+		this.trackItems = new ArrayList<ProductDTO>();
 	}
 
 	/* 고객 탐색 화면의 노출 조건 — ERD 2.4 */
 	public boolean isOnSale() {
 		return "판매중".equals(status) && stock > 0;
+	}
+
+	/* 트랙 패키지인가 — 낱개(SINGLE) / 트랙(TRACK) (ERD § 7.1) */
+	public boolean isTrack() {
+		return "TRACK".equals(productType);
+	}
+
+	/* 화면 표기용 구분 이름 */
+	public String getTypeLabel() {
+		return isTrack() ? "트랙" : "낱개";
 	}
 
 	public int getProductId() {
@@ -133,5 +147,21 @@ public class ProductDTO {
 
 	public void setReviewCount(int reviewCount) {
 		this.reviewCount = reviewCount;
+	}
+
+	public String getProductType() {
+		return productType;
+	}
+
+	public void setProductType(String productType) {
+		this.productType = productType;
+	}
+
+	public List<ProductDTO> getTrackItems() {
+		return trackItems;
+	}
+
+	public void setTrackItems(List<ProductDTO> trackItems) {
+		this.trackItems = trackItems;
 	}
 }

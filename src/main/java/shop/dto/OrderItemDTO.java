@@ -7,6 +7,8 @@ public class OrderItemDTO {
 	private int orderId;
 	private int productId;
 	private String productName;
+	/* 트랙 줄에만 있는 주문 시점 구성 문자열 (ERD § 8-13) */
+	private String trackSnapshot;
 	private int price;
 	private int quantity;
 	private boolean reviewWritten;
@@ -70,5 +72,13 @@ public class OrderItemDTO {
 
 	public void setReviewWritten(boolean reviewWritten) {
 		this.reviewWritten = reviewWritten;
+	}
+
+	public String getTrackSnapshot() {
+		return trackSnapshot;
+	}
+
+	public void setTrackSnapshot(String trackSnapshot) {
+		this.trackSnapshot = trackSnapshot;
 	}
 }

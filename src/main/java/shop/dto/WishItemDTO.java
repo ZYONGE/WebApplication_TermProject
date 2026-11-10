@@ -7,6 +7,7 @@ public class WishItemDTO {
 
 	private int memberId;
 	private int productId;
+	private String productType;
 	private String productName;
 	private String thumbnail;
 	private String status;
@@ -68,5 +69,23 @@ public class WishItemDTO {
 
 	public void setCreatedAt(Timestamp createdAt) {
 		this.createdAt = createdAt;
+	}
+
+	/* 트랙 패키지인가 — 낱개(SINGLE) / 트랙(TRACK) (ERD § 7.1) */
+	public boolean isTrack() {
+		return "TRACK".equals(productType);
+	}
+
+	/* 화면 표기용 구분 이름 */
+	public String getTypeLabel() {
+		return isTrack() ? "트랙" : "낱개";
+	}
+
+	public String getProductType() {
+		return productType;
+	}
+
+	public void setProductType(String productType) {
+		this.productType = productType;
 	}
 }

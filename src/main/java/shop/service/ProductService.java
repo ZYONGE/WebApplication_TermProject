@@ -1,12 +1,15 @@
 package shop.service;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import shop.dao.CategoryDAO;
 import shop.dao.ProductDAO;
 import shop.dao.QnaDAO;
 import shop.dao.ReviewDAO;
+import shop.dao.TrackItemDAO;
 import shop.dto.CategoryDTO;
 import shop.dto.PageDTO;
 import shop.dto.ProductDTO;
@@ -26,6 +29,7 @@ public class ProductService {
 	private final CategoryDAO categoryDAO = new CategoryDAO();
 	private final ReviewDAO reviewDAO = new ReviewDAO();
 	private final QnaDAO qnaDAO = new QnaDAO();
+	private final TrackItemDAO trackItemDAO = new TrackItemDAO();
 
 	public List<CategoryDTO> findCategoryTree() throws SQLException {
 		return categoryDAO.findTree();
@@ -43,9 +47,50 @@ public class ProductService {
 		return productDAO.findLatestOnSale(limit);
 	}
 
-	public PageDTO<ProductDTO> findList(Integer categoryId, String keyword, String sort,
-			int page, int size) throws SQLException {
-		return productDAO.findOnSalePage(categoryId, keyword, sort, page, size);
+	public PageDTO<ProductDTO> findList(Integer categoryId, String type, String keyword,
+			String sort, int page, int size) throws SQLException {
+		PageDTO<ProductDTO> result = productDAO.findOnSalePage(categoryId, type, keyword, sort, page, size);
+		fillTrackItems(result.getList());
+		return result;
+	}
+
+	public List<ProductDTO> findLatestSingles(int limit) throws SQLException {
+		return productDAO.findLatestOnSaleByType(ProductDAO.SINGLE, limit);
+	}
+
+	/* 메인 트랙 패키지 영역 — 구성까지 채워 카드에 "비타민C + 비타민D …" 를 보여준다 */
+	public List<ProductDTO> findLatestTracks(int limit) throws SQLException {
+		List<ProductDTO> list = productDAO.findLatestOnSaleByType(ProductDAO.TRACK, limit);
+		fillTrackItems(list);
+		return list;
+	}
+
+	/* 조합 탭 — 고를 수 있는 낱개 (판매중 · 재고 > 0) */
+	public List<ProductDTO> findSinglesOnSale() throws SQLException {
+		return productDAO.findOnSaleByType(ProductDAO.SINGLE);
+	}
+
+	/* 조합 탭 — 출발점으로 불러올 수 있는 트랙 (판매중 · 재고 > 0) + 구성 */
+	public List<ProductDTO> findTracksOnSale() throws SQLException {
+		List<ProductDTO> list = productDAO.findOnSaleByType(ProductDAO.TRACK);
+		fillTrackItems(list);
+		return list;
+	}
+
+	/* 트랙 행에 구성 낱개를 한 번의 조회로 채운다 (트랙마다 조회하면 N+1) */
+	private void fillTrackItems(List<ProductDTO> list) throws SQLException {
+		List<Integer> trackIds = new ArrayList<Integer>();
+		for (ProductDTO p : list) {
+			if (p.isTrack()) {
+				trackIds.add(Integer.valueOf(p.getProductId()));
+			}
+		}
+		Map<Integer, List<ProductDTO>> items = trackItemDAO.findItemsByTracks(trackIds);
+		for (ProductDTO p : list) {
+			if (p.isTrack()) {
+				p.setTrackItems(items.get(Integer.valueOf(p.getProductId())));
+			}
+		}
 	}
 
 	/*
@@ -60,6 +105,9 @@ public class ProductService {
 			return null;
 		}
 		product.setImages(productDAO.findImages(productId));
+		if (product.isTrack()) {
+			product.setTrackItems(trackItemDAO.findItems(productId));
+		}
 		return product;
 	}
 

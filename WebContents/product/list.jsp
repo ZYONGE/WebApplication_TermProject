@@ -8,11 +8,24 @@
 	<c:choose>
 		<c:when test="${not empty currentCategory}"><c:out value="${currentCategory.name}" /></c:when>
 		<c:when test="${not empty param.keyword}">'<c:out value="${param.keyword}" />' 검색 결과</c:when>
+		<c:when test="${param.type == 'SINGLE'}">낱개 영양제</c:when>
+		<c:when test="${param.type == 'TRACK'}">트랙 패키지</c:when>
 		<c:otherwise>전체 상품</c:otherwise>
 	</c:choose>
 </h2>
 
+<p class="field_help">가격은 1포(하루 섭취분) 기준입니다. 며칠치를 살지는 상품 화면에서 정합니다.
+	필요한 영양소만 고르려면 <a href="${ctx}/custom">조합 맞추기</a>를 이용하세요.</p>
+
 <form class="prod_filter" action="${ctx}/product/list" method="get">
+	<%-- 낱개 / 트랙 구분 — 서버가 허용 값(SINGLE · TRACK)만 쓴다 --%>
+	<label for="type">구분</label>
+	<select id="type" name="type">
+		<option value="">전체</option>
+		<option value="SINGLE" ${param.type == 'SINGLE' ? 'selected' : ''}>낱개 영양제</option>
+		<option value="TRACK" ${param.type == 'TRACK' ? 'selected' : ''}>트랙 패키지</option>
+	</select>
+
 	<label for="categoryId">카테고리</label>
 	<select id="categoryId" name="categoryId">
 		<option value="0">전체</option>
@@ -52,10 +65,15 @@
 					</c:choose>
 				</span>
 				<span class="prodcard_name"><c:out value="${p.name}" /></span>
-				<span class="prodcard_price"><fmt:formatNumber value="${p.price}" pattern="#,##0" />원</span>
+				<span class="prodcard_price">1포 <fmt:formatNumber value="${p.price}" pattern="#,##0" />원</span>
 			</a>
+			<c:if test="${p.track}">
+				<span class="prodcard_badge">
+					구성 <c:forEach var="item" items="${p.trackItems}" varStatus="st"><c:if test="${not st.first}"> + </c:if><c:out value="${item.name}" /></c:forEach>
+				</span>
+			</c:if>
 			<span class="prodcard_badge">
-				<c:out value="${p.categoryName}" /> ·
+				${p.typeLabel} · <c:out value="${p.categoryName}" /> ·
 				별점 <fmt:formatNumber value="${p.avgRating}" pattern="0.0" /> (${p.reviewCount})
 			</span>
 		</li>

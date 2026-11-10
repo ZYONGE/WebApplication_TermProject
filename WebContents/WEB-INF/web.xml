@@ -3,6 +3,16 @@
   <display-name>WebApplication_TermProject_Sandbox</display-name>
 
   <!--
+    JSTL fmt 로케일 고정 — 금액 · 날짜 표기를 브라우저 언어와 무관하게 한국어로.
+    이게 없으면 Accept-Language 가 없거나 맞지 않는 요청에서 <fmt:formatDate> 가
+    "2026-10-20 14:03:00.0" 처럼 날것의 Timestamp 를 그대로 찍는다.
+  -->
+  <context-param>
+    <param-name>javax.servlet.jsp.jstl.fmt.locale</param-name>
+    <param-value>ko_KR</param-value>
+  </context-param>
+
+  <!--
     Servlet 매핑은 @WebServlet 애노테이션으로 둔다 (Servlet 4.0).
     web.xml 에는 순서가 의미를 갖는 필터 체인만 적는다.
   -->

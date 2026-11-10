@@ -133,10 +133,11 @@ public abstract class BaseServlet extends HttpServlet {
 			request.setAttribute("navCategories", categoryDAO.findTree());
 			request.setAttribute("maintenance", Boolean.valueOf(configService.isMaintenance()));
 
-			/* 장바구니 배지는 USER 세션에서만 조회한다 — 다른 역할에는 장바구니가 없다 (ERD § 5.3). */
+			/* 장바구니 배지는 USER 세션에서만 조회한다 — 다른 역할에는 장바구니가 없다 (ERD § 5.3).
+			   배지는 줄 수다. 일수 합은 의미가 없다 (ERD § 7.1). */
 			int memberId = loginMemberId(request);
 			if (memberId > 0 && RoleUtil.is(request, "USER")) {
-				request.setAttribute("cartCount", Integer.valueOf(cartDAO.countQuantity(memberId)));
+				request.setAttribute("cartCount", Integer.valueOf(cartDAO.countLines(memberId)));
 			}
 		} catch (SQLException e) {
 			/* 헤더 때문에 본문을 못 보여주는 것은 과하다. 비워 두고 넘어간다. */

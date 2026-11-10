@@ -6,6 +6,8 @@
 
 <h2>장바구니</h2>
 
+<p class="field_help">수량은 섭취 일수입니다. 1포 = 하루 섭취분이라 N일분은 N포입니다. 한 줄에 최대 ${maxDays}일까지 담을 수 있습니다.</p>
+
 <%--
   담아 둔 줄은 품절 · 숨김이어도 보여준다 (CRUD.md § 2 주의).
   주문 대상에서만 빼고 그 사실을 화면에 적는다 — 조용히 사라지면
@@ -17,12 +19,19 @@
 	</p>
 </c:if>
 
+<%-- 트랙은 구성품까지 펼쳐 전체 조합을 본다. 안내만 하고 주문을 막지 않는다 (ERD § 7.1) --%>
+<%@ include file="/common/warnbox.jsp" %>
+
+<c:if test="${mixedDays}">
+	<p class="cart_notice">섭취 일수가 서로 다른 상품이 있습니다. 같은 날짜에 함께 다 드시려면 일수를 맞춰 주세요.</p>
+</c:if>
+
 <table class="listtable cart_table">
 	<thead class="listtable_head">
 		<tr>
 			<th class="col_name">상품</th>
-			<th class="col_price">단가</th>
-			<th class="col_qty">수량</th>
+			<th class="col_price">1포 가격</th>
+			<th class="col_qty">섭취 일수</th>
 			<th class="col_total">합계</th>
 			<th class="col_state">상태</th>
 			<th class="col_action">삭제</th>
@@ -32,6 +41,7 @@
 		<c:forEach var="item" items="${items}">
 			<tr class="${item.orderable ? '' : 'soldout'}">
 				<td class="col_name">
+					<span class="prodcard_badge">${item.typeLabel}</span>
 					<a href="${ctx}/product/view?productId=${item.productId}">
 						<c:out value="${item.productName}" />
 					</a>
@@ -40,8 +50,9 @@
 				<td class="col_qty">
 					<form action="${ctx}/cart/update" method="post">
 						<input type="hidden" name="cartId" value="${item.cartId}">
-						<input type="number" name="quantity" value="${item.quantity}" min="1" max="99">
+						<input type="number" name="quantity" value="${item.quantity}" min="1" max="${maxDays}">일
 						<button type="submit" class="btn btn_small">변경</button>
+						<span class="field_help">${item.quantity}포</span>
 					</form>
 				</td>
 				<%-- 주문 대상에서 빠진 줄은 합계에 들어가지 않는다 — 금액을 보이면 합산된 것으로 읽힌다 --%>
@@ -54,8 +65,8 @@
 				<td class="col_state">
 					<c:choose>
 						<c:when test="${item.status != '판매중'}">판매 중지</c:when>
-						<c:when test="${item.stock <= 0}">품절</c:when>
-						<c:when test="${item.stock < item.quantity}">재고 ${item.stock}개</c:when>
+						<c:when test="${item.stock <= 0}">재고 없음</c:when>
+						<c:when test="${item.stock < item.quantity}">재고 ${item.stock}포 (일수를 줄이세요)</c:when>
 						<c:otherwise>주문 가능</c:otherwise>
 					</c:choose>
 				</td>
@@ -90,6 +101,7 @@
 
 <div class="btnstyle">
 	<a class="btn btn_sub" href="${ctx}/product/list">계속 쇼핑</a>
+	<a class="btn btn_sub" href="${ctx}/custom">조합 맞추기</a>
 	<c:if test="${totalPrice > 0}">
 		<a class="btn btn_primary" href="${ctx}/order/form">주문하기</a>
 	</c:if>

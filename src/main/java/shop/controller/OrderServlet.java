@@ -15,6 +15,7 @@ import shop.dto.MemberDTO;
 import shop.dto.OrderDTO;
 import shop.service.CartService;
 import shop.service.ConfigService;
+import shop.service.IntakeService;
 import shop.service.MypageService;
 import shop.service.OrderService;
 import shop.service.ServiceException;
@@ -36,6 +37,7 @@ public class OrderServlet extends BaseServlet {
 	private final CartService cartService = new CartService();
 	private final MypageService mypageService = new MypageService();
 	private final ConfigService configService = new ConfigService();
+	private final IntakeService intakeService = new IntakeService();
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -97,6 +99,9 @@ public class OrderServlet extends BaseServlet {
 		request.setAttribute("member", member);
 		request.setAttribute("defaultAddr", defaultAddr);
 		request.setAttribute("addresses", mypageService.findAddresses(memberId));
+
+		/* 결제 전에 경고를 다시 보여준다. 막지 않는다 — 결제 트랜잭션은 경고를 보지 않는다 (ERD § 7.1) */
+		request.setAttribute("warnings", intakeService.checkCart(items));
 
 		render(request, response, "/order/form.jsp");
 	}

@@ -7,6 +7,7 @@
 <ul class="admin_nav">
 	<li><a href="${ctx}/admin/dashboard">대시보드</a></li>
 	<li><a href="${ctx}/admin/products">상품</a></li>
+	<li><a href="${ctx}/admin/conflicts">금지 조합</a></li>
 	<li><a href="${ctx}/admin/categories">카테고리</a></li>
 	<li><a href="${ctx}/admin/orders">주문·배송</a></li>
 	<li><a href="${ctx}/admin/members">회원</a></li>
@@ -108,13 +109,16 @@
 	<tr><th>운송장</th><td><c:out value="${detail.delivery.courier}" /> <c:out value="${detail.delivery.trackingNo}" /></td></tr>
 </table>
 <table class="listtable">
-	<thead class="listtable_head"><tr><th>상품</th><th>단가</th><th>수량</th><th>합계</th></tr></thead>
+	<thead class="listtable_head"><tr><th>상품</th><th>1포 가격</th><th>섭취 일수</th><th>합계</th></tr></thead>
 	<tbody>
 		<c:forEach var="item" items="${detail.items}">
 			<tr>
-				<td><c:out value="${item.productName}" /></td>
+				<td>
+					<c:out value="${item.productName}" />
+					<c:if test="${not empty item.trackSnapshot}"><span class="field_help">구성: <c:out value="${item.trackSnapshot}" /></span></c:if>
+				</td>
 				<td><fmt:formatNumber value="${item.price}" pattern="#,##0" /></td>
-				<td>${item.quantity}</td>
+				<td>${item.quantity}일분</td>
 				<td><fmt:formatNumber value="${item.lineTotal}" pattern="#,##0" /></td>
 			</tr>
 		</c:forEach>

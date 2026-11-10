@@ -10,12 +10,14 @@ import shop.dao.DeliveryDAO;
 import shop.dao.OrderDAO;
 import shop.dao.PaymentDAO;
 import shop.dao.ProductDAO;
+import shop.dao.TrackItemDAO;
 import shop.dto.CartItemDTO;
 import shop.dto.DeliveryDTO;
 import shop.dto.OrderDTO;
 import shop.dto.OrderItemDTO;
 import shop.dto.PageDTO;
 import shop.dto.PaymentDTO;
+import shop.dto.ProductDTO;
 import shop.util.DBUtil;
 import shop.util.StringUtil;
 
@@ -37,6 +39,7 @@ public class OrderService {
 	private final DeliveryDAO deliveryDAO = new DeliveryDAO();
 	private final ProductDAO productDAO = new ProductDAO();
 	private final CartDAO cartDAO = new CartDAO();
+	private final TrackItemDAO trackItemDAO = new TrackItemDAO();
 	private final AdminLogDAO adminLogDAO = new AdminLogDAO();
 	private final ConfigService configService = new ConfigService();
 
@@ -46,7 +49,7 @@ public class OrderService {
 	  결제 버튼 한 번 = 한 트랜잭션.
 
 	      1. orders INSERT → order_id → order_no UPDATE
-	      2. order_item INSERT (장바구니 줄마다)
+	      2. order_item INSERT (장바구니 줄마다 — 트랙이면 구성 스냅샷 track_snapshot 도)
 	      3. payment INSERT
 	      4. delivery INSERT (결제완료)
 	      5. delivery_history INSERT (NULL → 결제완료, is_forced = 'N')
@@ -98,8 +101,9 @@ public class OrderService {
 				if (!item.isOrderable()) {
 					continue;
 				}
+				String snapshot = item.isTrack() ? trackSnapshot(conn, item.getProductId()) : null;
 				orderDAO.insertItem(conn, orderId, item.getProductId(), item.getProductName(),
-						item.getPrice(), item.getQuantity());
+						item.getPrice(), item.getQuantity(), snapshot);
 
 				int affected = productDAO.decreaseStock(conn, item.getProductId(), item.getQuantity());
 				if (affected == 0) {
@@ -130,6 +134,25 @@ public class OrderService {
 		} finally {
 			DBUtil.release(conn);
 		}
+	}
+
+	/*
+	  트랙 구성 스냅샷 — 주문 시점 구성 낱개 이름을 ' + ' 로 잇는다 (ERD § 7.1 · § 8-13).
+	  나중에 관리자가 구성을 바꿔도 과거 주문은 산 그대로 보인다. 컬럼이 VARCHAR(500) 이라 자른다.
+	  트랙 재고는 트랙 자기 stock 만 차감한다 — 구성 낱개 재고는 건드리지 않는다 (IMPACT K5).
+	*/
+	private String trackSnapshot(Connection conn, int trackId) throws SQLException {
+		StringBuilder sb = new StringBuilder();
+		for (ProductDTO p : trackItemDAO.findItems(conn, trackId)) {
+			if (sb.length() > 0) {
+				sb.append(" + ");
+			}
+			sb.append(p.getName());
+		}
+		if (sb.length() == 0) {
+			return "(구성 없음)";
+		}
+		return sb.length() <= 500 ? sb.toString() : sb.substring(0, 500);
 	}
 
 	private void validateOrderForm(OrderDTO form, String method) {

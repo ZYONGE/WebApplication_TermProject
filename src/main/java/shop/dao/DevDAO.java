@@ -27,7 +27,7 @@ import shop.util.Paging;
 */
 public class DevDAO {
 
-	/* 17 테이블 + 뷰 5개. 이 Set 밖의 이름은 받지 않는다. */
+	/* 21 테이블 + 뷰 5개. 이 Set 밖의 이름은 받지 않는다. */
 	public static final Set<String> ALLOWED_TABLES;
 
 	static {
@@ -36,9 +36,13 @@ public class DevDAO {
 		set.add("address");
 		set.add("category");
 		set.add("product");
+		set.add("track_item");
+		set.add("supplement_conflict");
 		set.add("product_image");
 		set.add("cart");
 		set.add("wishlist");
+		set.add("combo");
+		set.add("combo_item");
 		set.add("orders");
 		set.add("order_item");
 		set.add("payment");
@@ -60,8 +64,28 @@ public class DevDAO {
 	/* TRUNCATE 순서 — FK 자식부터. member 는 목록에 없다 (ERD § 6.7). */
 	private static final String[] TRUNCATE_ORDER = {
 		"delivery_history", "delivery", "payment", "review", "order_item", "orders",
-		"cart", "wishlist", "qna", "product_image", "product", "category",
+		"cart", "wishlist", "combo_item", "combo", "qna", "product_image",
+		"track_item", "supplement_conflict", "product", "category",
 		"notice", "admin_log" };
+
+	/* 화면 문구용 — 허용 목록의 테이블 · 뷰 수, 초기화 대상 수. 숫자를 JSP 에 박지 않는다. */
+	public static int tableCount() {
+		int n = 0;
+		for (String name : ALLOWED_TABLES) {
+			if (!name.startsWith("v_")) {
+				n++;
+			}
+		}
+		return n;
+	}
+
+	public static int viewCount() {
+		return ALLOWED_TABLES.size() - tableCount();
+	}
+
+	public static int truncateCount() {
+		return TRUNCATE_ORDER.length;
+	}
 
 	public static boolean isAllowed(String table) {
 		return table != null && ALLOWED_TABLES.contains(table);

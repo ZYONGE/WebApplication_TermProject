@@ -23,6 +23,8 @@ public class ConfigDAO {
 	public static final String DELIVERY_FEE = "DELIVERY_FEE";
 	public static final String FREE_SHIPPING_MIN = "FREE_SHIPPING_MIN";
 	public static final String LOW_STOCK_THRESHOLD = "LOW_STOCK_THRESHOLD";
+	/* 섭취 일수 상한 — 장바구니 · 조합 담기 · 조합 저장이 함께 쓴다 (ERD § 2.16) */
+	public static final String MAX_INTAKE_DAYS = "MAX_INTAKE_DAYS";
 
 	public String findValue(String key) throws SQLException {
 		String sql = "SELECT config_value FROM system_config WHERE config_key = ?";

@@ -29,6 +29,10 @@ public class AdminLogDAO {
 	public static final String PRODUCT_CREATE = "PRODUCT_CREATE";
 	public static final String PRODUCT_UPDATE = "PRODUCT_UPDATE";
 	public static final String PRODUCT_DELETE = "PRODUCT_DELETE";
+	public static final String TRACK_ITEM_SET = "TRACK_ITEM_SET";
+	public static final String CONFLICT_CREATE = "CONFLICT_CREATE";
+	public static final String CONFLICT_UPDATE = "CONFLICT_UPDATE";
+	public static final String CONFLICT_DELETE = "CONFLICT_DELETE";
 	public static final String CATEGORY_CREATE = "CATEGORY_CREATE";
 	public static final String CATEGORY_UPDATE = "CATEGORY_UPDATE";
 	public static final String CATEGORY_DELETE = "CATEGORY_DELETE";
@@ -48,7 +52,7 @@ public class AdminLogDAO {
 	public static final String FORCE_PAY_STATUS = "FORCE_PAY_STATUS";
 	public static final String FORCE_STOCK_SET = "FORCE_STOCK_SET";
 	public static final String SHOP_STATUS_TOGGLE = "SHOP_STATUS_TOGGLE";
-	/* 샌드박스 임시 어휘 — ERD § 2.17 에 설정 변경 action 이 없어 추가 요청 중 (트랙 문서 § 7) */
+	/* SHOP_STATUS 외 설정값 변경 (ERD admin_log action 어휘) */
 	public static final String CONFIG_UPDATE = "CONFIG_UPDATE";
 	public static final String SEED_GENERATE = "SEED_GENERATE";
 	public static final String SEED_TRUNCATE_ALL = "SEED_TRUNCATE_ALL";
@@ -58,7 +62,8 @@ public class AdminLogDAO {
 
 	/* 감사로그 조회 화면의 필터 셀렉트가 그대로 쓴다. */
 	public static final String[] ACTIONS = {
-		PRODUCT_CREATE, PRODUCT_UPDATE, PRODUCT_DELETE,
+		PRODUCT_CREATE, PRODUCT_UPDATE, PRODUCT_DELETE, TRACK_ITEM_SET,
+		CONFLICT_CREATE, CONFLICT_UPDATE, CONFLICT_DELETE,
 		CATEGORY_CREATE, CATEGORY_UPDATE, CATEGORY_DELETE,
 		DELIVERY_NEXT_STEP, DELIVERY_TRACKING_SET, ORDER_CANCEL,
 		MEMBER_LEAVE, QNA_ANSWER,

@@ -48,7 +48,7 @@
     그래서 전체 초기화는 role = 'USER' 인 회원만 지운다.
 --%>
 <p class="field_help">
-	업무 테이블 14개를 TRUNCATE 하고, 회원은 <strong>role = 'USER'</strong> 인 행만 삭제합니다.
+	업무 테이블 ${truncateCount}개를 TRUNCATE 하고, 회원은 <strong>role = 'USER'</strong> 인 행만 삭제합니다.
 	ADMIN · DEV 계정은 남습니다. AUTO_INCREMENT 는 1로 되돌아갑니다.
 </p>
 <form action="${ctx}/dev/seed" method="post">

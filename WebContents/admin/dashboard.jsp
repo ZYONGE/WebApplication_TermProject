@@ -7,6 +7,7 @@
 <ul class="admin_nav">
 	<li><a href="${ctx}/admin/dashboard">대시보드</a></li>
 	<li><a href="${ctx}/admin/products">상품</a></li>
+	<li><a href="${ctx}/admin/conflicts">금지 조합</a></li>
 	<li><a href="${ctx}/admin/categories">카테고리</a></li>
 	<li><a href="${ctx}/admin/orders">주문·배송</a></li>
 	<li><a href="${ctx}/admin/members">회원</a></li>
@@ -62,7 +63,7 @@
 	</tbody>
 </table>
 
-<h3>재고 부족 (기준 ${lowStockThreshold}개 이하)</h3>
+<h3>재고 부족 (기준 ${lowStockThreshold}포 이하)</h3>
 <%--
   노출 규칙 때문에 stock = 0 인 상품은 고객 화면에서 조용히 사라진다.
   관리자가 그 사실을 알 수 있는 유일한 경로가 이 표다 (v_low_stock).
@@ -76,7 +77,7 @@
 			<tr class="${p.stock == 0 ? 'soldout' : ''}">
 				<td><a href="${ctx}/admin/products?editId=${p.productId}"><c:out value="${p.name}" /></a></td>
 				<td><c:out value="${p.categoryName}" /></td>
-				<td>${p.stock}<c:if test="${p.stock == 0}"> (고객 화면에서 숨겨짐)</c:if></td>
+				<td>${p.stock}포<c:if test="${p.stock == 0}"> (고객 화면에서 숨겨짐)</c:if></td>
 				<td><c:out value="${p.status}" /></td>
 			</tr>
 		</c:forEach>

@@ -6,7 +6,7 @@
 
 <h2>회원가입</h2>
 
-<form class="formtable_form" action="${ctx}/member/join" method="post" data-validate>
+<form class="formtable_form member_box" action="${ctx}/member/join" method="post" data-validate>
 	<table class="formtable">
 		<tr>
 			<th><label for="loginId">아이디 <span class="required">*</span></label></th>

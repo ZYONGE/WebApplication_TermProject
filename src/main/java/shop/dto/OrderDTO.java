@@ -50,7 +50,7 @@ public class OrderDTO {
 			|| "상품준비".equals(delivery.getStatus());
 	}
 
-	/* "티셔츠 외 2건" — 관리자 주문 목록의 제목 */
+	/* "원포올 외 2건" — 관리자 주문 목록의 제목 */
 	public String getItemSummary() {
 		if (firstProductName == null) {
 			return "";

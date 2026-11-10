@@ -343,15 +343,23 @@ public class DevService {
 			categoryDAO.insert(seed);
 			categories = categoryDAO.findAll();
 		}
+		/* 더미는 낱개(SINGLE)다. 소분류가 있으면 첫 소분류에, 없으면 첫 카테고리에 붙인다. */
 		categoryId = categories.get(0).getCategoryId();
+		for (CategoryDTO c : categories) {
+			if (c.getParentId() != null) {
+				categoryId = c.getCategoryId();
+				break;
+			}
+		}
 
 		long stamp = System.currentTimeMillis() % 100000L;
 		for (int i = 1; i <= count; i++) {
 			ProductDTO product = new ProductDTO();
 			product.setCategoryId(categoryId);
-			product.setName("DEV 더미상품 " + stamp + "-" + i);
-			product.setPrice(1000 * i);
-			product.setStock(10);
+			product.setProductType("SINGLE");
+			product.setName("DEV 더미 영양제 " + stamp + "-" + i);
+			product.setPrice(100 * i);
+			product.setStock(100);
 			product.setDescription("/dev 에서 생성한 더미 상품");
 			product.setStatus("판매중");
 			productDAO.insert(product);

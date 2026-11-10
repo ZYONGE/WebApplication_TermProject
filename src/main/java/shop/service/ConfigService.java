@@ -15,6 +15,11 @@ import shop.dto.SystemConfigDTO;
 */
 public class ConfigService {
 
+	public static final int DEFAULT_MAX_INTAKE_DAYS = 90;
+	/* 섭취 일수 입력의 처음 값 — 상품상세 · 조합 탭이 함께 쓴다 (상한 · 재고보다 크면 그 값으로 줄인다) */
+	public static final int DEFAULT_DAYS = 30;
+	private static final int[] QUICK_DAYS = { 7, 14, 30, 60, 90 };
+
 	private final ConfigDAO configDAO = new ConfigDAO();
 
 	public boolean isMaintenance() throws SQLException {
@@ -30,7 +35,25 @@ public class ConfigService {
 	}
 
 	public int lowStockThreshold() throws SQLException {
-		return configDAO.findInt(ConfigDAO.LOW_STOCK_THRESHOLD, 5);
+		return configDAO.findInt(ConfigDAO.LOW_STOCK_THRESHOLD, 30);
+	}
+
+	/* 섭취 일수 상한 — 파싱 실패 · 키 없음이면 코드 기본값 90 (ERD § 7 설정값) */
+	public int maxIntakeDays() throws SQLException {
+		int days = configDAO.findInt(ConfigDAO.MAX_INTAKE_DAYS, DEFAULT_MAX_INTAKE_DAYS);
+		return days > 0 ? days : DEFAULT_MAX_INTAKE_DAYS;
+	}
+
+	/* 섭취 일수 빠른 선택 — 상한을 넘는 값은 뺀다 (CONCEPT § 5) */
+	public java.util.List<Integer> quickDays() throws SQLException {
+		int max = maxIntakeDays();
+		java.util.List<Integer> list = new java.util.ArrayList<Integer>();
+		for (int d : QUICK_DAYS) {
+			if (d <= max) {
+				list.add(Integer.valueOf(d));
+			}
+		}
+		return list;
 	}
 
 	/*

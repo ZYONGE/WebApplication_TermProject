@@ -9,6 +9,7 @@
 	<li><a href="${ctx}/mypage/edit">정보수정</a></li>
 	<li><a href="${ctx}/mypage/address">배송지</a></li>
 	<li><a href="${ctx}/mypage/wishlist">찜 목록</a></li>
+	<li><a href="${ctx}/mypage/combo">내 조합</a></li>
 	<li><a href="${ctx}/mypage/review">내 리뷰</a></li>
 	<li><a href="${ctx}/mypage/qna">내 문의</a></li>
 	<li><a href="${ctx}/order/list">주문 내역</a></li>
@@ -22,13 +23,14 @@
 --%>
 <table class="listtable">
 	<thead class="listtable_head">
-		<tr><th class="col_name">상품</th><th class="col_price">가격</th>
+		<tr><th class="col_name">상품</th><th class="col_price">1포 가격</th>
 		    <th class="col_state">상태</th><th class="col_date">찜한 날</th><th class="col_action"></th></tr>
 	</thead>
 	<tbody>
 		<c:forEach var="w" items="${items}">
 			<tr class="${w.status == '판매중' ? '' : 'soldout'}">
 				<td class="col_name">
+					<span class="prodcard_badge">${w.typeLabel}</span>
 					<a href="${ctx}/product/view?productId=${w.productId}"><c:out value="${w.productName}" /></a>
 				</td>
 				<td class="col_price"><fmt:formatNumber value="${w.price}" pattern="#,##0" />원</td>

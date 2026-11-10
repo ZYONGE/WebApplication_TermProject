@@ -8,7 +8,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import shop.dao.ProductDAO;
 import shop.dto.ProductDTO;
+import shop.service.ConfigService;
+import shop.service.IntakeService;
 import shop.service.MypageService;
 import shop.service.ProductService;
 import shop.util.Paging;
@@ -21,6 +24,8 @@ public class ProductServlet extends BaseServlet {
 
 	private final ProductService productService = new ProductService();
 	private final MypageService mypageService = new MypageService();
+	private final IntakeService intakeService = new IntakeService();
+	private final ConfigService configService = new ConfigService();
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -40,6 +45,11 @@ public class ProductServlet extends BaseServlet {
 	private void list(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException, SQLException {
 		int categoryId = intParam(request, "categoryId", 0);
+		/* 낱개 / 트랙 구분 — 허용 값이 아니면 전체 */
+		String type = param(request, "type");
+		if (!ProductDAO.isType(type)) {
+			type = null;
+		}
 		String keyword = param(request, "keyword");
 		String sort = param(request, "sort", "latest");
 		int page = intParam(request, "page", 1);
@@ -47,7 +57,7 @@ public class ProductServlet extends BaseServlet {
 		request.setAttribute("pageTitle", "상품 목록");
 		request.setAttribute("pageData", productService.findList(
 				categoryId > 0 ? Integer.valueOf(categoryId) : null,
-				keyword, sort, page, Paging.DEFAULT_SIZE));
+				type, keyword, sort, page, Paging.DEFAULT_SIZE));
 		request.setAttribute("categories", productService.findAllCategories());
 		request.setAttribute("currentCategory",
 				categoryId > 0 ? productService.findCategory(categoryId) : null);
@@ -56,6 +66,9 @@ public class ProductServlet extends BaseServlet {
 		StringBuilder url = new StringBuilder("/product/list?");
 		if (categoryId > 0) {
 			url.append("categoryId=").append(categoryId).append("&");
+		}
+		if (type != null) {
+			url.append("type=").append(type).append("&");
 		}
 		if (keyword != null && keyword.length() > 0) {
 			url.append("keyword=").append(java.net.URLEncoder.encode(keyword, "UTF-8")).append("&");
@@ -90,6 +103,12 @@ public class ProductServlet extends BaseServlet {
 				productService.findQnaList(productId, viewerId, isAdmin(request)));
 		request.setAttribute("wished",
 				Boolean.valueOf(mypageService.isWished(viewerId, productId)));
+
+		/* 함께 드시지 말 것 — 트랙이면 구성품 전체 기준 (ERD § 7.1 경고 위치) */
+		request.setAttribute("conflicts", intakeService.findConflictsFor(product));
+		request.setAttribute("quickDays", configService.quickDays());
+		request.setAttribute("maxDays", Integer.valueOf(configService.maxIntakeDays()));
+		request.setAttribute("defaultDays", Integer.valueOf(ConfigService.DEFAULT_DAYS));
 
 		render(request, response, "/product/view.jsp");
 	}

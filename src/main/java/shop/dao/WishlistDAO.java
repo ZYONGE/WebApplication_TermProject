@@ -19,7 +19,7 @@ import shop.util.DBUtil;
 public class WishlistDAO {
 
 	public List<WishItemDTO> findByMember(int memberId) throws SQLException {
-		String sql = "SELECT w.member_id, w.product_id, w.created_at,"
+		String sql = "SELECT w.member_id, w.product_id, w.created_at, p.product_type,"
 				   + "       p.name AS product_name, p.thumbnail, p.status, p.price"
 				   + "  FROM wishlist w"
 				   + "  JOIN product p ON p.product_id = w.product_id"
@@ -38,6 +38,7 @@ public class WishlistDAO {
 				WishItemDTO dto = new WishItemDTO();
 				dto.setMemberId(rs.getInt("member_id"));
 				dto.setProductId(rs.getInt("product_id"));
+				dto.setProductType(rs.getString("product_type"));
 				dto.setProductName(rs.getString("product_name"));
 				dto.setThumbnail(rs.getString("thumbnail"));
 				dto.setStatus(rs.getString("status"));

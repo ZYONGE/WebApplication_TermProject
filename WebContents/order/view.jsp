@@ -78,7 +78,7 @@
 <h3>주문 상품</h3>
 <table class="listtable">
 	<thead class="listtable_head">
-		<tr><th class="col_name">상품</th><th class="col_price">단가</th><th class="col_qty">수량</th>
+		<tr><th class="col_name">상품</th><th class="col_price">1포 가격</th><th class="col_qty">섭취 일수</th>
 		    <th class="col_total">합계</th><th class="col_action">리뷰</th></tr>
 	</thead>
 	<tbody>
@@ -88,9 +88,11 @@
 					<a href="${ctx}/product/view?productId=${item.productId}">
 						<c:out value="${item.productName}" />
 					</a>
+					<%-- 트랙은 주문 시점 구성 스냅샷을 보여준다 — 지금 구성이 바뀌었어도 산 그대로 (ERD § 7.1) --%>
+					<c:if test="${not empty item.trackSnapshot}"><span class="field_help">구성: <c:out value="${item.trackSnapshot}" /></span></c:if>
 				</td>
 				<td class="col_price"><fmt:formatNumber value="${item.price}" pattern="#,##0" />원</td>
-				<td class="col_qty">${item.quantity}</td>
+				<td class="col_qty">${item.quantity}일분 (${item.quantity}포)</td>
 				<td class="col_total"><fmt:formatNumber value="${item.lineTotal}" pattern="#,##0" />원</td>
 				<td class="col_action">
 					<%--

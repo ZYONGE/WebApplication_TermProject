@@ -45,7 +45,7 @@ public class DevStateServlet extends BaseServlet {
 			request.setAttribute("flow", DeliveryDAO.FLOW);
 			request.setAttribute("configs", configService.findAll());
 			request.setAttribute("products",
-					adminService.findProducts(null, null, null, 1, 100).getList());
+					adminService.findProducts(null, null, null, null, 1, 100).getList());
 
 			int orderId = intParam(request, "orderId", 0);
 			if (orderId > 0) {

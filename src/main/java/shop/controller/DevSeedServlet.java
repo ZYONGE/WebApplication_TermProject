@@ -31,6 +31,7 @@ public class DevSeedServlet extends BaseServlet {
 		request.setAttribute("pageTitle", "dev · 데이터 관리");
 		pageCss(request, "admin");
 		request.setAttribute("tables", DevDAO.ALLOWED_TABLES);
+		request.setAttribute("truncateCount", Integer.valueOf(DevDAO.truncateCount()));
 		render(request, response, "/dev/seed.jsp");
 	}
 

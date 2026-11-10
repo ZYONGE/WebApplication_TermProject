@@ -6,7 +6,7 @@
 
 <h2>로그인</h2>
 
-<form class="formtable_form" action="${ctx}/member/login" method="post" data-validate>
+<form class="formtable_form member_box" action="${ctx}/member/login" method="post" data-validate>
 	<input type="hidden" name="returnUrl" value="<c:out value='${returnUrl}' />">
 	<table class="formtable">
 		<tr>

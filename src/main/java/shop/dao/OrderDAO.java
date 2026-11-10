@@ -85,10 +85,15 @@ public class OrderDAO {
 		return orderId;
 	}
 
+	/*
+	  주문 상품 스냅샷. quantity = 섭취 일수, price = 1포 단가.
+	  trackSnapshot 은 트랙 줄에만 채우고 낱개 줄은 null 이다 (ERD § 8-13).
+	*/
 	public int insertItem(Connection conn, int orderId, int productId, String productName,
-			int price, int quantity) throws SQLException {
-		String sql = "INSERT INTO order_item (order_id, product_id, product_name, price, quantity)"
-				   + " VALUES (?, ?, ?, ?, ?)";
+			int price, int quantity, String trackSnapshot) throws SQLException {
+		String sql = "INSERT INTO order_item"
+				   + " (order_id, product_id, product_name, price, quantity, track_snapshot)"
+				   + " VALUES (?, ?, ?, ?, ?, ?)";
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = conn.prepareStatement(sql);
@@ -97,6 +102,7 @@ public class OrderDAO {
 			pstmt.setString(3, productName);
 			pstmt.setInt(4, price);
 			pstmt.setInt(5, quantity);
+			pstmt.setString(6, trackSnapshot);
 			return pstmt.executeUpdate();
 		} finally {
 			DBUtil.close(pstmt);
@@ -180,7 +186,7 @@ public class OrderDAO {
 	*/
 	public List<OrderItemDTO> findItems(int orderId) throws SQLException {
 		String sql = "SELECT oi.item_id, oi.order_id, oi.product_id, oi.product_name,"
-				   + "       oi.price, oi.quantity,"
+				   + "       oi.price, oi.quantity, oi.track_snapshot,"
 				   + "       CASE WHEN r.review_id IS NULL THEN 0 ELSE 1 END AS review_written"
 				   + "  FROM order_item oi"
 				   + "  LEFT JOIN review r ON r.item_id = oi.item_id"
@@ -203,6 +209,7 @@ public class OrderDAO {
 				dto.setProductName(rs.getString("product_name"));
 				dto.setPrice(rs.getInt("price"));
 				dto.setQuantity(rs.getInt("quantity"));
+				dto.setTrackSnapshot(rs.getString("track_snapshot"));
 				dto.setReviewWritten(rs.getInt("review_written") == 1);
 				list.add(dto);
 			}

@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import shop.service.NoticeService;
 import shop.service.ProductService;
 
-/* 1번 메인 — 공지 + 신상품 (CRUD.md § 2) */
+/* 1번 메인 — 공지 + 트랙 패키지 + 신상품 (CRUD.md § 2) */
 /*
   "" 는 컨텍스트 루트 정확 일치 매핑이다 (Servlet 4.0).
   이것으로 welcome-file 없이 / 요청이 바로 이 서블릿에 온다.
@@ -30,7 +30,10 @@ public class MainServlet extends BaseServlet {
 			request.setAttribute("pageTitle", "SHOP");
 			pageCss(request, "main");
 			request.setAttribute("notices", noticeService.findLatest(3));
-			request.setAttribute("newProducts", productService.findLatest(8));
+			/* 신상품 — 트랙은 아래 트랙 영역이 따로 보여주므로 낱개만 (두 영역이 같은 카드로 겹치지 않게) */
+			request.setAttribute("newProducts", productService.findLatestSingles(8));
+			/* 트랙 패키지 영역 · 조합 맞추기 진입 (IMPACT § 4.2 main.jsp) */
+			request.setAttribute("tracks", productService.findLatestTracks(4));
 			render(request, response, "/main.jsp");
 		} catch (SQLException e) {
 			throw wrap(e);

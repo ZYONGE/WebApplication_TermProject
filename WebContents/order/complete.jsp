@@ -24,15 +24,18 @@
 
 <table class="listtable">
 	<thead class="listtable_head">
-		<tr><th class="col_name">상품</th><th class="col_price">단가</th>
-		    <th class="col_qty">수량</th><th class="col_total">합계</th></tr>
+		<tr><th class="col_name">상품</th><th class="col_price">1포 가격</th>
+		    <th class="col_qty">섭취 일수</th><th class="col_total">합계</th></tr>
 	</thead>
 	<tbody>
 		<c:forEach var="item" items="${order.items}">
 			<tr>
-				<td class="col_name"><c:out value="${item.productName}" /></td>
+				<td class="col_name">
+					<c:out value="${item.productName}" />
+					<c:if test="${not empty item.trackSnapshot}"><span class="field_help">구성: <c:out value="${item.trackSnapshot}" /></span></c:if>
+				</td>
 				<td class="col_price"><fmt:formatNumber value="${item.price}" pattern="#,##0" />원</td>
-				<td class="col_qty">${item.quantity}</td>
+				<td class="col_qty">${item.quantity}일분 (${item.quantity}포)</td>
 				<td class="col_total"><fmt:formatNumber value="${item.lineTotal}" pattern="#,##0" />원</td>
 			</tr>
 		</c:forEach>

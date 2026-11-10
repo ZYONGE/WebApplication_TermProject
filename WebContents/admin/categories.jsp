@@ -7,6 +7,7 @@
 <ul class="admin_nav">
 	<li><a href="${ctx}/admin/dashboard">대시보드</a></li>
 	<li><a href="${ctx}/admin/products">상품</a></li>
+	<li><a href="${ctx}/admin/conflicts">금지 조합</a></li>
 	<li><a href="${ctx}/admin/categories">카테고리</a></li>
 	<li><a href="${ctx}/admin/orders">주문·배송</a></li>
 	<li><a href="${ctx}/admin/members">회원</a></li>

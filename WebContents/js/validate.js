@@ -36,6 +36,17 @@
 		positiveInt: {
 			test: function (v) { return /^[1-9]\d*$/.test(v); },
 			message: "1 이상의 숫자를 입력하세요."
+		},
+		/*
+		  섭취 일수 — 1 ~ data-max (MAX_INTAKE_DAYS 와 재고 중 작은 값).
+		  서버 CartService.checkDays 가 같은 범위를 다시 검사한다.
+		*/
+		intakeDays: {
+			test: function (v, field) {
+				var max = parseInt(field.getAttribute("data-max"), 10) || 90;
+				return /^[1-9]\d*$/.test(v) && parseInt(v, 10) <= max;
+			},
+			message: "섭취 일수를 확인하세요. 1일 이상, 담을 수 있는 일수 이하로 입력합니다."
 		}
 	};
 
@@ -49,7 +60,7 @@
 				continue;
 			}
 			var value = (field.value || "").trim();
-			if (!rule.test(value)) {
+			if (!rule.test(value, field)) {
 				alert(field.getAttribute("data-message") || rule.message);
 				field.focus();
 				return false;
