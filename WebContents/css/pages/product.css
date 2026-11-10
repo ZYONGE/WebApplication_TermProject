@@ -78,8 +78,9 @@
 }
 
 /*정보 · 구매*/
+/*상품명과 가격 사이 — 본문 한 줄만큼 띄운다 (15px × 160% = 24px)*/
 .page_content .prod_info h2 {
-	margin-bottom: var(--space-sm);
+	margin-bottom: var(--space-lg);
 	padding-bottom: 0px;
 	font-size: 28px;
 	border-bottom: 0px;
@@ -93,15 +94,6 @@
 
 .prod_price strong {
 	font-size: 28px;
-}
-
-/*'1포 N원' 과 '1포 = 하루 섭취분' 사이를 띄운다*/
-.prod_price .field_help {
-	display: inline-block;
-	margin-top: 0px;
-	margin-left: var(--space-lg);
-	padding-left: var(--space-lg);
-	border-left: 1px solid var(--color-border);
 }
 
 .prod_spec {
