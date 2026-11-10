@@ -23,6 +23,14 @@ public class WishServlet extends BaseServlet {
 
 	private final MypageService mypageService = new MypageService();
 
+	/*
+	  동작 주소라 화면이 없다. 주소창 · 북마크 · 로그인 복귀로 GET 이 오면 405 대신 찜 목록으로 보낸다.
+	*/
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		redirect(request, response, "/mypage/wishlist");
+	}
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		int memberId = loginMemberId(request);

@@ -37,8 +37,9 @@ public class UserFilter implements Filter {
 
 		String role = RoleUtil.role(req);
 		if (role == null) {
-			String back = URLEncoder.encode(WebUtil.currentPath(req), "UTF-8");
-			res.sendRedirect(req.getContextPath() + "/member/login?returnUrl=" + back);
+			String back = returnPath(req);
+			res.sendRedirect(req.getContextPath() + "/member/login"
+					+ (back == null ? "" : "?returnUrl=" + URLEncoder.encode(back, "UTF-8")));
 			return;
 		}
 		if (!"USER".equals(role)) {
@@ -47,6 +48,34 @@ public class UserFilter implements Filter {
 			return;
 		}
 		chain.doFilter(request, response);
+	}
+
+	/*
+	  로그인 후 돌아올 주소.
+
+	  ★ GET 이면 지금 주소 그대로. POST(찜 · 담기 · 저장 같은 동작 주소)는 돌아갈 화면이 아니다 —
+	    그 주소를 returnUrl 로 쓰면 로그인 뒤 브라우저가 GET 으로 열어 405 가 난다.
+	    그래서 폼이 보낸 back(컨텍스트 기준 경로) → 같은 앱의 Referer 순으로 "원래 보던 화면" 을 쓴다.
+	    둘 다 없으면 null — 로그인 뒤 메인으로 간다.
+	*/
+	private String returnPath(HttpServletRequest req) {
+		if ("GET".equalsIgnoreCase(req.getMethod())) {
+			return WebUtil.currentPath(req);
+		}
+		String ctx = req.getContextPath();
+		String back = req.getParameter("back");
+		if (back != null && back.startsWith("/") && !back.startsWith("//")) {
+			return ctx + back;
+		}
+		String referer = req.getHeader("Referer");
+		if (referer != null) {
+			int at = referer.indexOf(ctx + "/", referer.indexOf("//") + 2);
+			String host = req.getServerName();
+			if (at > 0 && referer.contains("//" + host)) {
+				return referer.substring(at);
+			}
+		}
+		return null;
 	}
 
 	public void destroy() {
