@@ -182,7 +182,7 @@
 	background-color: var(--color-primary-light);
 }
 
-/*조합 맞추기 — 내비에서 다른 메뉴와 구분되는 진입점, 공지사항은 맨 오른쪽으로 민다*/
+/*조합 맞추기 — 내비 맨 오른쪽, 다른 메뉴와 구분되는 진입점 (공지사항은 왼쪽 메뉴 묶음에 있다)*/
 .page_nav > ul > li.page_nav_custom {
 	margin-left: auto;
 }

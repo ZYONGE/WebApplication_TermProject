@@ -4,8 +4,8 @@
   상품 — 목록, 상세
   소유 접두어: prod_* (DECISIONS.md D-09)
   사용 중: prod_filter (list) /
-           prod_detail · prod_gallery · prod_info · prod_cate · prod_price · prod_spec ·
-           prod_buy · prod_days · prod_days_label · prod_days_total · prod_wish ·
+           prod_detail · prod_gallery · prod_info · prod_price · prod_spec ·
+           prod_buy · prod_days · prod_days_label · prod_days_total · prod_actions · prod_wish ·
            prod_desc · prod_track · prod_review · prod_qna (view)
 
   상세 상단은 2단 격자다 — 왼쪽 이미지(480px) · 오른쪽 정보와 구매.
@@ -85,16 +85,6 @@
 	border-bottom: 0px;
 }
 
-.prod_cate {
-	margin-bottom: var(--space-xs);
-	font-size: var(--font-size-small);
-	color: var(--color-text-weak);
-}
-
-.prod_cate .prodcard_badge {
-	margin-top: 0px;
-}
-
 .prod_price {
 	margin-bottom: var(--space-md);
 	padding-bottom: var(--space-md);
@@ -105,9 +95,13 @@
 	font-size: 28px;
 }
 
+/*'1포 N원' 과 '1포 = 하루 섭취분' 사이를 띄운다*/
 .prod_price .field_help {
-	display: inline;
-	margin-left: var(--space-sm);
+	display: inline-block;
+	margin-top: 0px;
+	margin-left: var(--space-lg);
+	padding-left: var(--space-lg);
+	border-left: 1px solid var(--color-border);
 }
 
 .prod_spec {
@@ -130,8 +124,14 @@
 	border-radius: var(--radius-md);
 }
 
-.prod_buy > .btn_primary {
-	width: 100%;
+/*담기 · 찜 — 담기 버튼 자리를 5:5 로 나눠 나란히*/
+.prod_actions {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--space-sm);
+}
+
+.prod_actions .btn {
 	min-height: 48px;
 	font-size: 16px;
 }
@@ -180,13 +180,9 @@
 	font-size: 20px;
 }
 
-/*찜 — 담기 상자 아래 전체 폭 보조 버튼*/
+/*찜 폼 — 버튼은 담기 상자 안(prod_actions)에 있고 이 폼은 값만 담는다*/
 .prod_wish {
-	margin-top: var(--space-sm);
-}
-
-.prod_wish .btn {
-	width: 100%;
+	display: none;
 }
 
 /*아래 영역*/

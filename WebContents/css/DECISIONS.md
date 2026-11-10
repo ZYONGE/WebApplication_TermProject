@@ -83,13 +83,13 @@
 | 헤더 | 격자 3열: 로고 · 검색 · 유틸 / 안내 띠 / 내비. 소분류는 펼침 메뉴(`:hover` · `:focus-within`). `조합 맞추기` 는 채운 탭으로 오른쪽 |
 | 지금 화면 | `js/ui.js` 가 `page_nav` · `admin_nav` · `my_nav` 링크 중 현재 주소와 같은 것에 `on` |
 | 상품 카드 | `prodlist` 4열 격자, 썸네일 정사각형 |
-| 상품상세 | `prod_detail` 2단 격자 = `prod_gallery`(480px) · `prod_info`(`prod_cate` · h2 · `prod_price` · `prod_spec` · `prod_buy` · `prod_wish` · 경고). 설명 · 구성 · 리뷰 · 문의는 아래 전체 폭 |
+| 상품상세 | `prod_detail` 2단 격자 = `prod_gallery`(480px) · `prod_info`(h2 · `prod_price` · `prod_spec` · `prod_buy`(담기 · 찜 5:5 `prod_actions`) · 경고). 설명 · 구성 · 리뷰 · 문의는 아래 전체 폭 |
 | 회원 화면 | `formtable_form member_box` — 520px 가운데 |
 | 관리자 · 마이페이지 | `admin_nav` · `my_nav` 는 탭 줄, `admin_filter` · `prod_filter` 는 한 줄 필터 띠 |
 | 팝업 | 머리 · 발 고정(sticky), 몸만 스크롤 |
 | 이미지 없음 | `ui.js` 가 실패한 `<img>` 를 "[이미지 없음]" 글자로 바꾼다 (STATUS P5) |
 
-새 클래스: `prod_info` · `prod_cate` · `prod_price` · `prod_spec` (pages/product.css), `member_box` (pages/member.css). 기존 접두어 안이라 표 변경은 없다.
+새 클래스: `prod_info` · `prod_price` · `prod_spec` · `prod_actions` (pages/product.css), `member_box` (pages/member.css). 기존 접두어 안이라 표 변경은 없다.
 하드코딩 예외(0 · 1px · 100% · auto) 밖의 px 는 컴포넌트 치수(버튼 높이 · 썸네일 폭 등)에만 남았다 — 컨셉 때 토큰화 여부를 정한다.
 
 ## 5. 미결
