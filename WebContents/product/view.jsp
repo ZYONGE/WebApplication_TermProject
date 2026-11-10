@@ -25,7 +25,6 @@
 		<h2><c:out value="${product.name}" /></h2>
 		<p class="prod_price">
 			1포 <strong><fmt:formatNumber value="${product.price}" pattern="#,##0" /></strong>원
-			<span class="field_help">1포 = 하루 섭취분</span>
 		</p>
 
 		<table class="formtable prod_spec">

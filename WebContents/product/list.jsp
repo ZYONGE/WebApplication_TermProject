@@ -7,10 +7,9 @@
 <h2>
 	<c:choose>
 		<c:when test="${not empty currentCategory}"><c:out value="${currentCategory.name}" /></c:when>
+		<c:when test="${not empty tabTitle}"><c:out value="${tabTitle}" /></c:when>
 		<c:when test="${not empty param.keyword}">'<c:out value="${param.keyword}" />' 검색 결과</c:when>
-		<c:when test="${param.type == 'SINGLE'}">낱개 영양제</c:when>
-		<c:when test="${param.type == 'TRACK'}">트랙 패키지</c:when>
-		<c:otherwise>전체 상품</c:otherwise>
+		<c:otherwise>전체 영양제</c:otherwise>
 	</c:choose>
 </h2>
 
@@ -18,21 +17,23 @@
 	필요한 영양소만 고르려면 <a href="${ctx}/custom">조합 맞추기</a>를 이용하세요.</p>
 
 <form class="prod_filter" action="${ctx}/product/list" method="get">
-	<%-- 낱개 / 트랙 구분 — 서버가 허용 값(SINGLE · TRACK)만 쓴다 --%>
-	<label for="type">구분</label>
-	<select id="type" name="type">
-		<option value="">전체</option>
-		<option value="SINGLE" ${param.type == 'SINGLE' ? 'selected' : ''}>낱개 영양제</option>
-		<option value="TRACK" ${param.type == 'TRACK' ? 'selected' : ''}>트랙 패키지</option>
-	</select>
-
+	<%--
+	  필터는 카테고리 · 정렬 · 검색어 세 가지 (구분 선택은 두지 않는다).
+	  카테고리 선택지는 지금 탭의 대분류 묶음뿐이다 — 낱개 영양제 탭이면 낱개 영양제 쪽만,
+	  트랙 패키지 탭이면 트랙 패키지 쪽만 (ProductServlet 이 filterRoots 로 내려준다).
+	  탭 안의 '전체' 는 그 대분류 자체를 골라 탭을 벗어나지 않는다.
+	--%>
 	<label for="categoryId">카테고리</label>
 	<select id="categoryId" name="categoryId">
-		<option value="0">전체</option>
-		<c:forEach var="cat" items="${categories}">
-			<option value="${cat.categoryId}" ${param.categoryId == cat.categoryId ? 'selected' : ''}>
-				<c:if test="${not empty cat.parentId}">— </c:if><c:out value="${cat.name}" />
+		<c:if test="${not tabMode}"><option value="0">전체</option></c:if>
+		<c:forEach var="root" items="${filterRoots}">
+			<option value="${root.categoryId}"
+			        ${param.categoryId == root.categoryId or (tabMode and empty param.categoryId) ? 'selected' : ''}>
+				<c:out value="${root.name}" /><c:if test="${tabMode}"> 전체</c:if>
 			</option>
+			<c:forEach var="sub" items="${root.children}">
+				<option value="${sub.categoryId}" ${param.categoryId == sub.categoryId ? 'selected' : ''}>— <c:out value="${sub.name}" /></option>
+			</c:forEach>
 		</c:forEach>
 	</select>
 

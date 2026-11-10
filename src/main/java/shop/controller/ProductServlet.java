@@ -58,9 +58,40 @@ public class ProductServlet extends BaseServlet {
 		request.setAttribute("pageData", productService.findList(
 				categoryId > 0 ? Integer.valueOf(categoryId) : null,
 				type, keyword, sort, page, Paging.DEFAULT_SIZE));
-		request.setAttribute("categories", productService.findAllCategories());
 		request.setAttribute("currentCategory",
 				categoryId > 0 ? productService.findCategory(categoryId) : null);
+
+		/*
+		  카테고리 필터의 선택지 = 지금 탭의 대분류 묶음 (구분 필터는 두지 않는다).
+		      전체 영양제 탭            → 모든 대분류와 소분류
+		      낱개 영양제 · 트랙 패키지 탭 → 그 대분류와 그 밑 소분류만
+		  탭은 categoryId 가 속한 대분류로 정한다. ?type=TRACK 처럼 구분으로 들어오면
+		  그 구분의 상품이 있는 대분류로 정한다 — 대분류 id · 이름을 코드에 박지 않는다.
+		*/
+		java.util.List<shop.dto.CategoryDTO> tree = productService.findCategoryTree();
+		java.util.List<shop.dto.CategoryDTO> tabRoots = new java.util.ArrayList<shop.dto.CategoryDTO>();
+		if (categoryId > 0) {
+			for (shop.dto.CategoryDTO root : tree) {
+				boolean mine = root.getCategoryId() == categoryId;
+				for (shop.dto.CategoryDTO sub : root.getChildren()) {
+					mine = mine || sub.getCategoryId() == categoryId;
+				}
+				if (mine) {
+					tabRoots.add(root);
+				}
+			}
+		} else if (type != null) {
+			java.util.Map<Integer, String> rootTypes = productService.findRootTypes();
+			for (shop.dto.CategoryDTO root : tree) {
+				if (type.equals(rootTypes.get(Integer.valueOf(root.getCategoryId())))) {
+					tabRoots.add(root);
+				}
+			}
+		}
+		boolean tabMode = !tabRoots.isEmpty();
+		request.setAttribute("filterRoots", tabMode ? tabRoots : tree);
+		request.setAttribute("tabMode", Boolean.valueOf(tabMode));
+		request.setAttribute("tabTitle", tabRoots.size() == 1 ? tabRoots.get(0).getName() : null);
 
 		/* 페이지 번호만 갈아 끼우면 되도록 나머지 조건을 미리 붙여 둔다. */
 		StringBuilder url = new StringBuilder("/product/list?");

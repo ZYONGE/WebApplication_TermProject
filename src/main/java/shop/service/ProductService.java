@@ -54,6 +54,11 @@ public class ProductService {
 		return result;
 	}
 
+	/* 대분류 id → 그 밑 상품 구분 (목록 필터가 "탭" 을 정할 때) */
+	public Map<Integer, String> findRootTypes() throws SQLException {
+		return productDAO.findRootTypes();
+	}
+
 	public List<ProductDTO> findLatestSingles(int limit) throws SQLException {
 		return productDAO.findLatestOnSaleByType(ProductDAO.SINGLE, limit);
 	}
