@@ -2,43 +2,106 @@
 
 /*
   메인 페이지 — 소유 접두어: main_* (DECISIONS.md D-09)
-  사용 중: main_notice (main.jsp) / main_new (main.jsp) / main_maintenance (maintenance.jsp)
+  사용 중: main_custom · main_notice · main_track · main_new (main.jsp) / main_maintenance (maintenance.jsp)
+
+  순서: 조합 맞추기 진입(넓은 띠) → 공지 → 트랙 패키지 → 새로 들어온 영양제
 */
 
-.main_notice {
+/*조합 맞추기 진입 — 첫 화면 맨 위 넓은 띠*/
+.main_custom {
 	margin-bottom: var(--space-xl);
-	padding-top: var(--space-md);
-	padding-right: var(--space-md);
-	padding-bottom: var(--space-md);
-	padding-left: var(--space-md);
-	border: 1px solid var(--color-border);
+	padding-top: var(--space-xl);
+	padding-right: var(--space-xl);
+	padding-bottom: var(--space-xl);
+	padding-left: var(--space-xl);
+	background-color: var(--color-primary-light);
+	border-radius: var(--radius-md);
+}
+
+.page_content .main_custom h2 {
+	margin-top: 0px;
+	margin-bottom: var(--space-sm);
+	padding-bottom: 0px;
+	font-size: 30px;
+	border-bottom: 0px;
+}
+
+.main_custom p {
+	margin-bottom: var(--space-lg);
+	color: var(--color-text-weak);
+}
+
+.main_custom p:last-child {
+	display: flex;
+	gap: var(--space-sm);
+	margin-bottom: 0px;
+}
+
+.main_custom .btn {
+	min-width: 160px;
+	min-height: 48px;
+}
+
+/*공지 — 한 줄 목록. 날짜는 오른쪽*/
+.main_notice {
+	position: relative;
+	margin-bottom: var(--space-xl);
 }
 
 .main_notice li {
-	padding-top: var(--space-xs);
-	padding-bottom: var(--space-xs);
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: var(--color-border);
+	display: flex;
+	justify-content: space-between;
+	padding-top: var(--space-sm);
+	padding-bottom: var(--space-sm);
+	border-bottom: 1px solid var(--color-border);
+}
+
+.main_notice li a {
+	color: var(--color-text);
+	text-decoration: none;
+}
+
+.main_notice li a:hover {
+	text-decoration: underline;
 }
 
 .main_notice li span {
-	margin-left: var(--space-sm);
 	font-size: var(--font-size-small);
 	color: var(--color-text-weak);
 }
 
-.main_new {
+/*'공지 전체보기' 는 제목 줄 오른쪽 끝*/
+.main_notice > p {
+	position: absolute;
+	top: var(--space-xs);
+	right: 0px;
+	font-size: var(--font-size-small);
+}
+
+.main_notice > p a {
+	color: var(--color-text-weak);
+}
+
+.main_track, .main_new {
 	margin-bottom: var(--space-xl);
+}
+
+.main_track > .field_help {
+	margin-top: calc(var(--space-sm) * -1);
+	margin-bottom: var(--space-md);
 }
 
 /*점검 모드 안내 — 일반 사용자가 보는 유일한 화면이다*/
 .main_maintenance {
+	max-width: 640px;
+	margin-top: var(--space-xl);
+	margin-right: auto;
+	margin-left: auto;
 	padding-top: var(--space-xl);
-	padding-right: var(--space-md);
+	padding-right: var(--space-lg);
 	padding-bottom: var(--space-xl);
-	padding-left: var(--space-md);
+	padding-left: var(--space-lg);
 	text-align: center;
-	background-color: var(--bp-state);
-	border: 1px solid var(--bp-state-line);
+	background-color: var(--color-primary-light);
+	border-radius: var(--radius-md);
 }

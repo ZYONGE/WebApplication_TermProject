@@ -6,56 +6,83 @@
   사용 중: order_form · order_method (form.jsp) / order_timeline (view.jsp)
 */
 
-/*주문서 전체 — 사용자가 값을 넣는 영역*/
+/*주문서 — 위의 상품표와 같은 폭으로 이어진다. 소제목마다 구분선*/
 .order_form {
-	padding-top: var(--space-md);
-	padding-right: var(--space-md);
-	padding-bottom: var(--space-md);
-	padding-left: var(--space-md);
-	background-color: var(--bp-input);
-	border: 1px solid var(--bp-input-line);
+	margin-top: var(--space-lg);
 }
 
 .order_form h3 {
-	margin-top: var(--space-lg);
+	margin-top: var(--space-xl);
 	margin-bottom: var(--space-sm);
-	padding-bottom: var(--space-xs);
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: var(--bp-input-line);
 }
 
-/*결제수단 — 라디오 묶음*/
+.order_form h3:first-child {
+	margin-top: 0px;
+}
+
+/*저장된 배송지 고르기 줄*/
+.order_form > p {
+	display: flex;
+	align-items: center;
+	gap: var(--space-sm);
+	margin-bottom: var(--space-sm);
+	font-size: var(--font-size-small);
+}
+
+.order_form > p select {
+	min-width: 280px;
+}
+
+.order_form .formtable .field {
+	max-width: 480px;
+}
+
+/*결제수단 — 라디오를 버튼처럼 나란히*/
 .order_method {
-	padding-top: var(--space-sm);
-	padding-right: var(--space-md);
-	padding-bottom: var(--space-sm);
-	padding-left: var(--space-md);
-	background-color: var(--color-surface);
-	border: 1px solid var(--bp-input-line);
+	display: flex;
+	gap: var(--space-sm);
 }
 
 .order_method label {
-	margin-right: var(--space-lg);
+	display: inline-flex;
+	align-items: center;
+	padding-top: var(--space-sm);
+	padding-right: var(--space-lg);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-md);
+	border: 1px solid var(--color-border-strong);
+	border-radius: var(--radius-sm);
+	cursor: pointer;
 }
 
-/*
-  배송 상태 이력 — 시간순 목록.
-  상태가 몇 번 바뀌었는지가 보여야 하므로 줄마다 선을 둔다.
-*/
+.order_method label:has(input:checked) {
+	font-weight: bold;
+	border-color: var(--color-primary);
+	box-shadow: inset 0px 0px 0px 1px var(--color-primary);
+}
+
+/*배송 상태 이력 — 세로 시간선*/
 .order_timeline {
 	margin-top: var(--space-sm);
-	padding-left: var(--space-md);
-	border-left-width: 3px;
-	border-left-style: solid;
-	border-left-color: var(--bp-data-line);
+	margin-bottom: var(--space-lg);
+	padding-left: var(--space-lg);
+	border-left: 2px solid var(--color-border-strong);
 }
 
 .order_timeline li {
+	position: relative;
 	padding-top: var(--space-xs);
-	padding-bottom: var(--space-xs);
+	padding-bottom: var(--space-sm);
 	font-size: var(--font-size-small);
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: var(--color-border);
+}
+
+.order_timeline li::before {
+	content: "";
+	position: absolute;
+	top: 10px;
+	left: calc(var(--space-lg) * -1 - 6px);
+	width: 10px;
+	height: 10px;
+	background-color: var(--color-primary);
+	border-radius: 50%;
 }

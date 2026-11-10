@@ -1,0 +1,201 @@
+@charset "utf-8";
+
+/*
+  조합 탭 (/custom) — 소유 접두어: custom_* (DECISIONS.md § 2 · IMPACT K12)
+  사용 중: custom (폼 = 3분할 격자) / custom_tabs / custom_list / custom_table / custom_more /
+           custom_summary / custom_count / custom_picked / custom_picked_name / custom_picked_price /
+           custom_days / custom_days_label / custom_sum / custom_actions / custom_save /
+           custom_share / custom_loaded / custom_mycombo
+
+  레퍼런스: 다나와 "PC 견적 맞추기" — 왼쪽 분류 탭 · 가운데 상품 목록 · 오른쪽 견적함.
+  고정폭 1200px (D-06) 안에서 180 / 가변 / 340 으로 나눈다.
+  탭(tab*) · 경고(warnbox*) 모양은 컴포넌트가 정하고, 여기서는 배치만 정한다.
+*/
+
+.custom {
+	display: grid;
+	grid-template-columns: 180px 1fr 340px;
+	column-gap: var(--space-md);
+	align-items: start;
+}
+
+.custom_tabs {
+	margin-bottom: 0px;
+}
+
+/*가운데 목록*/
+.custom_list {
+	min-width: 0px;
+}
+
+.custom_table {
+	width: 100%;
+	background-color: var(--color-surface);
+}
+
+.custom_table .col_check {
+	width: 48px;
+	text-align: center;
+}
+
+.custom_table label {
+	cursor: pointer;
+}
+
+.custom_more {
+	margin-left: var(--space-sm);
+	font-size: var(--font-size-small);
+	color: var(--color-text-weak);
+}
+
+/*오른쪽 내 조합 — 스크롤해도 따라온다*/
+.custom_summary {
+	position: sticky;
+	top: var(--space-md);
+	padding-top: var(--space-md);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-md);
+	padding-left: var(--space-md);
+	background-color: var(--color-surface);
+	border: 1px solid var(--color-border-strong);
+	border-radius: var(--radius-md);
+}
+
+.custom_summary h3 {
+	margin-top: 0px;
+	font-size: var(--font-size-base);
+}
+
+.custom_count {
+	font-weight: bold;
+}
+
+.custom_picked {
+	margin-top: 0px;
+	margin-bottom: var(--space-sm);
+	padding-left: 0px;
+	list-style: none;
+}
+
+.custom_picked li {
+	display: flex;
+	align-items: center;
+	padding-top: var(--space-xs);
+	padding-bottom: var(--space-xs);
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: var(--color-border);
+}
+
+.custom_picked_name {
+	flex-grow: 1;
+}
+
+.custom_picked_price {
+	margin-right: var(--space-sm);
+	font-size: var(--font-size-small);
+	color: var(--color-text-weak);
+}
+
+/*섭취 일수 — 빠른 선택 버튼 + 직접 입력*/
+.custom_days {
+	margin-top: var(--space-md);
+	margin-bottom: var(--space-md);
+	padding-top: var(--space-sm);
+	padding-right: var(--space-sm);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-sm);
+	background-color: var(--color-primary-light);
+	border-radius: var(--radius-sm);
+}
+
+.custom_days_label {
+	display: block;
+	margin-bottom: var(--space-xs);
+	font-size: var(--font-size-small);
+	font-weight: bold;
+}
+
+.custom_days .btn {
+	margin-right: var(--space-xs);
+	margin-bottom: var(--space-xs);
+}
+
+.custom_days input[type="number"] {
+	width: 64px;
+	margin-left: var(--space-xs);
+	padding-top: var(--space-xs);
+	text-align: right;
+}
+
+.custom_days label {
+	margin-left: var(--space-xs);
+	font-size: var(--font-size-small);
+	white-space: nowrap;
+}
+
+.custom_sum {
+	width: 100%;
+	background-color: var(--color-surface);
+}
+
+.custom_sum th {
+	width: 110px;
+}
+
+.custom_actions, .custom_save {
+	margin-top: var(--space-md);
+}
+
+.custom_actions .btn_primary {
+	width: 100%;
+}
+
+.custom_save .field {
+	width: 100%;
+	margin-top: var(--space-xs);
+	margin-bottom: var(--space-xs);
+}
+
+.custom_share {
+	margin-top: var(--space-md);
+	margin-bottom: 0px;
+	font-size: var(--font-size-small);
+	word-break: break-all;
+}
+
+/*트랙 · 내 조합 불러옴 안내 — 상태 표식색*/
+.custom_loaded {
+	margin-bottom: var(--space-md);
+	padding-top: var(--space-xs);
+	padding-right: var(--space-sm);
+	padding-bottom: var(--space-xs);
+	padding-left: var(--space-sm);
+	font-size: var(--font-size-small);
+	background-color: var(--color-primary-light);
+	border-left: 4px solid var(--color-border-strong);
+	border-radius: var(--radius-sm);
+}
+
+/*내 조합 불러오기 — 폼 밖 목록*/
+.custom_mycombo {
+	margin-top: var(--space-lg);
+	margin-bottom: var(--space-xl);
+	padding-top: var(--space-md);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-md);
+	padding-left: var(--space-md);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+}
+
+.custom_mycombo h3 {
+	margin-top: 0px;
+	font-size: var(--font-size-base);
+}
+
+.custom_mycombo li {
+	display: inline-block;
+	margin-right: var(--space-lg);
+}
+

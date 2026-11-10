@@ -3,97 +3,221 @@
 /*
   상품 — 목록, 상세
   소유 접두어: prod_* (DECISIONS.md D-09)
-  사용 중: prod_filter (list) / prod_detail · prod_gallery · prod_desc ·
-           prod_buy · prod_wish · prod_review · prod_qna (view)
+  사용 중: prod_filter (list) /
+           prod_detail · prod_gallery · prod_info · prod_cate · prod_price · prod_spec ·
+           prod_buy · prod_days · prod_days_label · prod_days_total · prod_wish ·
+           prod_desc · prod_track · prod_review · prod_qna (view)
+
+  상세 상단은 2단 격자다 — 왼쪽 이미지(480px) · 오른쪽 정보와 구매.
+  설명 · 트랙 구성 · 리뷰 · 문의는 그 아래 전체 폭으로 이어진다.
 */
 
-/*목록 상단 필터 — 입력 영역*/
+/*목록 상단 필터 — 한 줄*/
 .prod_filter {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-sm);
 	margin-bottom: var(--space-lg);
-	padding-top: var(--space-sm);
-	padding-right: var(--space-md);
-	padding-bottom: var(--space-sm);
-	padding-left: var(--space-md);
-	background-color: var(--bp-input);
-	border: 1px solid var(--bp-input-line);
-}
-
-.prod_filter label {
-	margin-right: var(--space-xs);
-	margin-left: var(--space-sm);
-	font-size: var(--font-size-small);
-}
-
-/*상세*/
-
-.prod_detail {
-	margin-bottom: var(--space-xl);
-	padding-bottom: var(--space-lg);
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: var(--color-border);
-}
-
-/*대표 이미지 + 추가 이미지 — 이미지 슬롯 묶음*/
-.prod_gallery {
-	margin-bottom: var(--space-md);
 	padding-top: var(--space-md);
 	padding-right: var(--space-md);
 	padding-bottom: var(--space-md);
 	padding-left: var(--space-md);
-	background-color: var(--bp-image);
-	border: 1px solid var(--bp-image-line);
+	background-color: var(--color-primary-light);
+	border-radius: var(--radius-md);
 }
 
-.prod_gallery img {
-	width: 240px;
-	height: 240px;
-	margin-right: var(--space-sm);
+.prod_filter label {
+	margin-left: var(--space-sm);
+	font-size: var(--font-size-small);
+	font-weight: bold;
+}
+
+.prod_filter label:first-child {
+	margin-left: 0px;
+}
+
+.prod_filter input[type="text"] {
+	width: 220px;
+}
+
+/*상세 — 상단 2단*/
+.prod_detail {
+	display: grid;
+	grid-template-columns: 480px 1fr;
+	column-gap: var(--space-xl);
+	align-items: start;
+	margin-bottom: var(--space-xl);
+}
+
+/*이미지 — 첫 장은 크게, 나머지는 아래 4칸 줄*/
+.prod_gallery {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: var(--space-sm);
+}
+
+.prod_gallery > img,
+.prod_gallery > span,
+.prod_gallery > p {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	aspect-ratio: 1 / 1;
 	object-fit: cover;
-	border: 1px solid var(--bp-image-line);
+	font-size: var(--font-size-small);
+	color: var(--color-text-weak);
+	background-color: var(--color-primary-light);
+	border-radius: var(--radius-sm);
 }
 
-.prod_gallery p {
+.prod_gallery > :first-child {
+	grid-column: 1 / -1;
+	border-radius: var(--radius-md);
+}
+
+/*정보 · 구매*/
+.page_content .prod_info h2 {
+	margin-bottom: var(--space-sm);
+	padding-bottom: 0px;
+	font-size: 28px;
+	border-bottom: 0px;
+}
+
+.prod_cate {
+	margin-bottom: var(--space-xs);
 	font-size: var(--font-size-small);
 	color: var(--color-text-weak);
 }
 
-.prod_desc {
-	margin-top: var(--space-md);
+.prod_cate .prodcard_badge {
+	margin-top: 0px;
+}
+
+.prod_price {
 	margin-bottom: var(--space-md);
+	padding-bottom: var(--space-md);
+	border-bottom: 1px solid var(--color-border);
+}
+
+.prod_price strong {
+	font-size: 28px;
+}
+
+.prod_price .field_help {
+	display: inline;
+	margin-left: var(--space-sm);
+}
+
+.prod_spec {
+	margin-bottom: var(--space-md);
+	border-top-width: 1px;
+}
+
+.prod_spec th {
+	width: 90px;
+}
+
+/*담기 — 일수 고르기 · 합계 · 담기 버튼을 한 상자에*/
+.prod_buy {
+	margin-top: var(--space-md);
 	padding-top: var(--space-md);
 	padding-right: var(--space-md);
 	padding-bottom: var(--space-md);
 	padding-left: var(--space-md);
-	border: 1px solid var(--color-border);
+	border: 1px solid var(--color-border-strong);
+	border-radius: var(--radius-md);
 }
 
-/*담기 · 찜 — 액션 영역*/
-.prod_buy, .prod_wish {
-	display: inline-block;
-	margin-right: var(--space-sm);
-	margin-top: var(--space-sm);
-	padding-top: var(--space-sm);
-	padding-right: var(--space-md);
-	padding-bottom: var(--space-sm);
-	padding-left: var(--space-md);
-	background-color: var(--bp-action);
-	border: 1px solid var(--bp-action-line);
+.prod_buy > .btn_primary {
+	width: 100%;
+	min-height: 48px;
+	font-size: 16px;
 }
 
-.prod_buy label {
-	margin-right: var(--space-xs);
+.prod_buy > .field_help {
+	text-align: center;
+}
+
+/*섭취 일수 — 빠른 선택(7 · 14 · 30 · 60 · 90일) + 직접 입력*/
+.prod_days {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-xs);
+	margin-bottom: var(--space-sm);
+}
+
+.prod_days_label {
+	width: 100%;
+	margin-bottom: var(--space-xs);
 	font-size: var(--font-size-small);
+	font-weight: bold;
 }
 
-.prod_buy input[type="number"] {
+.prod_days label {
+	margin-left: var(--space-sm);
+	font-size: var(--font-size-small);
+	color: var(--color-text-weak);
+}
+
+.prod_days input[type="number"] {
 	width: 72px;
-	margin-right: var(--space-sm);
-	padding-top: var(--space-xs);
-	padding-left: var(--space-xs);
-	border: 1px solid var(--bp-input-line);
+	text-align: right;
 }
 
-.prod_review, .prod_qna {
+/*1포 가격 × 일수 = 합계 — js/custom.js 가 입력에 맞춰 다시 쓴다*/
+.prod_days_total {
+	margin-top: var(--space-sm);
+	margin-bottom: var(--space-md);
+	padding-top: var(--space-sm);
+	text-align: right;
+	border-top: 1px dashed var(--color-border);
+}
+
+.prod_days_total strong {
+	font-size: 20px;
+}
+
+/*찜 — 담기 상자 아래 전체 폭 보조 버튼*/
+.prod_wish {
+	margin-top: var(--space-sm);
+}
+
+.prod_wish .btn {
+	width: 100%;
+}
+
+/*아래 영역*/
+.prod_desc, .prod_track, .prod_review, .prod_qna {
 	margin-bottom: var(--space-xl);
+}
+
+.prod_desc h3, .prod_track h3, .prod_review h3, .prod_qna h3 {
+	margin-top: 0px;
+}
+
+/*설명은 표와 같은 윗선으로 시작한다*/
+.prod_desc p {
+	padding-top: var(--space-md);
+	padding-bottom: var(--space-md);
+	white-space: pre-line;
+	border-top: 2px solid var(--color-text);
+	border-bottom: 1px solid var(--color-border);
+}
+
+.prod_track .listtable {
+	margin-bottom: var(--space-sm);
+}
+
+/*문의하기 버튼은 제목 줄 오른쪽에*/
+.prod_qna {
+	position: relative;
+}
+
+.prod_qna > .btn {
+	position: absolute;
+	top: 0px;
+	right: 0px;
 }

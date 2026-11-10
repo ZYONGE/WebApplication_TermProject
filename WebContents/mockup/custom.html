@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>조합 맞추기 — 청사진</title>
+<!--
+  custom/index.jsp 대응. pages/custom.css + components/tab.css · warnbox.css 확인용.
+  레퍼런스: 다나와 "PC 견적 맞추기" — 분류 탭 | 상품 목록 | 견적함(내 조합)
+  탭 여닫기는 ../js/ui.js 의 data-tab-open 패턴이다. 합계 · 경고 즉시 계산은 JSP 트랙의 js/custom.js 몫이라
+  여기서는 "비타민C · 칼슘 · 철분 을 고른 상태" 를 정적으로 그려 둔다.
+-->
+<link rel="stylesheet" href="../css/base/reset.css">
+<link rel="stylesheet" href="../css/base/variables.css">
+<link rel="stylesheet" href="../css/base/layout.css">
+<link rel="stylesheet" href="../css/components/button.css">
+<link rel="stylesheet" href="../css/components/form.css">
+<link rel="stylesheet" href="../css/components/card.css">
+<link rel="stylesheet" href="../css/components/table.css">
+<link rel="stylesheet" href="../css/components/pagination.css">
+<link rel="stylesheet" href="../css/components/popup.css">
+<link rel="stylesheet" href="../css/components/tab.css">
+<link rel="stylesheet" href="../css/components/warnbox.css">
+<link rel="stylesheet" href="../css/pages/custom.css">
+<script src="../js/ui.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+<header class="page_header">
+	<h1><a href="#">SHOP</a></h1>
+	<ul class="page_header_util">
+		<li>홍길동님 (USER)</li><li><a href="#">마이페이지</a></li><li><a href="#">내 조합</a></li><li><a href="#">장바구니 (3)</a></li><li><a href="#">로그아웃</a></li>
+	</ul>
+	<nav class="page_nav"><ul>
+		<li><a href="#">전체상품</a></li><li><a href="#">낱개 영양제</a></li><li><a href="#">트랙 패키지</a></li><li class="page_nav_custom"><a href="#">조합 맞추기</a></li><li><a href="#">공지사항</a></li>
+	</ul></nav>
+</header>
+<main class="page_content">
+
+<h2>조합 맞추기</h2>
+<p class="field_help">필요한 영양제만 고르고 며칠치를 살지 정하세요. 고른 영양제마다 같은 일수로 장바구니에 한 줄씩 담깁니다.</p>
+
+<p class="custom_loaded">'여성 활력 트랙' 구성을 불러왔습니다. 빼거나 더해서 나만의 조합으로 고쳐 보세요.</p>
+
+<form class="custom" action="#" method="post">
+
+	<nav class="custom_tabs tab" data-tab>
+		<ul class="tab_list">
+			<li><button type="button" class="tab_btn on" data-tab-open="mVitamin">비타민</button></li>
+			<li><button type="button" class="tab_btn" data-tab-open="mMineral">미네랄</button></li>
+			<li><button type="button" class="tab_btn" data-tab-open="mFunc">기능성 원료</button></li>
+			<li><button type="button" class="tab_btn" data-tab-open="mTrack">트랙 불러오기</button></li>
+		</ul>
+	</nav>
+
+	<div class="custom_list">
+		<section id="mVitamin" class="tab_panel on">
+			<h3>비타민</h3>
+			<table class="listtable custom_table">
+				<thead class="listtable_head">
+					<tr><th class="col_check">선택</th><th class="col_name">영양제</th><th class="col_price">1포 가격</th><th class="col_rating">별점</th><th class="col_state">재고</th></tr>
+				</thead>
+				<tbody>
+					<tr><td class="col_check"><input type="checkbox" checked></td><td class="col_name"><label>비타민C 1000mg</label><a class="custom_more" href="#">상세</a></td><td class="col_price">300원</td><td class="col_rating">4.0 (1)</td><td class="col_state">2000포</td></tr>
+					<tr><td class="col_check"><input type="checkbox"></td><td class="col_name"><label>비타민D 2000IU</label><a class="custom_more" href="#">상세</a></td><td class="col_price">250원</td><td class="col_rating">0.0 (0)</td><td class="col_state">1500포</td></tr>
+					<tr><td class="col_check"><input type="checkbox"></td><td class="col_name"><label>비타민B 컴플렉스</label><a class="custom_more" href="#">상세</a></td><td class="col_price">350원</td><td class="col_rating">0.0 (0)</td><td class="col_state">800포</td></tr>
+				</tbody>
+			</table>
+		</section>
+		<section id="mMineral" class="tab_panel" hidden>
+			<h3>미네랄</h3>
+			<table class="listtable custom_table">
+				<tbody>
+					<tr><td class="col_check"><input type="checkbox" checked></td><td class="col_name"><label>칼슘 500mg</label></td><td class="col_price">280원</td><td class="col_state">1200포</td></tr>
+					<tr><td class="col_check"><input type="checkbox" checked></td><td class="col_name"><label>철분 18mg</label></td><td class="col_price">220원</td><td class="col_state">600포</td></tr>
+				</tbody>
+			</table>
+		</section>
+		<section id="mFunc" class="tab_panel" hidden>
+			<h3>기능성 원료</h3>
+			<table class="listtable custom_table"><tbody><tr><td colspan="5" class="empty">지금 고를 수 있는 영양제가 없습니다.</td></tr></tbody></table>
+		</section>
+		<section id="mTrack" class="tab_panel" hidden>
+			<h3>트랙 패키지에서 시작하기</h3>
+			<table class="listtable custom_table">
+				<tbody>
+					<tr><td class="col_name">데일리 기본 트랙</td><td class="col_content">비타민C + 비타민D + 오메가3 + 마그네슘</td><td class="col_price">1,200원</td><td class="col_action"><a class="btn btn_small" href="#">불러오기</a></td></tr>
+				</tbody>
+			</table>
+		</section>
+	</div>
+
+	<aside class="custom_summary">
+		<h3>내 조합 <span class="custom_count">3</span>종</h3>
+		<ul class="custom_picked">
+			<li><span class="custom_picked_name">비타민C 1000mg</span><span class="custom_picked_price">1포 300원</span><button type="button" class="btn btn_small btn_sub">빼기</button></li>
+			<li><span class="custom_picked_name">칼슘 500mg</span><span class="custom_picked_price">1포 280원</span><button type="button" class="btn btn_small btn_sub">빼기</button></li>
+			<li><span class="custom_picked_name">철분 18mg</span><span class="custom_picked_price">1포 220원</span><button type="button" class="btn btn_small btn_sub">빼기</button></li>
+		</ul>
+
+		<div class="custom_days">
+			<span class="custom_days_label">섭취 일수</span>
+			<button type="button" class="btn btn_small">7일</button>
+			<button type="button" class="btn btn_small">14일</button>
+			<button type="button" class="btn btn_small on">30일</button>
+			<button type="button" class="btn btn_small">60일</button>
+			<button type="button" class="btn btn_small">90일</button>
+			<label for="mDays">직접 입력</label>
+			<input type="number" id="mDays" value="30" min="1" max="90">일
+		</div>
+
+		<table class="formtable custom_sum">
+			<tr><th>1포 합계</th><td>800원</td></tr>
+			<tr><th>섭취 일수</th><td>30일 (30포씩)</td></tr>
+			<tr><th>상품 합계</th><td><strong>24,000</strong>원</td></tr>
+			<tr><th>배송비 (예상)</th><td>3,000원 <span class="field_help">50,000원 이상 무료</span></td></tr>
+		</table>
+
+		<section class="warnbox">
+			<h3 class="warnbox_title">함께 드실 때 확인하세요</h3>
+			<ul class="warnbox_list">
+				<li class="warnbox_conflict">
+					<strong class="warnbox_label">동시 섭취 주의</strong>
+					칼슘 500mg × 철분 18mg
+					<span class="warnbox_msg">칼슘은 철분 흡수를 방해할 수 있습니다. 2시간 이상 간격을 두고 드세요.</span>
+				</li>
+			</ul>
+			<p class="warnbox_note">경고는 안내이며 담기를 막지 않습니다. 일반 정보이며 의학적 조언이 아닙니다.</p>
+		</section>
+
+		<div class="custom_actions">
+			<button type="submit" class="btn btn_primary">장바구니에 담기</button>
+		</div>
+		<div class="custom_save">
+			<label for="mName">조합 이름</label>
+			<input type="text" id="mName" class="field" placeholder="예: 출근 전 루틴">
+			<button type="submit" class="btn">조합 저장</button>
+		</div>
+		<p class="custom_share">이 조합 링크: <a href="#">/custom?pick=1,4,7&amp;days=30</a></p>
+	</aside>
+</form>
+
+<section class="custom_mycombo">
+	<h3>내 조합 불러오기</h3>
+	<ul>
+		<li><a href="#">출근 전 루틴</a> <span class="field_help">4종 · 30일분</span></li>
+		<li><a href="#">운동 후 회복</a> <span class="field_help">3종 · 14일분</span></li>
+	</ul>
+</section>
+
+</main>
+<footer class="page_footer"><p>배선 동작 확인용 골격입니다.</p></footer>
+</div>
+</body>
+</html>

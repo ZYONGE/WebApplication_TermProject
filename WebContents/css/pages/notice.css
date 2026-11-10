@@ -11,48 +11,42 @@
     접두어 표(D-09)에 notice_* 행을 추가해야 한다. (보고 항목 G-2)
 */
 
-/*목록 상단 검색*/
+/*목록 상단 검색 — 오른쪽 정렬 한 줄*/
 .notice_search {
-	margin-bottom: var(--space-lg);
-	padding-top: var(--space-sm);
-	padding-right: var(--space-md);
-	padding-bottom: var(--space-sm);
-	padding-left: var(--space-md);
-	background-color: var(--bp-input);
-	border: 1px solid var(--bp-input-line);
+	display: flex;
+	justify-content: flex-end;
+	gap: var(--space-sm);
+	margin-bottom: var(--space-md);
 }
 
 .notice_search input[type="text"] {
-	margin-right: var(--space-sm);
-	padding-top: var(--space-xs);
-	padding-right: var(--space-sm);
-	padding-bottom: var(--space-xs);
-	padding-left: var(--space-sm);
-	border: 1px solid var(--bp-input-line);
+	width: 260px;
 }
 
 /*상세*/
 
 .notice_view {
 	margin-bottom: var(--space-lg);
-	padding-top: var(--space-md);
-	padding-right: var(--space-md);
-	padding-bottom: var(--space-md);
-	padding-left: var(--space-md);
-	border: 1px solid var(--color-border);
+	border-top: 2px solid var(--color-text);
+	border-bottom: 1px solid var(--color-border-strong);
 }
 
-.notice_view h2 {
-	padding-bottom: var(--space-sm);
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: var(--color-border-strong);
+.page_content .notice_view h2 {
+	margin-bottom: var(--space-xs);
+	padding-top: var(--space-md);
+	padding-bottom: 0px;
+	border-bottom: 0px;
+}
+
+.notice_view > .field_help {
+	padding-bottom: var(--space-md);
+	border-bottom: 1px solid var(--color-border);
 }
 
 /*본문 — 줄바꿈이 그대로 보여야 한다*/
 .notice_content {
-	margin-top: var(--space-md);
-	padding-top: var(--space-md);
-	padding-bottom: var(--space-md);
+	min-height: 200px;
+	padding-top: var(--space-lg);
+	padding-bottom: var(--space-lg);
 	white-space: pre-wrap;
 }

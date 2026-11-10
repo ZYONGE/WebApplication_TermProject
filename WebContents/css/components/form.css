@@ -5,40 +5,34 @@
   사용 중: formtable / formtable_form / field / field_help / required / btnstyle
 
   폼은 table 마크업을 쓴다 (D-11). th = 레이블, td = 입력.
-  입력 영역은 input 표식색으로 묶어 "사용자가 값을 넣는 곳"을 한눈에 구분한다.
+  formtable 은 입력폼과 "항목 : 값" 정보표(주문 요약 · 상품 정보) 양쪽에 쓰인다.
 */
 
-/*폼을 감싸는 form 요소 — 입력 영역의 경계*/
+/*폼 하나를 감싸는 form — 화면 가운데 적당한 폭으로 모은다*/
 .formtable_form {
-	padding-top: var(--space-md);
-	padding-right: var(--space-md);
-	padding-bottom: var(--space-md);
-	padding-left: var(--space-md);
-	background-color: var(--bp-input);
-	border: 1px solid var(--bp-input-line);
+	max-width: 760px;
+	margin-right: auto;
+	margin-left: auto;
 }
 
 .formtable {
 	width: 100%;
 	background-color: var(--color-surface);
-	border: 1px solid var(--bp-input-line);
+	border-top: 2px solid var(--color-text);
 }
 
 .formtable th {
-	width: var(--layout-side-width);
+	width: 160px;
 	padding-top: var(--space-sm);
 	padding-right: var(--space-md);
 	padding-bottom: var(--space-sm);
 	padding-left: var(--space-md);
-	text-align: left;
+	font-size: var(--font-size-small);
 	font-weight: bold;
-	background-color: var(--bp-input);
-	border-right-width: 1px;
-	border-right-style: solid;
-	border-right-color: var(--bp-input-line);
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: var(--bp-input-line);
+	text-align: left;
+	vertical-align: middle;
+	background-color: var(--color-primary-light);
+	border-bottom: 1px solid var(--color-border);
 }
 
 .formtable td {
@@ -47,24 +41,54 @@
 	padding-bottom: var(--space-sm);
 	padding-left: var(--space-md);
 	text-align: left;
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: var(--bp-input-line);
+	vertical-align: middle;
+	border-bottom: 1px solid var(--color-border);
 }
 
-/*입력칸 — 어디까지가 입력 가능 영역인지 보여야 한다*/
-.field {
-	width: 100%;
+/*입력칸*/
+.field,
+.page_content input[type="text"],
+.page_content input[type="password"],
+.page_content input[type="email"],
+.page_content input[type="number"],
+.page_content select,
+.page_content textarea {
+	box-sizing: border-box;
+	min-height: 36px;
 	padding-top: var(--space-xs);
 	padding-right: var(--space-sm);
 	padding-bottom: var(--space-xs);
 	padding-left: var(--space-sm);
-	background-color: var(--color-bg);
-	border: 1px solid var(--bp-input-line);
+	color: var(--color-text);
+	background-color: var(--color-surface);
+	border: 1px solid var(--color-border-strong);
+	border-radius: var(--radius-sm);
 }
 
-textarea.field {
+.field {
+	width: 100%;
+}
+
+.page_content input:focus,
+.page_content select:focus,
+.page_content textarea:focus {
+	outline: 2px solid var(--color-primary);
+	outline-offset: -1px;
+}
+
+textarea.field,
+.page_content textarea {
 	line-height: var(--line-height-base);
+	resize: vertical;
+}
+
+.page_content input[type="checkbox"],
+.page_content input[type="radio"] {
+	width: 16px;
+	height: 16px;
+	margin-right: var(--space-xs);
+	vertical-align: middle;
+	accent-color: var(--color-primary);
 }
 
 /*보조 설명 — 값이 아니라 안내라는 것이 구분돼야 한다*/
@@ -81,17 +105,20 @@ textarea.field {
 	font-weight: bold;
 }
 
-/*폼 하단 버튼 행 — 실습 관례의 .btnstyle 을 승계한다*/
+/*폼 · 화면 하단 버튼 행 — 실습 관례의 .btnstyle 을 승계한다*/
 .btnstyle {
-	margin-top: var(--space-md);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: var(--space-sm);
+	margin-top: var(--space-lg);
 	padding-top: var(--space-md);
-	padding-bottom: var(--space-md);
-	text-align: center;
-	background-color: var(--bp-action);
-	border: 1px solid var(--bp-action-line);
 }
 
 .btnstyle .btn {
-	margin-right: var(--space-xs);
-	margin-left: var(--space-xs);
+	min-width: 120px;
+}
+
+.btnstyle form {
+	margin: 0px;
 }

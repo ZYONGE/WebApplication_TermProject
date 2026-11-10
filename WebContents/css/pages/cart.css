@@ -2,39 +2,75 @@
 
 /*
   장바구니 — 소유 접두어: cart_* (DECISIONS.md D-09)
-  사용 중: cart_table (listtable 과 함께) / cart_sum (formtable 과 함께)
-
-  둘 다 컴포넌트에 덧붙는 보조 클래스다. 컴포넌트가 모양을 정하고
-  여기서는 장바구니에서만 다른 점만 적는다 (D-09 · D-11).
+  사용 중: cart_table (listtable 과 함께) / cart_sum (formtable 과 함께) /
+           cart_notice (섭취 일수가 다른 줄 안내)
+  경고 박스는 components/warnbox.css 가 정한다 — 장바구니는 자리만 내준다.
 */
 
 .cart_table {
 	margin-bottom: var(--space-lg);
 }
 
-/*수량 변경은 줄마다 폼이 따로 있다 — 한 줄에 들어가야 한다*/
+/*일수 변경은 줄마다 폼이 따로 있다 — 한 줄에 들어가야 한다*/
+.cart_table .col_qty {
+	width: 220px;
+}
+
 .cart_table .col_qty form {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-xs);
 	margin: 0px;
 }
 
 .cart_table .col_qty input[type="number"] {
-	width: 56px;
-	margin-right: var(--space-xs);
-	padding-top: var(--space-xs);
-	padding-left: var(--space-xs);
-	border: 1px solid var(--bp-input-line);
+	width: 72px;
+	text-align: right;
 }
 
-.cart_table .col_action form {
-	margin: 0px;
+.cart_table .col_qty .field_help {
+	width: 100%;
+	margin-top: 0px;
 }
 
-/*합계 — 결제 예정 금액이 목록과 구분돼야 한다*/
+.cart_table .col_name .prodcard_badge {
+	margin-top: 0px;
+}
+
+/*합계 — 오른쪽에 붙은 결제 예정 상자*/
 .cart_sum {
 	width: 420px;
 	margin-left: auto;
 }
 
 .cart_sum th {
-	width: 160px;
+	width: 140px;
+}
+
+.cart_sum td {
+	text-align: right;
+}
+
+.cart_sum td .field_help {
+	display: block;
+}
+
+.cart_sum tr:last-child th,
+.cart_sum tr:last-child td {
+	font-size: 18px;
+	font-weight: bold;
+}
+
+/*섭취 일수가 서로 다른 줄 안내 — 막지 않는 안내*/
+.cart_notice {
+	margin-bottom: var(--space-md);
+	padding-top: var(--space-sm);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-md);
+	font-size: var(--font-size-small);
+	background-color: var(--color-primary-light);
+	border-left: 4px solid var(--color-border-strong);
+	border-radius: var(--radius-sm);
 }

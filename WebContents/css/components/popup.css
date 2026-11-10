@@ -5,73 +5,91 @@
   사용 중: popup / popup_form / popup_head / popup_body / popup_foot / popup_close
            toast / toast_error
 
-  ★ O-02(별창 vs 인페이지 모달) 는 이 샌드박스에서 사실상 결정됐다.
-    JSP 가 HTML 표준 <dialog> + showModal() 로 구현했으므로 인페이지 모달이다.
-    별창(window.open) 마크업은 한 곳도 없다. 보고 항목 참조.
-
-  팝업 영역은 popup 표식색으로 묶는다. 라우팅 페이지와 팝업을 구분해
-  개발한다는 공지 항목 5 가 화면에서도 보여야 한다.
+  팝업은 HTML 표준 <dialog> + showModal() 인페이지 모달이다 (DECISIONS § 4).
+  라우팅 페이지와 팝업을 구분해 만든다는 원칙이 화면에서도 보이도록
+  머리 · 몸 · 발 세 칸으로 나눈다.
 */
 
 .popup {
 	width: 640px;
+	max-width: 90vw;
+	max-height: 86vh;
 	padding: 0px;
+	overflow: auto;
 	background-color: var(--color-surface);
-	border: 2px solid var(--bp-popup-line);
+	border: 0px;
+	border-radius: var(--radius-md);
+	box-shadow: 0px 12px 40px rgba(0, 0, 0, 0.25);
 }
 
 .popup::backdrop {
-	background-color: rgba(0, 0, 0, 0.4);
+	background-color: rgba(0, 0, 0, 0.45);
 }
 
-/*팝업 안의 form — 팝업 전체를 감싸는 경우가 많다*/
 .popup_form {
 	margin: 0px;
 	padding: 0px;
 }
 
 .popup_head {
+	position: sticky;
+	top: 0px;
 	margin: 0px;
-	padding-top: var(--space-sm);
-	padding-right: var(--space-md);
-	padding-bottom: var(--space-sm);
-	padding-left: var(--space-md);
-	font-size: var(--font-size-base);
+	padding-top: var(--space-md);
+	padding-right: var(--space-lg);
+	padding-bottom: var(--space-md);
+	padding-left: var(--space-lg);
+	font-size: 17px;
 	font-weight: bold;
-	background-color: var(--bp-popup);
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: var(--bp-popup-line);
+	background-color: var(--color-surface);
+	border-bottom: 1px solid var(--color-border);
 }
 
 .popup_body {
-	padding-top: var(--space-md);
-	padding-right: var(--space-md);
-	padding-bottom: var(--space-md);
-	padding-left: var(--space-md);
+	padding-top: var(--space-lg);
+	padding-right: var(--space-lg);
+	padding-bottom: var(--space-lg);
+	padding-left: var(--space-lg);
+}
+
+.popup_body > p {
+	margin-bottom: var(--space-sm);
 }
 
 .popup_body label {
 	display: inline-block;
 	margin-bottom: var(--space-xs);
 	font-size: var(--font-size-small);
+	font-weight: bold;
+}
+
+.popup_body .field + label,
+.popup_body textarea + label {
+	margin-top: var(--space-md);
+}
+
+.popup_body h4 {
+	margin-top: var(--space-md);
+	margin-bottom: var(--space-xs);
 }
 
 .popup_foot {
-	padding-top: var(--space-sm);
-	padding-right: var(--space-md);
-	padding-bottom: var(--space-sm);
-	padding-left: var(--space-md);
-	text-align: right;
-	background-color: var(--bp-popup);
-	border-top-width: 1px;
-	border-top-style: solid;
-	border-top-color: var(--bp-popup-line);
+	position: sticky;
+	bottom: 0px;
+	display: flex;
+	justify-content: flex-end;
+	gap: var(--space-sm);
+	padding-top: var(--space-md);
+	padding-right: var(--space-lg);
+	padding-bottom: var(--space-md);
+	padding-left: var(--space-lg);
+	background-color: var(--color-primary-light);
+	border-top: 1px solid var(--color-border);
 }
 
 /*닫기 — btn 과 함께 붙는 보조 클래스다 (단독 사용 아님)*/
 .popup_close {
-	margin-left: var(--space-xs);
+	margin-left: 0px;
 }
 
 /*
@@ -79,18 +97,24 @@
   header.jsp 가 page_content 밖, 헤더 바로 아래에 내보낸다.
 */
 .toast {
-	margin-top: var(--space-sm);
-	margin-bottom: var(--space-sm);
+	margin-top: var(--space-md);
 	padding-top: var(--space-sm);
 	padding-right: var(--space-md);
 	padding-bottom: var(--space-sm);
 	padding-left: var(--space-md);
-	background-color: var(--bp-state);
-	border: 1px solid var(--bp-state-line);
+	font-size: var(--font-size-small);
+	background-color: var(--color-primary-light);
+	border-left: 4px solid var(--color-success);
+	border-radius: var(--radius-sm);
 }
 
 .toast_error {
 	color: var(--color-danger);
-	border-width: 2px;
-	border-color: var(--color-danger);
+	border-left-color: var(--color-danger);
+}
+
+/*본문 안에 놓인 토스트(장바구니의 주문 불가 안내 등)는 아래 여백만*/
+.page_content .toast {
+	margin-top: 0px;
+	margin-bottom: var(--space-md);
 }

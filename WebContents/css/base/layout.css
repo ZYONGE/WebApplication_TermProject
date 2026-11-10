@@ -4,8 +4,11 @@
   공통 레이아웃 — wrap · page_header · page_nav · page_content · page_footer
   소유 접두어: wrap, container, page_* (DECISIONS.md D-09)
 
-  header.jsp / footer.jsp 가 내보내는 골격을 그대로 받는다.
-  구조가 보이도록 영역마다 선을 두르고, 내비 · 유틸은 nav 표식색으로 묶는다.
+  header.jsp 의 마크업 순서는 그대로 두고 격자(grid)로 자리만 잡는다.
+
+      ┌ 로고 ───────── 검색 ─────────── 유틸(로그인 · 장바구니) ┐  1행
+      ├ 안내 (계정 전환 · 점검 모드) — 있을 때만 ────────────────┤  2행~
+      └ 내비 (카테고리 · 조합 맞추기 · 공지) — 소분류는 펼침 메뉴 ┘  마지막 행
 */
 
 .wrap {
@@ -19,129 +22,219 @@
 /*상단*/
 
 .page_header {
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	column-gap: var(--space-lg);
+	align-items: center;
 	padding-top: var(--space-md);
-	padding-bottom: var(--space-md);
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: var(--color-border-strong);
+	border-bottom: 1px solid var(--color-border-strong);
 }
 
 .page_header h1 {
-	font-size: var(--font-size-title);
+	grid-row: 1;
+	grid-column: 1;
+	font-size: 26px;
+	letter-spacing: 1px;
 }
 
 .page_header h1 a {
+	color: var(--color-text);
 	text-decoration: none;
 }
 
-/*로그인 · 장바구니 · 관리자 — 유틸 묶음*/
-.page_header_util {
-	margin-top: var(--space-sm);
-	padding-top: var(--space-xs);
-	padding-right: var(--space-sm);
-	padding-bottom: var(--space-xs);
-	padding-left: var(--space-sm);
-	background-color: var(--bp-nav);
-	border: 1px solid var(--bp-nav-line);
-}
-
-.page_header_util li {
-	display: inline-block;
-	margin-right: var(--space-md);
-	font-size: var(--font-size-small);
-}
-
-/*dev 계정 전환 · 점검 모드 안내 — 상태 표식색*/
-.page_header_notice {
-	margin-top: var(--space-sm);
-	padding-top: var(--space-xs);
-	padding-right: var(--space-sm);
-	padding-bottom: var(--space-xs);
-	padding-left: var(--space-sm);
-	font-size: var(--font-size-small);
-	background-color: var(--bp-state);
-	border: 1px solid var(--bp-state-line);
-}
-
-.page_nav {
-	margin-top: var(--space-sm);
-	padding-top: var(--space-sm);
-	padding-right: var(--space-sm);
-	padding-bottom: var(--space-sm);
-	padding-left: var(--space-sm);
-	background-color: var(--bp-nav);
-	border: 1px solid var(--bp-nav-line);
-}
-
-.page_nav > ul > li {
-	display: inline-block;
-	margin-right: var(--space-md);
-	vertical-align: top;
-}
-
-/*2단 카테고리 — 하위 목록이 있다는 사실이 보여야 한다*/
-.page_nav > ul > li > ul {
-	margin-top: var(--space-xs);
-	padding-left: var(--space-sm);
-	border-left-width: 1px;
-	border-left-style: solid;
-	border-left-color: var(--bp-nav-line);
-}
-
-.page_nav > ul > li > ul > li {
-	font-size: var(--font-size-small);
-}
-
+/*검색 — 로고 옆 가운데. 레이블은 화면에서 숨기고 읽기 프로그램에는 남긴다*/
 .page_search {
-	margin-top: var(--space-sm);
-	padding-top: var(--space-sm);
-	padding-right: var(--space-sm);
-	padding-bottom: var(--space-sm);
-	padding-left: var(--space-sm);
-	background-color: var(--bp-input);
-	border: 1px solid var(--bp-input-line);
+	grid-row: 1;
+	grid-column: 2;
+	display: flex;
+	max-width: 460px;
 }
 
 .page_search label {
-	margin-right: var(--space-sm);
-	font-size: var(--font-size-small);
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0px, 0px, 0px, 0px);
 }
 
 .page_search input[type="text"] {
-	width: 240px;
+	flex-grow: 1;
+	height: 40px;
+	padding-right: var(--space-md);
+	padding-left: var(--space-md);
+	border: 2px solid var(--color-primary);
+	border-right-width: 0px;
+	border-radius: var(--radius-sm) 0px 0px var(--radius-sm);
+}
+
+.page_search .btn {
+	height: 40px;
+	color: var(--color-text-inverse);
+	background-color: var(--color-primary);
+	border-color: var(--color-primary);
+	border-radius: 0px var(--radius-sm) var(--radius-sm) 0px;
+}
+
+/*로그인 · 장바구니 · 관리자 — 오른쪽 위 유틸*/
+.page_header_util {
+	grid-row: 1;
+	grid-column: 3;
+	display: flex;
+	align-items: center;
+	font-size: var(--font-size-small);
+}
+
+.page_header_util li {
+	margin-left: var(--space-md);
+	color: var(--color-text-weak);
+}
+
+.page_header_util a {
+	color: var(--color-text);
+	text-decoration: none;
+}
+
+.page_header_util a:hover {
+	text-decoration: underline;
+}
+
+/*dev 계정 전환 · 점검 모드 안내 — 헤더 폭 전체 띠*/
+.page_header_notice {
+	grid-column: 1 / -1;
+	margin-top: var(--space-sm);
 	padding-top: var(--space-xs);
-	padding-right: var(--space-sm);
+	padding-right: var(--space-md);
 	padding-bottom: var(--space-xs);
-	padding-left: var(--space-sm);
-	border: 1px solid var(--bp-input-line);
+	padding-left: var(--space-md);
+	font-size: var(--font-size-small);
+	background-color: var(--color-primary-light);
+	border-left: 3px solid var(--color-danger);
+}
+
+/*내비 — 헤더 맨 아래 한 줄*/
+.page_nav {
+	grid-column: 1 / -1;
+	margin-top: var(--space-md);
+}
+
+.page_nav > ul {
+	display: flex;
+}
+
+.page_nav > ul > li {
+	position: relative;
+}
+
+.page_nav > ul > li > a {
+	display: block;
+	padding-top: var(--space-sm);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-md);
+	font-weight: bold;
+	color: var(--color-text);
+	text-decoration: none;
+	border-bottom: 3px solid transparent;
+}
+
+.page_nav > ul > li:first-child > a {
+	padding-left: 0px;
+}
+
+.page_nav > ul > li > a:hover,
+.page_nav > ul > li > a.on {
+	border-bottom-color: var(--color-primary);
+}
+
+/*소분류 — 대분류에 올리면 펼친다 (키보드 포커스로도)*/
+.page_nav > ul > li > ul {
+	display: none;
+	position: absolute;
+	top: 100%;
+	left: 0px;
+	z-index: 50;
+	min-width: 160px;
+	padding-top: var(--space-xs);
+	padding-bottom: var(--space-xs);
+	background-color: var(--color-surface);
+	border: 1px solid var(--color-border-strong);
+	border-radius: 0px 0px var(--radius-sm) var(--radius-sm);
+}
+
+.page_nav > ul > li:hover > ul,
+.page_nav > ul > li:focus-within > ul {
+	display: block;
+}
+
+.page_nav > ul > li > ul a {
+	display: block;
+	padding-top: var(--space-xs);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-xs);
+	padding-left: var(--space-md);
+	font-size: var(--font-size-small);
+	color: var(--color-text);
+	text-decoration: none;
+}
+
+.page_nav > ul > li > ul a:hover {
+	background-color: var(--color-primary-light);
+}
+
+/*조합 맞추기 — 내비에서 다른 메뉴와 구분되는 진입점, 공지사항은 맨 오른쪽으로 민다*/
+.page_nav > ul > li.page_nav_custom {
+	margin-left: auto;
+}
+
+.page_nav > ul > li.page_nav_custom > a {
+	color: var(--color-text-inverse);
+	background-color: var(--color-primary);
+	border-radius: var(--radius-sm) var(--radius-sm) 0px 0px;
+}
+
+.page_nav > ul > li.page_nav_custom > a:hover {
+	background-color: var(--color-primary-dark);
+	border-bottom-color: var(--color-primary-dark);
 }
 
 /*중앙*/
 
 .page_content {
 	display: block;
+	min-height: 480px;
 	padding-top: var(--space-lg);
 	padding-bottom: var(--space-xl);
 }
 
 .page_content h2 {
 	margin-bottom: var(--space-md);
+	padding-bottom: var(--space-sm);
 	font-size: var(--font-size-title);
+	border-bottom: 2px solid var(--color-text);
 }
 
 .page_content h3 {
 	margin-top: var(--space-lg);
+	margin-bottom: var(--space-sm);
+	font-size: 17px;
+}
+
+.page_content > p {
 	margin-bottom: var(--space-sm);
 }
 
 /*하단*/
 
 .page_footer {
-	padding-top: var(--space-md);
-	padding-bottom: var(--space-md);
+	padding-top: var(--space-lg);
+	padding-bottom: var(--space-lg);
 	font-size: var(--font-size-small);
 	color: var(--color-text-weak);
-	border-top-width: 1px;
-	border-top-style: solid;
-	border-top-color: var(--color-border-strong);
+	text-align: center;
+	border-top: 1px solid var(--color-border-strong);
+}
+
+.page_footer p {
+	margin-bottom: var(--space-xs);
 }

@@ -13,6 +13,8 @@
 <link rel="stylesheet" href="../css/components/table.css">
 <link rel="stylesheet" href="../css/components/pagination.css">
 <link rel="stylesheet" href="../css/components/popup.css">
+<link rel="stylesheet" href="../css/components/tab.css">
+<link rel="stylesheet" href="../css/components/warnbox.css">
 <link rel="stylesheet" href="../css/pages/main.css">
 </head>
 <body>
@@ -23,12 +25,18 @@
 		<li><a href="#">로그인</a></li><li><a href="#">회원가입</a></li>
 	</ul>
 	<nav class="page_nav"><ul>
-		<li><a href="#">전체상품</a></li><li><a href="#">의류</a></li><li><a href="#">공지사항</a></li>
+		<li><a href="#">전체상품</a></li><li><a href="#">낱개 영양제</a></li><li><a href="#">트랙 패키지</a></li><li class="page_nav_custom"><a href="#">조합 맞추기</a></li><li><a href="#">공지사항</a></li>
 	</ul></nav>
-	<form class="page_search" action="#"><label for="k">상품검색</label>
+	<form class="page_search" action="#"><label for="k">영양제 검색</label>
 		<input type="text" id="k"><button type="submit" class="btn">검색</button></form>
 </header>
 <main class="page_content">
+
+<section class="main_custom">
+	<h2>나에게 필요한 영양소만, 하루 1포로</h2>
+	<p>영양제를 직접 골라 며칠치를 살지 정하세요. 함께 먹기를 권하지 않는 조합은 고르는 즉시 알려 드립니다.</p>
+	<p><a class="btn btn_primary" href="custom.html">조합 맞추기</a> <a class="btn btn_sub" href="#">트랙 패키지 보기</a></p>
+</section>
 
 <section class="main_notice">
 	<h2>공지사항</h2>
@@ -39,22 +47,38 @@
 	<p><a href="#">공지 전체보기</a></p>
 </section>
 
+<section class="main_track">
+	<h2>트랙 패키지</h2>
+	<p class="field_help">여러 영양제를 1포에 미리 묶었습니다. 조합 맞추기에서 불러와 고쳐 쓸 수도 있습니다.</p>
+	<ul class="prodlist">
+		<li class="prodcard">
+			<a href="#">
+				<span class="prodcard_thumb">[이미지 없음]</span>
+				<span class="prodcard_name">데일리 기본 트랙</span>
+				<span class="prodcard_price">1포 1,200원</span>
+			</a>
+			<span class="prodcard_badge">구성 비타민C 1000mg + 비타민D 2000IU + 오메가3 1000mg + 마그네슘 300mg</span>
+			<a class="btn btn_small" href="custom.html">불러와 고치기</a>
+		</li>
+	</ul>
+</section>
+
 <section class="main_new">
 	<h2>신상품</h2>
 	<ul class="prodlist">
 		<li class="prodcard">
 			<a href="#">
 				<span class="prodcard_thumb">[이미지 없음]</span>
-				<span class="prodcard_name">기본 티셔츠</span>
-				<span class="prodcard_price">19,000원</span>
+				<span class="prodcard_name">비타민C 1000mg</span>
+				<span class="prodcard_price">1포 300원</span>
 			</a>
 			<span class="prodcard_badge">별점 4.5 (12)</span>
 		</li>
 		<li class="prodcard">
 			<a href="#">
 				<span class="prodcard_thumb">[이미지 없음]</span>
-				<span class="prodcard_name">면 바지</span>
-				<span class="prodcard_price">34,000원</span>
+				<span class="prodcard_name">데일리 기본 트랙</span>
+				<span class="prodcard_price">1포 1,200원</span>
 			</a>
 			<span class="prodcard_badge">별점 4.0 (3)</span>
 		</li>
@@ -62,7 +86,7 @@
 			<a href="#">
 				<span class="prodcard_thumb">[이미지 없음]</span>
 				<span class="prodcard_name">품절된 상품</span>
-				<span class="prodcard_price">12,000원</span>
+				<span class="prodcard_price">1포 500원</span>
 			</a>
 			<span class="prodcard_badge">별점 0.0 (0)</span>
 		</li>

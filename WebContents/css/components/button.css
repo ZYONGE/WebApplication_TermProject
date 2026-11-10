@@ -2,14 +2,18 @@
 
 /*
   버튼 — 소유 접두어: btn* (DECISIONS.md D-09)
-  사용 중인 변종: btn / btn_primary / btn_sub / btn_danger / btn_small
+  사용 중인 변종: btn / btn_primary / btn_sub / btn_danger / btn_small  (+ 상태 on)
 
   JSP 는 <button class="btn"> 과 <a class="btn"> 두 형태로 쓴다.
-  두 요소가 같은 모양이어야 하므로 inline-block 으로 맞춘다.
+  두 요소가 같은 모양이어야 하므로 inline-flex 로 높이와 가운데 정렬을 맞춘다.
 */
 
 .btn {
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	min-height: 36px;
 	padding-top: var(--space-xs);
 	padding-right: var(--space-md);
 	padding-bottom: var(--space-xs);
@@ -19,37 +23,84 @@
 	color: var(--color-text);
 	text-align: center;
 	text-decoration: none;
-	background-color: var(--bp-action);
-	border: 1px solid var(--bp-action-line);
+	white-space: nowrap;
+	vertical-align: middle;
+	background-color: var(--color-surface);
+	border: 1px solid var(--color-border-strong);
+	border-radius: var(--radius-sm);
 	cursor: pointer;
 }
 
-/*주 동작 — 테두리를 굵게 해 한 화면에서 무엇이 주 동작인지 보이게 한다*/
+.btn:hover {
+	border-color: var(--color-primary);
+}
+
+/*주 동작 — 한 화면에 하나. 채운 버튼*/
 .btn_primary {
-	border-width: 2px;
 	font-weight: bold;
+	color: var(--color-text-inverse);
+	background-color: var(--color-primary);
+	border-color: var(--color-primary);
+}
+
+.btn_primary:hover {
+	background-color: var(--color-primary-dark);
+	border-color: var(--color-primary-dark);
 }
 
 /*보조 동작 — 목록으로, 계속 쇼핑 등*/
 .btn_sub {
-	background-color: var(--color-bg);
+	color: var(--color-text-weak);
+	background-color: var(--color-surface);
+	border-color: var(--color-border);
 }
 
 /*파괴적 동작 — 삭제, 취소*/
 .btn_danger {
 	color: var(--color-danger);
+	background-color: var(--color-surface);
+	border-color: var(--color-danger);
+}
+
+.btn_danger:hover {
+	color: var(--color-text-inverse);
+	background-color: var(--color-danger);
 	border-color: var(--color-danger);
 }
 
 /*표 안에 들어가는 작은 버튼*/
 .btn_small {
+	min-height: 28px;
+	padding-top: 2px;
 	padding-right: var(--space-sm);
+	padding-bottom: 2px;
 	padding-left: var(--space-sm);
 	font-size: var(--font-size-small);
 }
 
+/*선택된 값 — 섭취 일수 빠른 선택 등*/
+.btn.on {
+	font-weight: bold;
+	color: var(--color-text-inverse);
+	background-color: var(--color-primary);
+	border-color: var(--color-primary);
+}
+
 .btn[disabled] {
 	color: var(--color-text-weak);
-	border-style: dashed;
+	background-color: var(--color-primary-light);
+	border-color: var(--color-border);
 	cursor: default;
+}
+
+/*표 칸 안에서 버튼 · 버튼 폼이 나란히 놓이게 한다 (수정 링크 + 삭제 폼)*/
+td > form {
+	display: inline-block;
+	margin: 0px;
+}
+
+td > .btn + form,
+td > form + .btn,
+td > .btn + .btn {
+	margin-left: var(--space-xs);
 }

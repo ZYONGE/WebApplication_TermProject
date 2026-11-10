@@ -1,0 +1,67 @@
+@charset "utf-8";
+
+/*
+  탭 — 소유 접두어: tab* (DECISIONS.md § 2 · IMPACT K12)
+  사용 중: tab (묶음, data-tab) / tab_list / tab_btn (+on) / tab_panel (+on)
+           — custom/index.jsp 조합 탭의 분류 탭
+
+  여닫기는 js/ui.js 의 data-tab-open 패턴이다 (팝업의 data-popup-open 과 같은 방식).
+  ui.js 가 패널에 hidden 속성을 함께 걸어 주므로 CSS 가 없어도 한 패널만 보인다.
+*/
+
+.tab {
+	margin-bottom: var(--space-md);
+}
+
+.tab_list {
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+	border-top: 2px solid var(--color-text);
+}
+
+.tab_list li {
+	border-bottom: 1px solid var(--color-border);
+}
+
+.tab_btn {
+	display: block;
+	width: 100%;
+	padding-top: var(--space-sm);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-md);
+	font-family: var(--font-base);
+	font-size: var(--font-size-base);
+	color: var(--color-text);
+	text-align: left;
+	background-color: var(--color-surface);
+	border: 0px;
+	border-left: 3px solid transparent;
+	cursor: pointer;
+}
+
+.tab_btn:hover {
+	background-color: var(--color-primary-light);
+}
+
+/*지금 열린 탭*/
+.tab_btn.on {
+	font-weight: bold;
+	background-color: var(--color-primary-light);
+	border-left-color: var(--color-primary);
+}
+
+.tab_panel {
+	padding: 0px;
+}
+
+.tab_panel[hidden] {
+	display: none;
+}
+
+.tab_panel h3 {
+	margin-top: 0px;
+	margin-bottom: var(--space-sm);
+	font-size: 17px;
+}

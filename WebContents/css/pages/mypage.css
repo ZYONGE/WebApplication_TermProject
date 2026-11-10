@@ -2,24 +2,55 @@
 
 /*
   마이페이지 — 소유 접두어: my_* (DECISIONS.md D-09)
-  사용 중: my_nav (index · edit · address · wishlist · review · qna 6개 화면 공통)
+  사용 중: my_nav (index · edit · address · wishlist · combo · review · qna 7개 화면 공통) /
+           my_combo_off (내 조합 — 지금 담을 수 없는 구성)
 
-  admin_nav 와 같은 모양의 좌우 내비다. 두 클래스를 합치지 않은 이유는
+  admin_nav 와 같은 모양의 탭 줄 내비다. 두 클래스를 합치지 않은 이유는
   JSP 가 각각 다른 이름으로 내보내고 있기 때문이다 — 계약을 바꾸려면 PM 을 거친다.
 */
 
 .my_nav {
+	display: flex;
+	flex-wrap: wrap;
 	margin-bottom: var(--space-lg);
-	padding-top: var(--space-sm);
-	padding-right: var(--space-sm);
-	padding-bottom: var(--space-sm);
-	padding-left: var(--space-sm);
-	background-color: var(--bp-nav);
-	border: 1px solid var(--bp-nav-line);
+	border-bottom: 1px solid var(--color-border-strong);
 }
 
 .my_nav li {
-	display: inline-block;
-	margin-right: var(--space-md);
+	margin-right: 0px;
+}
+
+.my_nav a {
+	display: block;
+	padding-top: var(--space-sm);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-md);
 	font-size: var(--font-size-small);
+	color: var(--color-text-weak);
+	text-decoration: none;
+	border-bottom: 2px solid transparent;
+	margin-bottom: -1px;
+}
+
+.my_nav a:hover {
+	color: var(--color-text);
+}
+
+/*지금 화면 — js/ui.js 가 주소를 보고 on 을 붙인다*/
+.my_nav a.on {
+	font-weight: bold;
+	color: var(--color-text);
+	border-bottom-color: var(--color-primary);
+}
+
+/*내 조합 — 판매 중지 · 재고 없는 구성. 지우지 않고 흐리게만 보인다*/
+.my_combo_off {
+	color: var(--color-text-weak);
+	text-decoration: line-through;
+}
+
+/*마이페이지 첫 화면의 회원 요약표는 좁게*/
+.my_nav ~ .formtable {
+	max-width: 640px;
 }

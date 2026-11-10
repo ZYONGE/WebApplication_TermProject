@@ -7,35 +7,36 @@
 */
 
 .paging {
-	margin-top: var(--space-md);
-	padding-top: var(--space-sm);
-	padding-bottom: var(--space-sm);
-	text-align: center;
+	display: flex;
+	justify-content: center;
+	gap: var(--space-xs);
+	margin-top: var(--space-lg);
 }
 
 .paging a, .paging strong {
-	display: inline-block;
-	min-width: 32px;
-	margin-right: var(--space-xs);
-	margin-left: var(--space-xs);
-	padding-top: var(--space-xs);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 34px;
+	height: 34px;
 	padding-right: var(--space-sm);
-	padding-bottom: var(--space-xs);
 	padding-left: var(--space-sm);
-	text-align: center;
+	box-sizing: border-box;
+	font-size: var(--font-size-small);
+	color: var(--color-text);
 	text-decoration: none;
 	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
 }
 
-.paging_prev, .paging_next {
-	background-color: var(--bp-nav);
-	border-color: var(--bp-nav-line);
+.paging a:hover {
+	border-color: var(--color-primary);
 }
 
-/*현재 페이지 — 어디에 있는지가 보여야 한다*/
+/*현재 페이지*/
 .paging .on {
 	font-weight: bold;
-	background-color: var(--bp-data);
-	border-color: var(--bp-data-line);
-	border-width: 2px;
+	color: var(--color-text-inverse);
+	background-color: var(--color-primary);
+	border-color: var(--color-primary);
 }

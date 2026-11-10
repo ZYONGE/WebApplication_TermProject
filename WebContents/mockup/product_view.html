@@ -17,6 +17,8 @@
 <link rel="stylesheet" href="../css/components/table.css">
 <link rel="stylesheet" href="../css/components/pagination.css">
 <link rel="stylesheet" href="../css/components/popup.css">
+<link rel="stylesheet" href="../css/components/tab.css">
+<link rel="stylesheet" href="../css/components/warnbox.css">
 <link rel="stylesheet" href="../css/pages/product.css">
 </head>
 <body>
@@ -24,25 +26,56 @@
 <header class="page_header">
 	<h1><a href="#">SHOP</a></h1>
 	<ul class="page_header_util"><li>홍길동님</li><li><a href="#">마이페이지</a></li><li><a href="#">장바구니 (3)</a></li></ul>
-	<nav class="page_nav"><ul><li><a href="#">전체상품</a></li><li><a href="#">의류</a></li><li><a href="#">공지사항</a></li></ul></nav>
+	<nav class="page_nav"><ul><li><a href="#">전체상품</a></li><li><a href="#">낱개 영양제</a></li><li><a href="#">트랙 패키지</a></li><li class="page_nav_custom"><a href="#">조합 맞추기</a></li><li><a href="#">공지사항</a></li></ul></nav>
 </header>
 <main class="page_content">
 
 <article class="prod_detail">
-	<h2>기본 티셔츠</h2>
+	<h2><span class="prodcard_badge">트랙</span> 데일리 기본 트랙</h2>
 
 	<div class="prod_gallery">
 		<p>[대표 이미지 없음]</p>
 	</div>
 
 	<table class="formtable">
-		<tr><th>카테고리</th><td>의류 &gt; 상의</td></tr>
-		<tr><th>판매가</th><td>19,000원</td></tr>
-		<tr><th>재고</th><td>24개</td></tr>
+		<tr><th>구분</th><td>트랙 패키지 — 여러 영양제를 1포에 묶은 상품</td></tr>
+		<tr><th>카테고리</th><td>데일리 케어</td></tr>
+		<tr><th>판매가</th><td>1포 1,200원 <span class="field_help">1포 = 하루 섭취분</span></td></tr>
+		<tr><th>재고</th><td>300포 (300일분)</td></tr>
 		<tr><th>별점</th><td>4.5 / 5 (리뷰 12건)</td></tr>
 	</table>
 
-	<div class="prod_desc">면 100% 기본 티셔츠입니다. 설명 본문이 이 영역에 들어옵니다.</div>
+	<div class="prod_desc">하루 기본 4종을 1포에. 설명 본문이 이 영역에 들어옵니다.</div>
+
+	<!-- 트랙 구성표 — 트랙일 때만 -->
+	<section class="prod_track">
+		<h3>트랙 구성 (1포 기준)</h3>
+		<table class="listtable">
+			<thead class="listtable_head">
+				<tr><th class="col_no">순서</th><th class="col_name">구성 영양제</th><th class="col_price">낱개 1포 가격</th></tr>
+			</thead>
+			<tbody>
+				<tr><td class="col_no">1</td><td class="col_name">비타민C 1000mg</td><td class="col_price">300원</td></tr>
+				<tr><td class="col_no">2</td><td class="col_name">비타민D 2000IU</td><td class="col_price">250원</td></tr>
+				<tr><td class="col_no">3</td><td class="col_name">오메가3 1000mg</td><td class="col_price">450원</td></tr>
+				<tr><td class="col_no">4</td><td class="col_name">마그네슘 300mg</td><td class="col_price">320원</td></tr>
+			</tbody>
+		</table>
+		<p class="field_help">낱개로 따로 담으면 1포 1,320원, 트랙은 1포 1,200원입니다. <a href="custom.html">조합 맞추기에서 불러와 고치기</a></p>
+	</section>
+
+	<!-- 함께 드시지 말 것 — 금지 조합이 있을 때만. 구매를 막지 않는다 -->
+	<section class="warnbox">
+		<h3 class="warnbox_title">이 영양제와 함께 드시지 마세요</h3>
+		<ul class="warnbox_list">
+			<li class="warnbox_conflict">
+				<strong class="warnbox_label">동시 섭취 주의</strong>
+				칼슘 500mg × 철분 18mg
+				<span class="warnbox_msg">칼슘은 철분 흡수를 방해할 수 있습니다. 2시간 이상 간격을 두고 드세요.</span>
+			</li>
+		</ul>
+		<p class="warnbox_note">일반 정보이며 의학적 조언이 아닙니다. 복용 중인 약이 있다면 전문가와 상담하세요.</p>
+	</section>
 
 	<!--
 	  구매 영역 — 역할별 3종 (ERD § 5.2 · USER · ADMIN · DEV 완전 격리).
@@ -50,11 +83,20 @@
 	  분기는 JSP 트랙이 넣는다 — 여기서는 세 모양을 나란히 제시한다.
 	-->
 
-	<p class="field_help">[구매영역 1 / 3] USER — 수량 · 담기 · 찜 활성</p>
+	<p class="field_help">[구매영역 1 / 3] USER — 섭취 일수 · 담기 · 찜 활성</p>
 
 	<form class="prod_buy" action="#" method="post">
-		<label for="quantity">수량</label>
-		<input type="number" id="quantity" name="quantity" value="1" min="1" max="24">
+		<div class="prod_days">
+			<span class="prod_days_label">섭취 일수</span>
+			<button type="button" class="btn btn_small">7일</button>
+			<button type="button" class="btn btn_small">14일</button>
+			<button type="button" class="btn btn_small on">30일</button>
+			<button type="button" class="btn btn_small">60일</button>
+			<button type="button" class="btn btn_small">90일</button>
+			<label for="quantity">직접 입력</label>
+			<input type="number" id="quantity" name="quantity" value="30" min="1" max="90">일
+		</div>
+		<p class="prod_days_total">1포 1,200원 × 30일 = <strong>36,000</strong>원</p>
 		<button type="submit" class="btn btn_primary">장바구니 담기</button>
 	</form>
 
