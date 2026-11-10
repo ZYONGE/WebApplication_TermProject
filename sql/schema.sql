@@ -2,11 +2,13 @@
 -- 샌드박스 스키마 DDL (sandbox 전용)
 --
 --   대상 DB : webapplication_sandbox
---   근거    : docs/ERD.md
---               § 2.1 ~ 2.17  테이블 17개
---               § 2.18        인덱스 9개
---               § 2.19        FK 의존 생성 순서 (아래 생성 순서가 이 표다)
---               § 3.1 ~ 3.5   뷰 5개
+--   근거    : docs/ERD.md (커스텀 영양제 컨셉 · docs/CONCEPT.md)
+--               § 3    테이블 21개
+--               § 4    CHECK 10 · 복합 키 · 인덱스 10
+--               § 4.4  FK 의존 생성 순서 (아래 생성 순서가 이 표다)
+--               § 5    뷰 5개
+--   단위    : 1포 = 하루 섭취분. price 는 1포 가격, stock 은 남은 포 수,
+--             cart.quantity · order_item.quantity · combo.days 는 섭취 일수(= 포 수)
 --   공통    : ENGINE=InnoDB / utf8mb4 / utf8mb4_unicode_ci
 --
 --   실행    : mysql -D webapplication_sandbox < sql/schema.sql   (재실행 가능)
@@ -40,12 +42,16 @@ DROP TABLE IF EXISTS delivery;
 DROP TABLE IF EXISTS payment;
 DROP TABLE IF EXISTS order_item;
 DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS combo_item;
+DROP TABLE IF EXISTS combo;
 DROP TABLE IF EXISTS wishlist;
 DROP TABLE IF EXISTS cart;
 DROP TABLE IF EXISTS product_image;
 DROP TABLE IF EXISTS address;
 DROP TABLE IF EXISTS system_config;
 DROP TABLE IF EXISTS notice;
+DROP TABLE IF EXISTS supplement_conflict;
+DROP TABLE IF EXISTS track_item;
 DROP TABLE IF EXISTS product;
 DROP TABLE IF EXISTS category;
 DROP TABLE IF EXISTS member;
@@ -106,12 +112,17 @@ CREATE TABLE category (
 --   ★ 노출 규칙 — 상품을 찾아가는 경로의 공통 조건은 다음 한 줄이다.
 --         WHERE status = '판매중' AND stock > 0
 --     목록 · 검색 · 상품상세(직접 URL 포함)에 적용한다.
---     장바구니 · 찜은 예외다 — 사용자 자기 기록이므로 보여주되 '재고 없음' 표시만 하고
+--     장바구니 · 찜 · 내 조합은 예외다 — 사용자 자기 기록이므로 보여주되 '재고 없음' 표시만 하고
 --     주문 대상에서 뺀다. 주문내역은 order_item 스냅샷을 쓰므로 무관하다.
+--
+--   ★ product_type — 낱개(SINGLE) = 영양소 하나, 트랙(TRACK) = 낱개 여러 개를 1포에 묶은 상품.
+--     price 는 1포 가격, stock 은 남은 포 수다. 트랙은 자기 stock 만 차감한다 (구성 낱개 재고와 별개).
+--     낱개는 '낱개 영양제' 대분류, 트랙은 '트랙 패키지' 대분류 밑에만 등록한다 (ERD § 8-12, 서비스가 지킨다).
 CREATE TABLE product (
-    product_id  INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    category_id INT UNSIGNED NOT NULL,
-    name        VARCHAR(100) NOT NULL,
+    product_id   INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    category_id  INT UNSIGNED NOT NULL,
+    product_type ENUM('SINGLE', 'TRACK') NOT NULL DEFAULT 'SINGLE',
+    name         VARCHAR(100) NOT NULL,
     price       INT UNSIGNED NOT NULL,
     stock       INT UNSIGNED NOT NULL DEFAULT 0,
     description TEXT         NULL,
@@ -120,9 +131,58 @@ CREATE TABLE product (
     created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (product_id),
     KEY idx_product_category_status (category_id, status),
+    KEY idx_product_type_status (product_type, status),
     KEY idx_product_created (created_at),
     CONSTRAINT fk_product_category FOREIGN KEY (category_id)
         REFERENCES category (category_id) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+
+-- =============================================================
+-- 3-1. track_item — 트랙 구성                           ERD § 3
+-- =============================================================
+--   트랙 상품 1포 = 구성 낱개 1회분씩. 구성마다 수량 컬럼이 없다.
+--   track_id 는 CASCADE — 트랙을 지우면 구성도 사라진다.
+--   item_id  는 RESTRICT — 트랙에 들어간 낱개는 구성에서 빼기 전에는 지울 수 없다.
+--   track_id = TRACK, item_id = SINGLE 은 행을 넘나드는 조건이라 CHECK 로 못 막는다 (ERD § 8-9).
+CREATE TABLE track_item (
+    track_id   INT UNSIGNED NOT NULL,
+    item_id    INT UNSIGNED NOT NULL,
+    sort_order INT          NOT NULL DEFAULT 0,
+    PRIMARY KEY (track_id, item_id),
+    KEY idx_track_item_item (item_id),
+    CONSTRAINT fk_track_item_track FOREIGN KEY (track_id)
+        REFERENCES product (product_id) ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT fk_track_item_item FOREIGN KEY (item_id)
+        REFERENCES product (product_id) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+
+-- =============================================================
+-- 3-2. supplement_conflict — 동시 섭취 금지 조합         ERD § 3
+-- =============================================================
+--   낱개 두 개의 쌍 + 경고 문구. 경고는 안내만 하고 구매를 막지 않는다.
+--   같은 쌍이 (A,B) · (B,A) 로 두 번 들어가지 않게 product_a < product_b 로 정렬해 저장한다.
+--
+--   ★ 두 FK 가 RESTRICT 인 이유 — MySQL 은 CASCADE · SET NULL 같은 참조 동작이 걸린
+--     FK 컬럼에 CHECK 를 금지한다 (ERROR 3823). CHECK (product_a < product_b) 를 DB 가
+--     지키게 하려고 참조 동작을 RESTRICT 로 두었다. 이 쌍에 걸린 낱개를 지우려면
+--     관리자 조합 관리(/admin/conflicts)에서 쌍부터 지운다.
+--   경고 조회: WHERE product_a = LEAST(?, ?) AND product_b = GREATEST(?, ?)
+CREATE TABLE supplement_conflict (
+    conflict_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    product_a   INT UNSIGNED NOT NULL,
+    product_b   INT UNSIGNED NOT NULL,
+    message     VARCHAR(200) NOT NULL,
+    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (conflict_id),
+    UNIQUE KEY uk_conflict_pair (product_a, product_b),
+    KEY idx_conflict_product_b (product_b),
+    CONSTRAINT fk_conflict_product_a FOREIGN KEY (product_a)
+        REFERENCES product (product_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT fk_conflict_product_b FOREIGN KEY (product_b)
+        REFERENCES product (product_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT chk_conflict_order CHECK (product_a < product_b)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 
@@ -198,9 +258,10 @@ CREATE TABLE product_image (
 -- =============================================================
 -- 8. cart — 장바구니                                    ERD § 2.6
 -- =============================================================
+--   quantity 는 섭취 일수(= 포 수)다. 상한은 system_config.MAX_INTAKE_DAYS.
 --   UNSIGNED 는 0 을 허용하므로 CHECK (quantity > 0) 이 그대로 필요하다.
---   담기는 INSERT ... ON DUPLICATE KEY UPDATE 한 문장으로 끝난다
---   (UNIQUE KEY 가 그걸 가능하게 한다).
+--   담기는 INSERT ... ON DUPLICATE KEY UPDATE quantity = ? 한 문장으로 끝난다
+--   (UNIQUE KEY 가 그걸 가능하게 한다). 같은 상품을 다시 담으면 일수를 덮어쓴다 (ERD § 7.1).
 CREATE TABLE cart (
     cart_id    INT UNSIGNED NOT NULL AUTO_INCREMENT,
     member_id  INT UNSIGNED NOT NULL,
@@ -232,6 +293,49 @@ CREATE TABLE wishlist (
     CONSTRAINT fk_wishlist_member FOREIGN KEY (member_id)
         REFERENCES member (member_id) ON DELETE CASCADE ON UPDATE RESTRICT,
     CONSTRAINT fk_wishlist_product FOREIGN KEY (product_id)
+        REFERENCES product (product_id) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+
+-- =============================================================
+-- 9-1. combo — 저장한 조합 (내 조합)                    ERD § 3
+-- =============================================================
+--   사용자가 조합 탭(/custom)에서 고른 낱개 묶음에 이름을 붙여 저장한다 (예: 'JY package').
+--   구매 계열 테이블이다 — USER 회원만 행을 가진다 (ERD § 8-8).
+--   가격 · 합계는 저장하지 않는다. 불러올 때 현재 1포 가격으로 다시 계산한다.
+--   UNIQUE (member_id, name) — 한 회원 안에서 이름이 겹치지 않는다. 같은 이름으로 저장하면
+--   서비스가 덮어쓸지 묻고 UPDATE 한다. updated_at 은 그때 바뀐다.
+CREATE TABLE combo (
+    combo_id   INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    member_id  INT UNSIGNED NOT NULL,
+    name       VARCHAR(50)  NOT NULL,
+    days       INT UNSIGNED NOT NULL,
+    created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
+                            ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (combo_id),
+    UNIQUE KEY uk_combo_member_name (member_id, name),
+    CONSTRAINT fk_combo_member FOREIGN KEY (member_id)
+        REFERENCES member (member_id) ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT ck_combo_days CHECK (days > 0)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+
+-- =============================================================
+-- 9-2. combo_item — 저장한 조합의 구성                  ERD § 3
+-- =============================================================
+--   낱개만 담는다 (ERD § 8-11). 저장할 때마다 전부 DELETE 후 다시 INSERT 한다.
+--   product 쪽 CASCADE — 장바구니 · 찜과 같은 사용자 자기 기록이다.
+--   숨김 · 재고 0 이 되어도 행은 남는다. 불러오면 표시만 하고 담기에서 뺀다.
+CREATE TABLE combo_item (
+    combo_id   INT UNSIGNED NOT NULL,
+    product_id INT UNSIGNED NOT NULL,
+    sort_order INT          NOT NULL DEFAULT 0,
+    PRIMARY KEY (combo_id, product_id),
+    KEY idx_combo_item_product (product_id),
+    CONSTRAINT fk_combo_item_combo FOREIGN KEY (combo_id)
+        REFERENCES combo (combo_id) ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT fk_combo_item_product FOREIGN KEY (product_id)
         REFERENCES product (product_id) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
@@ -275,15 +379,18 @@ CREATE TABLE orders (
 -- =============================================================
 -- 11. order_item — 주문 상품                            ERD § 2.9
 -- =============================================================
---   product_name · price 는 주문 시점 복사본이다. 상품 정보가 바뀌어도
---   주문 내역은 그대로다.
+--   product_name · price · track_snapshot 은 주문 시점 복사본이다. 상품 정보나
+--   트랙 구성이 바뀌어도 주문 내역은 그대로다.
+--   quantity 는 섭취 일수(= 포 수), price 는 1포 단가다.
+--   track_snapshot 은 트랙 줄에만 채운다 — 구성 낱개 이름을 ' + ' 로 이은 문자열 (ERD § 8-13).
 CREATE TABLE order_item (
-    item_id      INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    order_id     INT UNSIGNED NOT NULL,
-    product_id   INT UNSIGNED NOT NULL,
-    product_name VARCHAR(100) NOT NULL,
-    price        INT UNSIGNED NOT NULL,
-    quantity     INT UNSIGNED NOT NULL,
+    item_id        INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    order_id       INT UNSIGNED NOT NULL,
+    product_id     INT UNSIGNED NOT NULL,
+    product_name   VARCHAR(100) NOT NULL,
+    price          INT UNSIGNED NOT NULL,
+    quantity       INT UNSIGNED NOT NULL,
+    track_snapshot VARCHAR(500) NULL,
     PRIMARY KEY (item_id),
     KEY idx_order_item_order (order_id),
     KEY idx_order_item_product (product_id),
@@ -500,7 +607,7 @@ GROUP  BY d.status;
 --   payment · delivery 는 주문과 같은 트랜잭션에서 생기므로 실제로는 항상 있다.
 --   그래도 LEFT JOIN 인 이유는 /dev 가 데이터를 강제로 비틀 수 있기 때문이다 —
 --   반쪽 주문이 생겨도 관리자 화면이 그 행을 감추지 않고 보여줘야 이상을 알아챈다.
---   목록 제목은 first_product_name + (item_count - 1) 로 "티셔츠 외 2건" 형태를 만든다.
+--   목록 제목은 first_product_name + (item_count - 1) 로 "데일리 기본 트랙 외 2건" 형태를 만든다.
 CREATE OR REPLACE VIEW v_admin_order AS
 SELECT o.order_id, o.order_no, o.ordered_at, o.canceled_at,
        o.order_status, o.total_price, o.delivery_fee,
@@ -553,7 +660,7 @@ FROM   member m;
 --
 --   ★ 이 뷰는 선택 기능이 아니다. § 2.4 노출 규칙에 따라 stock = 0 인 상품은
 --     사용자 화면에서 조용히 사라지므로, 관리자가 그 사실을 알 수 있는 유일한 경로다.
---     stock = 0 도 임계값 이하라 함께 잡힌다 — 0 과 1~5 를 구분해 보여주면
+--     stock = 0 도 임계값 이하라 함께 잡힌다 — 0 과 1~30(포) 을 구분해 보여주면
 --     "이미 사라진 것" 과 "사라지기 직전인 것" 이 나뉜다.
 CREATE OR REPLACE VIEW v_low_stock AS
 SELECT p.product_id, p.name, p.stock, p.status,
