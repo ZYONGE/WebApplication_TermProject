@@ -153,6 +153,7 @@ public class OrderServlet extends BaseServlet {
 	private void list(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException, SQLException {
 		request.setAttribute("pageTitle", "주문 내역");
+		pageCss(request, "mypage");
 		request.setAttribute("pageData", orderService.findMyOrders(loginMemberId(request),
 				intParam(request, "page", 1), Paging.DEFAULT_SIZE));
 		request.setAttribute("pageUrl", "/order/list?");

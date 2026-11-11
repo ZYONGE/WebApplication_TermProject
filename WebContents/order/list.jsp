@@ -2,7 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<c:set var="pageCss" value="order" />
+<%-- 마이페이지 탭(my_nav) 안의 화면이라 mypage.css 를 쓴다. 이 화면은 order_* 클래스를 쓰지 않는다 --%>
+<c:set var="pageCss" value="mypage" />
 <%@ include file="/common/header.jsp" %>
 
 <ul class="my_nav">
@@ -10,6 +11,7 @@
 	<li><a href="${ctx}/mypage/edit">정보수정</a></li>
 	<li><a href="${ctx}/mypage/address">배송지</a></li>
 	<li><a href="${ctx}/mypage/wishlist">찜 목록</a></li>
+	<li><a href="${ctx}/mypage/combo">내 조합</a></li>
 	<li><a href="${ctx}/mypage/review">내 리뷰</a></li>
 	<li><a href="${ctx}/mypage/qna">내 문의</a></li>
 	<li><a href="${ctx}/order/list">주문 내역</a></li>
@@ -42,8 +44,12 @@
 				</td>
 				<td class="col_total"><fmt:formatNumber value="${order.payAmount}" pattern="#,##0" />원</td>
 				<td class="col_state"><c:out value="${order.orderStatus}" /></td>
+				<%-- 취소 주문은 배송 행이 결제완료로 남아 있다 — 주문 상태를 먼저 본다 (ERD § 7 취소 주문 조회) --%>
 				<td class="col_state">
-					<c:out value="${empty order.delivery ? '-' : order.delivery.status}" />
+					<c:choose>
+						<c:when test="${order.orderStatus == '취소'}">취소</c:when>
+						<c:otherwise><c:out value="${empty order.delivery ? '-' : order.delivery.status}" /></c:otherwise>
+					</c:choose>
 				</td>
 				<td class="col_action">
 					<a class="btn btn_small" href="${ctx}/order/view?orderId=${order.orderId}">상세</a>

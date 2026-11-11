@@ -132,7 +132,7 @@ ID 는 `docs/STATUS.md` PM 결정 대기 표를 따른다.
 
 | 출처 | 내용 |
 |---|---|
-| DB | 취소 주문의 배송 상태를 `order_status` 먼저 보고 렌더 — 주문내역 · 관리자 목록이 아직 `delivery.status` 를 그대로 표시 |
+| DB | 취소 주문의 배송 상태를 `order_status` 먼저 보고 렌더 — 고객 주문내역은 반영(2026-11-11), 관리자 목록은 아직 `delivery.status` 그대로 |
 | DB | 판매 집계 6일 범위 — 대시보드는 현재 최근 7행(`findSalesDaily(7)`) |
 
 **전달받은 요청 — 반영 완료** (`docs/STATUS.md` 전달 대기 표에서 정리 가능)
