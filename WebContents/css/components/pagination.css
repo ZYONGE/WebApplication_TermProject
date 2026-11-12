@@ -2,7 +2,7 @@
 
 /*
   페이지네이션 — 소유 접두어: paging* (DECISIONS.md D-09)
-  사용 중: paging / paging_num / paging_prev / paging_next / on
+  사용 중: paging / paging_num / paging_prev / paging_next / paging_info / on
   마크업은 common/paging.jsp 가 내보낸다.
 */
 
@@ -39,4 +39,12 @@
 	color: var(--color-text-inverse);
 	background-color: var(--color-primary);
 	border-color: var(--color-primary);
+}
+
+/*건수 · 쪽 안내*/
+.paging_info {
+	margin-top: var(--space-sm);
+	font-size: var(--font-size-small);
+	color: var(--color-text-weak);
+	text-align: center;
 }

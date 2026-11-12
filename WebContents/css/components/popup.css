@@ -63,9 +63,31 @@
 	font-weight: bold;
 }
 
-.popup_body .field + label,
-.popup_body textarea + label {
+/*입력칸 레이블(for 가 있는 것)은 칸 위 한 줄 — 체크박스 레이블(for 없음)은 글자 옆 그대로*/
+.popup_body label[for] {
+	display: block;
 	margin-top: var(--space-md);
+}
+
+.popup_body > label[for]:first-of-type {
+	margin-top: 0px;
+}
+
+.popup_body select {
+	min-width: 240px;
+}
+
+/*답변 팝업의 원문 인용 — 브라우저 기본 들여쓰기(40px) 대신 왼쪽 선*/
+.popup_body blockquote {
+	margin: 0px;
+	margin-bottom: var(--space-md);
+	padding-top: var(--space-sm);
+	padding-right: var(--space-md);
+	padding-bottom: var(--space-sm);
+	padding-left: var(--space-md);
+	white-space: pre-wrap;
+	background-color: var(--color-primary-light);
+	border-left: 3px solid var(--color-border-strong);
 }
 
 .popup_body h4 {

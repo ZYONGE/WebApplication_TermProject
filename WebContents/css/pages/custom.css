@@ -3,7 +3,7 @@
 /*
   조합 탭 (/custom) — 소유 접두어: custom_* (DECISIONS.md § 2 · IMPACT K12)
   사용 중: custom (폼 = 3분할 격자) / custom_tabs / custom_list / custom_table / custom_more /
-           custom_summary / custom_count / custom_picked / custom_picked_name / custom_picked_price /
+           custom_summary / custom_count / custom_picked / custom_picked_name / custom_picked_price / custom_picked_warn /
            custom_days / custom_days_label / custom_sum / custom_actions / custom_save /
            custom_share / custom_loaded / custom_mycombo
 
@@ -36,6 +36,22 @@
 .custom_table .col_check {
 	width: 48px;
 	text-align: center;
+}
+
+/*트랙 불러오기 표 — 구성 칸에 폭을 몰아준다*/
+.custom_table td.col_name {
+	min-width: 0px;
+	width: 110px;
+}
+
+.custom_table .col_content {
+	min-width: 260px;
+	font-size: var(--font-size-small);
+}
+
+.custom_table .col_action,
+.custom_table .col_price {
+	width: 72px;
 }
 
 .custom_table label {
@@ -89,6 +105,17 @@
 
 .custom_picked_name {
 	flex-grow: 1;
+}
+
+/*재고보다 많은 일수를 고른 줄 — 담을 때 빠진다*/
+.custom_picked_warn {
+	flex-basis: 100%;
+	font-size: var(--font-size-small);
+	color: var(--color-danger);
+}
+
+.custom_picked li {
+	flex-wrap: wrap;
 }
 
 .custom_picked_price {

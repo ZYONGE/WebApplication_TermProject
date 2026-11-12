@@ -3,7 +3,8 @@
 /*
   회원 — 로그인, 회원가입
   소유 접두어: member_* (DECISIONS.md D-09)
-  사용 중: member_box (login.jsp · join.jsp 의 formtable_form 에 함께 붙는다)
+  사용 중: member_box (login.jsp · join.jsp 의 formtable_form 에 함께 붙는다) /
+           member_idrow · member_ok · member_ng (join.jsp 아이디 중복확인)
 
   폼 모양은 components/form.css 가 정한다. 여기서는 회원 화면만 폭을 좁혀 가운데로 모은다.
 */
@@ -29,4 +30,25 @@
 
 .member_box .btnstyle .btn {
 	flex-grow: 1;
+}
+
+/*아이디 + 중복확인 버튼 — 한 줄*/
+.member_idrow {
+	display: flex;
+	gap: var(--space-xs);
+}
+
+.member_idrow .field {
+	flex-grow: 1;
+}
+
+/*중복확인 결과 — 성공 / 실패를 색으로 구분*/
+.field_help.member_ok {
+	font-weight: bold;
+	color: var(--color-success);
+}
+
+.field_help.member_ng {
+	font-weight: bold;
+	color: var(--color-danger);
 }
