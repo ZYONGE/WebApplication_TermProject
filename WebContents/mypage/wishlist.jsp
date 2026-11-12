@@ -28,13 +28,13 @@
 	</thead>
 	<tbody>
 		<c:forEach var="w" items="${items}">
-			<tr class="${w.status == '판매중' ? '' : 'soldout'}">
+			<tr class="${w.stateLabel == '판매중' ? '' : 'soldout'}">
 				<td class="col_name">
 					<span class="prodcard_badge">${w.typeLabel}</span>
 					<a href="${ctx}/product/view?productId=${w.productId}"><c:out value="${w.productName}" /></a>
 				</td>
 				<td class="col_price"><fmt:formatNumber value="${w.price}" pattern="#,##0" />원</td>
-				<td class="col_state"><c:out value="${w.status}" /></td>
+				<td class="col_state"><c:out value="${w.stateLabel}" /></td>
 				<td class="col_date"><fmt:formatDate value="${w.createdAt}" pattern="yyyy-MM-dd" /></td>
 				<td class="col_action">
 					<form action="${ctx}/wish/remove" method="post">

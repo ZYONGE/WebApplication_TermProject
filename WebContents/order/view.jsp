@@ -2,7 +2,20 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:set var="pageCss" value="order" />
+<%-- 마이페이지 탭(my_nav) 안의 화면 — mypage.css 도 건다 --%>
+<c:set var="subCss" value="mypage" />
 <%@ include file="/common/header.jsp" %>
+
+<ul class="my_nav">
+	<li><a href="${ctx}/mypage/">마이페이지</a></li>
+	<li><a href="${ctx}/mypage/edit">정보수정</a></li>
+	<li><a href="${ctx}/mypage/address">배송지</a></li>
+	<li><a href="${ctx}/mypage/wishlist">찜 목록</a></li>
+	<li><a href="${ctx}/mypage/combo">내 조합</a></li>
+	<li><a href="${ctx}/mypage/review">내 리뷰</a></li>
+	<li><a href="${ctx}/mypage/qna">내 문의</a></li>
+	<li><a class="on" href="${ctx}/order/list">주문 내역</a></li>
+</ul>
 
 <h2>주문 상세</h2>
 
@@ -51,7 +64,7 @@
 	</c:when>
 	<c:otherwise>
 		<table class="formtable">
-			<tr><th>배송상태</th><td><c:out value="${order.delivery.status}" /></td></tr>
+			<tr><th>배송상태</th><td><c:out value="${order.displayStatus}" /></td></tr>
 			<tr><th>택배사</th><td><c:out value="${empty order.delivery.courier ? '-' : order.delivery.courier}" /></td></tr>
 			<tr>
 				<th>운송장번호</th>

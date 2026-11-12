@@ -22,7 +22,7 @@
 	<select name="categoryId">
 		<option value="0">전체 카테고리</option>
 		<c:forEach var="cat" items="${categories}">
-			<option value="${cat.categoryId}" ${param.categoryId == cat.categoryId ? 'selected' : ''}>
+			<option value="${cat.categoryId}" ${selectedCategoryId == cat.categoryId ? 'selected' : ''}>
 				<c:if test="${not empty cat.parentId}">— </c:if><c:out value="${cat.name}" />
 			</option>
 		</c:forEach>
@@ -56,7 +56,11 @@
 				<td><c:out value="${p.categoryName}" /></td>
 				<td><fmt:formatNumber value="${p.price}" pattern="#,##0" />원</td>
 				<td>${p.stock}</td>
-				<td><c:out value="${p.status}" /></td>
+				<td>
+					<c:out value="${p.status}" />
+					<%-- 판매중이어도 재고 0 이면 고객 화면에서 숨겨진다 (노출 규칙 ERD § 2.4) — 관리자가 알아야 한다 --%>
+					<c:if test="${p.status == '판매중' and p.stock == 0}"><span class="field_help">재고 0 · 고객 화면 숨김</span></c:if>
+				</td>
 				<td><fmt:formatDate value="${p.createdAt}" pattern="yyyy-MM-dd" /></td>
 				<td>
 					<a class="btn btn_small" href="${ctx}/admin/products?editId=${p.productId}">수정</a>
@@ -209,21 +213,36 @@ function newProduct() {
     트랙 패키지일 때만 트랙 구성 칸을 연다.
   판정의 근거는 서버(AdminService.validateProduct)다. 여기는 입력 순서를 안내할 뿐이다.
 */
+/*
+  optgroup 에 hidden 을 거는 방식은 브라우저마다 기본 선택 목록에서 무시되기도 한다.
+  그래서 처음 그려진 대분류 묶음을 보관해 두고, 구분을 바꿀 때마다 맞는 묶음만 다시 꽂는다.
+*/
+var categoryGroups = null;
+
 function applyProductType() {
 	var type = document.getElementById("productType").value;
 	var category = document.getElementById("pCategoryId");
-	category.disabled = (type === "");
-	var groups = category.querySelectorAll("optgroup");
-	for (var i = 0; i < groups.length; i++) {
-		var groupType = groups[i].getAttribute("data-type");
-		var show = type !== "" && (groupType === "" || groupType === type);
-		groups[i].hidden = !show;
-		groups[i].disabled = !show;
+	if (categoryGroups === null) {
+		categoryGroups = Array.prototype.slice.call(category.querySelectorAll("optgroup"));
 	}
-	var picked = category.options[category.selectedIndex];
-	if (picked && picked.parentNode.disabled) {
+	var keep = category.value;
+	for (var i = 0; i < categoryGroups.length; i++) {
+		if (categoryGroups[i].parentNode) {
+			categoryGroups[i].parentNode.removeChild(categoryGroups[i]);
+		}
+	}
+	for (var j = 0; j < categoryGroups.length; j++) {
+		var groupType = categoryGroups[j].getAttribute("data-type");
+		if (type !== "" && (groupType === "" || groupType === type)) {
+			category.appendChild(categoryGroups[j]);
+		}
+	}
+	/* 고른 값이 새 목록에 없으면 비운다 */
+	category.value = keep;
+	if (category.value !== keep) {
 		category.value = "";
 	}
+	category.disabled = (type === "");
 	document.getElementById("trackItemsRow").hidden = (type !== "TRACK");
 }
 document.addEventListener("DOMContentLoaded", applyProductType);

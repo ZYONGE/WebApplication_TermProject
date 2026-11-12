@@ -142,7 +142,7 @@ public class ReviewDAO {
 		List<Object> args = new ArrayList<Object>();
 		if (keyword != null && keyword.length() > 0) {
 			where.append(" AND (p.name LIKE ? OR m.login_id LIKE ? OR r.content LIKE ?)");
-			String like = "%" + keyword + "%";
+			String like = StringUtil.likeContains(keyword);
 			args.add(like);
 			args.add(like);
 			args.add(like);

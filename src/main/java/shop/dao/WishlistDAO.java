@@ -20,7 +20,7 @@ public class WishlistDAO {
 
 	public List<WishItemDTO> findByMember(int memberId) throws SQLException {
 		String sql = "SELECT w.member_id, w.product_id, w.created_at, p.product_type,"
-				   + "       p.name AS product_name, p.thumbnail, p.status, p.price"
+				   + "       p.name AS product_name, p.thumbnail, p.status, p.price, p.stock"
 				   + "  FROM wishlist w"
 				   + "  JOIN product p ON p.product_id = w.product_id"
 				   + " WHERE w.member_id = ?"
@@ -43,6 +43,7 @@ public class WishlistDAO {
 				dto.setThumbnail(rs.getString("thumbnail"));
 				dto.setStatus(rs.getString("status"));
 				dto.setPrice(rs.getInt("price"));
+				dto.setStock(rs.getInt("stock"));
 				dto.setCreatedAt(rs.getTimestamp("created_at"));
 				list.add(dto);
 			}

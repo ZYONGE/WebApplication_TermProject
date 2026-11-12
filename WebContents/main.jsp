@@ -38,7 +38,7 @@
 					<span class="prodcard_thumb">
 						<c:choose>
 							<c:when test="${not empty p.thumbnail}">
-								<img src="${ctx}${p.thumbnail}" alt="<c:out value='${p.name}' />">
+								<img src="${ctx}${p.thumbnail}" alt="">
 							</c:when>
 							<c:otherwise>[이미지 없음]</c:otherwise>
 						</c:choose>
@@ -69,7 +69,7 @@
 					<span class="prodcard_thumb">
 						<c:choose>
 							<c:when test="${not empty p.thumbnail}">
-								<img src="${ctx}${p.thumbnail}" alt="<c:out value='${p.name}' />">
+								<img src="${ctx}${p.thumbnail}" alt="">
 							</c:when>
 							<c:otherwise>[이미지 없음]</c:otherwise>
 						</c:choose>

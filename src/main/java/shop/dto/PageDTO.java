@@ -24,9 +24,13 @@ public class PageDTO<T> {
 
 	public PageDTO(List<T> list, int page, int size, int total) {
 		this.list = list == null ? new ArrayList<T>() : list;
-		this.page = page;
 		this.size = size;
 		this.total = total;
+		/*
+		  화면용 페이지 번호는 1 ~ 전체 페이지로 맞춘다. 0 · -1 은 DAO 가 이미 1쪽을 읽었고,
+		  전체를 넘는 번호는 빈 목록이다 — "6 / 5 페이지" 같은 표기가 나오지 않게 한다.
+		*/
+		this.page = Math.min(Math.max(page, 1), getTotalPages());
 	}
 
 	public int getTotalPages() {

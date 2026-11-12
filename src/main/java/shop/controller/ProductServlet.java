@@ -60,6 +60,8 @@ public class ProductServlet extends BaseServlet {
 				type, keyword, sort, page, Paging.DEFAULT_SIZE));
 		request.setAttribute("currentCategory",
 				categoryId > 0 ? productService.findCategory(categoryId) : null);
+		/* 화면 비교용 정수 — JSP 가 param.categoryId(문자열)를 숫자와 비교하면 'abc' 에서 ELException 이 난다 */
+		request.setAttribute("selectedCategoryId", Integer.valueOf(categoryId));
 
 		/*
 		  카테고리 필터의 선택지 = 지금 탭의 대분류 묶음 (구분 필터는 두지 않는다).

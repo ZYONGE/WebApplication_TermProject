@@ -25,6 +25,10 @@
 <link rel="stylesheet" href="${ctx}/css/components/popup.css">
 <link rel="stylesheet" href="${ctx}/css/components/tab.css">
 <link rel="stylesheet" href="${ctx}/css/components/warnbox.css">
+<%-- 다른 영역 화면 안에 들어가는 화면(주문상세 = 마이페이지 탭 안)은 그 영역 CSS 를 하나 더 건다 --%>
+<c:if test="${not empty subCss}">
+<link rel="stylesheet" href="${ctx}/css/pages/${subCss}.css">
+</c:if>
 <c:if test="${not empty pageCss}">
 <link rel="stylesheet" href="${ctx}/css/pages/${pageCss}.css">
 </c:if>
@@ -44,7 +48,8 @@
 				<li><a href="${ctx}/member/join">회원가입</a></li>
 			</c:when>
 			<c:otherwise>
-				<li><c:out value="${sessionScope.loginMember.name}" />님 (<c:out value="${sessionScope.loginMember.role}" />)</li>
+				<%-- 권한 코드(USER 등)는 보이지 않는다. 관리자 · 개발자만 표시 --%>
+				<li><c:out value="${sessionScope.loginMember.name}" />님<c:if test="${sessionScope.loginMember.role != 'USER'}"> (<c:out value="${sessionScope.loginMember.roleLabel}" />)</c:if></li>
 				<%-- 역할별 메뉴 — 3개 입장은 서로의 영역을 보지 않는다 (ERD § 5.3) --%>
 				<c:choose>
 					<c:when test="${sessionScope.loginMember.role == 'USER'}">

@@ -68,11 +68,11 @@
   탈퇴는 소프트 삭제다 (status='LEFT'). 주문 · 리뷰가 FK 로 참조하므로
   물리 삭제가 불가능하다 (CRUD.md § 4 member 행).
 --%>
-<form class="formtable_form" action="${ctx}/mypage/leave" method="post">
+<form class="formtable_form" action="${ctx}/mypage/leave" method="post" data-validate>
 	<table class="formtable">
 		<tr>
 			<th><label for="leavePassword">비밀번호 확인</label></th>
-			<td><input type="password" id="leavePassword" name="password" class="field"></td>
+			<td><input type="password" id="leavePassword" name="password" class="field" data-rule="required"></td>
 		</tr>
 	</table>
 	<p class="field_help">탈퇴해도 주문 내역은 보존됩니다. 같은 아이디로 다시 로그인할 수 없습니다.</p>

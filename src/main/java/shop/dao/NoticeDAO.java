@@ -10,6 +10,7 @@ import java.util.List;
 import shop.dto.NoticeDTO;
 import shop.dto.PageDTO;
 import shop.util.DBUtil;
+import shop.util.StringUtil;
 import shop.util.Paging;
 
 /* notice — 공지사항. */
@@ -43,7 +44,7 @@ public class NoticeDAO {
 		List<Object> args = new ArrayList<Object>();
 		if (keyword != null && keyword.length() > 0) {
 			where.append(" AND title LIKE ?");
-			args.add("%" + keyword + "%");
+			args.add(StringUtil.likeContains(keyword));
 		}
 
 		int total = 0;

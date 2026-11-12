@@ -15,6 +15,7 @@ import shop.dto.PageDTO;
 import shop.dto.ProductDTO;
 import shop.dto.ProductImageDTO;
 import shop.util.DBUtil;
+import shop.util.StringUtil;
 import shop.util.Paging;
 
 /*
@@ -192,6 +193,26 @@ public class ProductDAO {
 		}
 	}
 
+	/* 판매 중인 상품이 있는 카테고리 id — 고객 메뉴가 빈 카테고리를 숨길 때 쓴다 */
+	public java.util.Set<Integer> findOnSaleCategoryIds() throws SQLException {
+		String sql = "SELECT DISTINCT p.category_id FROM product p WHERE" + ON_SALE;
+		java.util.Set<Integer> ids = new java.util.HashSet<Integer>();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = DBUtil.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				ids.add(Integer.valueOf(rs.getInt(1)));
+			}
+			return ids;
+		} finally {
+			DBUtil.close(rs, pstmt, conn);
+		}
+	}
+
 	/* 판매 이력 — product_type 은 이력이 생긴 뒤 바꾸지 않는다 (ERD § 8-15). */
 	public int countOrderItems(int productId) throws SQLException {
 		List<Object> args = new ArrayList<Object>();
@@ -224,8 +245,12 @@ public class ProductDAO {
 			args.add(categoryId);
 		}
 		if (keyword != null && keyword.length() > 0) {
-			where.append(" AND p.name LIKE ?");
-			args.add("%" + keyword + "%");
+			/* 이름 또는 트랙 구성품 이름 — "오메가" 로 오메가3 가 든 트랙도 찾는다 */
+			where.append(" AND (p.name LIKE ? OR p.product_id IN ("
+					   + "SELECT ti.track_id FROM track_item ti JOIN product i ON i.product_id = ti.item_id"
+					   + " WHERE i.name LIKE ?))");
+			args.add(StringUtil.likeContains(keyword));
+			args.add(StringUtil.likeContains(keyword));
 		}
 
 		int total = count("SELECT COUNT(*) FROM product p" + where, args);
@@ -296,7 +321,7 @@ public class ProductDAO {
 		}
 		if (keyword != null && keyword.length() > 0) {
 			where.append(" AND p.name LIKE ?");
-			args.add("%" + keyword + "%");
+			args.add(StringUtil.likeContains(keyword));
 		}
 		if ("판매중".equals(status) || "숨김".equals(status)) {
 			where.append(" AND p.status = ?");

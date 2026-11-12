@@ -28,11 +28,11 @@
 		<c:if test="${not tabMode}"><option value="0">전체</option></c:if>
 		<c:forEach var="root" items="${filterRoots}">
 			<option value="${root.categoryId}"
-			        ${param.categoryId == root.categoryId or (tabMode and empty param.categoryId) ? 'selected' : ''}>
+			        ${selectedCategoryId == root.categoryId or (tabMode and selectedCategoryId == 0) ? 'selected' : ''}>
 				<c:out value="${root.name}" /><c:if test="${tabMode}"> 전체</c:if>
 			</option>
 			<c:forEach var="sub" items="${root.children}">
-				<option value="${sub.categoryId}" ${param.categoryId == sub.categoryId ? 'selected' : ''}>— <c:out value="${sub.name}" /></option>
+				<option value="${sub.categoryId}" ${selectedCategoryId == sub.categoryId ? 'selected' : ''}>— <c:out value="${sub.name}" /></option>
 			</c:forEach>
 		</c:forEach>
 	</select>
@@ -60,7 +60,7 @@
 				<span class="prodcard_thumb">
 					<c:choose>
 						<c:when test="${not empty p.thumbnail}">
-							<img src="${ctx}${p.thumbnail}" alt="<c:out value='${p.name}' />">
+							<img src="${ctx}${p.thumbnail}" alt="">
 						</c:when>
 						<c:otherwise>[이미지 없음]</c:otherwise>
 					</c:choose>

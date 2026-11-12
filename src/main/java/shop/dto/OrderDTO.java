@@ -225,4 +225,15 @@ public class OrderDTO {
 	public void setDelivery(DeliveryDTO delivery) {
 		this.delivery = delivery;
 	}
+
+	/*
+	  화면에 보일 진행 상태 (유도 필드).
+	  취소 주문은 delivery 행이 결제완료 · 상품준비로 남는다 — 주문 상태를 먼저 본다 (ERD § 7 취소 주문 조회).
+	*/
+	public String getDisplayStatus() {
+		if ("취소".equals(orderStatus)) {
+			return "취소";
+		}
+		return delivery == null || delivery.getStatus() == null ? "-" : delivery.getStatus();
+	}
 }

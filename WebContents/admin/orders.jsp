@@ -50,7 +50,7 @@
 				<td><fmt:formatNumber value="${o.payAmount}" pattern="#,##0" />원</td>
 				<td><c:out value="${empty o.payment ? '-' : o.payment.payStatus}" /></td>
 				<td><c:out value="${o.orderStatus}" /></td>
-				<td><c:out value="${empty o.delivery ? '-' : o.delivery.status}" /></td>
+				<td><c:out value="${o.displayStatus}" /></td>
 				<td>
 					<%--
 					  다음 단계 버튼. 배송중으로 넘어갈 때만 운송장 입력이 필요하므로
@@ -151,7 +151,8 @@
 			<input type="text" id="courier" name="courier" class="field" data-rule="required">
 			<label for="trackingNo">운송장 번호</label>
 			<input type="text" id="trackingNo" name="trackingNo" class="field" data-rule="required">
-			<span class="field_help">외부 택배사 조회는 하지 않습니다. 화면 표시용입니다.</span>
+			<%-- 외부 택배사 조회는 하지 않는다 (CLAUDE.md § 2) — 입력값은 화면 표시용 --%>
+			<span class="field_help">입력한 택배사 · 운송장 번호가 고객의 배송조회에 표시됩니다.</span>
 		</div>
 		<div class="popup_foot">
 			<button type="submit" class="btn btn_primary">배송중으로 변경</button>

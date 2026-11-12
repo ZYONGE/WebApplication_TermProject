@@ -34,6 +34,8 @@ public class MemberServlet extends BaseServlet {
 		} else if ("login".equals(action)) {
 			request.setAttribute("pageTitle", "로그인");
 			request.setAttribute("returnUrl", param(request, "returnUrl"));
+			/* 가입 직후에는 방금 만든 아이디를 채워 둔다 */
+			request.setAttribute("loginId", param(request, "loginId"));
 			render(request, response, "/member/login.jsp");
 		} else if ("logout".equals(action)) {
 			logout(request, response);
@@ -68,7 +70,8 @@ public class MemberServlet extends BaseServlet {
 		try {
 			memberService.join(member, request.getParameter("passwordConfirm"));
 			flash(request, "회원가입이 완료되었습니다. 로그인해 주세요.");
-			redirect(request, response, "/member/login");
+			redirect(request, response, "/member/login?loginId="
+					+ java.net.URLEncoder.encode(member.getLoginId(), "UTF-8"));
 		} catch (ServiceException e) {
 			/* 거절은 입력값을 살려 둔 채 같은 화면으로 돌려보낸다. */
 			request.setAttribute("errorMessage", e.getMessage());
@@ -135,6 +138,7 @@ public class MemberServlet extends BaseServlet {
 		if (session != null) {
 			session.invalidate();
 		}
+		flash(request, "로그아웃했습니다.");
 		redirect(request, response, "/");
 	}
 

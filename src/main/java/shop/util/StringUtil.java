@@ -42,4 +42,14 @@ public class StringUtil {
 		sb.append(name.charAt(name.length() - 1));
 		return sb.toString();
 	}
+
+	/*
+	  LIKE '%검색어%' 값 — 검색어 안의 % · _ · \ 를 이스케이프한다.
+	  그대로 넣으면 '%' 한 글자 검색이 전체를 돌려준다. MySQL 기본 이스케이프 문자는 \ 다.
+	*/
+	public static String likeContains(String keyword) {
+		String k = keyword == null ? "" : keyword;
+		k = k.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
+		return "%" + k + "%";
+	}
 }

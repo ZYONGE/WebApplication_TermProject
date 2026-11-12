@@ -21,10 +21,10 @@
 </p>
 
 <c:if test="${not empty loadedTrack}">
-	<p class="custom_loaded">'<c:out value="${loadedTrack.name}" />' 구성을 불러왔습니다. 빼거나 더해서 나만의 조합으로 고쳐 보세요.</p>
+	<p class="custom_loaded" data-loaded>'<c:out value="${loadedTrack.name}" />' 구성을 불러왔습니다. 빼거나 더해서 나만의 조합으로 고쳐 보세요.</p>
 </c:if>
-<c:if test="${not empty loadedCombo}">
-	<p class="custom_loaded">내 조합 '<c:out value="${loadedCombo.name}" />' 을(를) 불러왔습니다. 가격 · 재고 · 경고는 지금 기준으로 다시 계산했습니다.</p>
+<c:if test="${not empty loadedCombo and empty param.saved}">
+	<p class="custom_loaded" data-loaded>내 조합 '<c:out value="${loadedCombo.name}" />' 을(를) 불러왔습니다. 가격 · 재고 · 경고는 지금 기준으로 다시 계산했습니다.</p>
 </c:if>
 <c:if test="${not empty unavailable}">
 	<p class="custom_loaded">
@@ -69,7 +69,7 @@
 								<tr>
 									<td class="col_check">
 										<input type="checkbox" name="productId" value="${p.productId}" id="pick${p.productId}"
-										       data-name="<c:out value='${p.name}' />" data-price="${p.price}"
+										       data-name="<c:out value='${p.name}' />" data-price="${p.price}" data-stock="${p.stock}"
 										       ${pickedIds.contains(p.productId) ? 'checked' : ''}>
 									</td>
 									<td class="col_name">
@@ -129,6 +129,7 @@
 				<li data-id="${p.productId}">
 					<span class="custom_picked_name"><c:out value="${p.name}" /></span>
 					<span class="custom_picked_price">1포 <fmt:formatNumber value="${p.price}" pattern="#,##0" />원</span>
+					<c:if test="${p.stock < days}"><span class="custom_picked_warn">재고 ${p.stock}포 — ${days}일분은 담을 수 없음</span></c:if>
 					<button type="button" class="btn btn_small btn_sub" data-unpick="${p.productId}">빼기</button>
 				</li>
 			</c:forEach>

@@ -107,9 +107,19 @@ public class CartService {
 	  ★ 여러 줄이 한 단위다 — 한 트랜잭션으로 넣는다.
 	  ★ 경고는 막지 않는다. 장바구니 화면이 다시 계산해 보여준다.
 
-	  돌려주는 값: [담은 줄 수, 건너뛴 줄 수]
+	  돌려주는 값: 담은 줄 수와, 건너뛴 상품마다 "이름(이유)" 목록 — 화면이 어떤 상품을 뺐는지 알린다.
 	*/
-	public int[] addAll(int memberId, List<Integer> productIds, int days) throws SQLException {
+	public static class AddAllResult {
+		public final int added;
+		public final List<String> skipped;
+
+		AddAllResult(int added, List<String> skipped) {
+			this.added = added;
+			this.skipped = skipped;
+		}
+	}
+
+	public AddAllResult addAll(int memberId, List<Integer> productIds, int days) throws SQLException {
 		checkDays(days);
 		Set<Integer> ids = new LinkedHashSet<Integer>(productIds);
 		if (ids.isEmpty()) {
@@ -118,17 +128,23 @@ public class CartService {
 
 		Map<Integer, ProductDTO> products = productDAO.findAnyByIds(ids);
 		List<ProductDTO> targets = new ArrayList<ProductDTO>();
-		int skipped = 0;
+		List<String> skipped = new ArrayList<String>();
 		for (Integer id : ids) {
 			ProductDTO p = products.get(id);
-			if (p == null || p.isTrack() || !p.isOnSale() || p.getStock() < days) {
-				skipped++;
+			if (p == null || p.isTrack()) {
+				continue;
+			}
+			if (!p.isOnSale()) {
+				skipped.add(p.getName() + "(판매 중지)");
+			} else if (p.getStock() < days) {
+				skipped.add(p.getName() + "(재고 " + p.getStock() + "포 — " + p.getStock() + "일분까지)");
 			} else {
 				targets.add(p);
 			}
 		}
 		if (targets.isEmpty()) {
-			throw new ServiceException("지금 담을 수 있는 영양제가 없습니다. 재고나 판매 상태를 확인하세요.");
+			throw new ServiceException("지금 담을 수 있는 영양제가 없습니다."
+					+ (skipped.isEmpty() ? "" : " " + String.join(", ", skipped)));
 		}
 
 		Connection conn = null;
@@ -144,7 +160,7 @@ public class CartService {
 		} finally {
 			DBUtil.release(conn);
 		}
-		return new int[] { targets.size(), skipped };
+		return new AddAllResult(targets.size(), skipped);
 	}
 
 	public void updateQuantity(int cartId, int memberId, int days) throws SQLException {

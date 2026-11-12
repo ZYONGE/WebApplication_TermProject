@@ -11,9 +11,13 @@
 		<tr>
 			<th><label for="loginId">아이디 <span class="required">*</span></label></th>
 			<td>
-				<input type="text" id="loginId" name="loginId" class="field"
-				       value="<c:out value='${form.loginId}' />" data-rule="loginId">
-				<button type="button" class="btn btn_small" onclick="checkLoginId()">중복확인</button>
+				<%-- 중복확인을 통과한 값만 data-checked-value 에 남는다. 아이디를 고치면 다시 확인해야 한다 (validate.js) --%>
+				<div class="member_idrow">
+					<input type="text" id="loginId" name="loginId" class="field"
+					       value="<c:out value='${form.loginId}' />" data-rule="loginId"
+					       data-check-required="아이디 중복확인을 해 주세요." data-checked-value="">
+					<button type="button" class="btn" onclick="checkLoginId()">중복확인</button>
+				</div>
 				<span id="idCheckResult" class="field_help"></span>
 				<span class="field_help">영문 · 숫자 · 밑줄 4~30자</span>
 			</td>
@@ -63,22 +67,39 @@
 
 <script>
 /* 아이디 중복 확인 — 서버 판정을 그대로 받아 표시만 한다. */
+function showIdResult(text, state) {
+	var result = document.getElementById("idCheckResult");
+	result.textContent = text;
+	result.className = "field_help" + (state ? " member_" + state : "");
+}
+
 function checkLoginId() {
 	var input = document.getElementById("loginId");
-	var result = document.getElementById("idCheckResult");
 	var value = input.value.trim();
-	if (value.length < 4) {
-		result.textContent = "아이디를 4자 이상 입력하세요.";
+	input.setAttribute("data-checked-value", "");
+	if (!/^[A-Za-z0-9_]{4,30}$/.test(value)) {
+		showIdResult("영문 · 숫자 · 밑줄 4~30자로 입력한 뒤 확인하세요.", "ng");
 		return;
 	}
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", "${ctx}/member/idcheck?loginId=" + encodeURIComponent(value), true);
 	xhr.onload = function () {
-		result.textContent = (xhr.responseText === "OK")
-			? "사용할 수 있는 아이디입니다."
-			: "이미 사용 중인 아이디입니다.";
+		if (xhr.responseText === "OK") {
+			input.setAttribute("data-checked-value", value);
+			showIdResult("사용할 수 있는 아이디입니다.", "ok");
+		} else {
+			showIdResult("이미 사용 중인 아이디입니다.", "ng");
+		}
 	};
 	xhr.send();
 }
+
+/* 확인한 뒤 아이디를 고치면 결과를 지운다 — 다시 확인해야 가입할 수 있다 */
+document.getElementById("loginId").addEventListener("input", function () {
+	if (this.value.trim() !== this.getAttribute("data-checked-value")) {
+		this.setAttribute("data-checked-value", "");
+		showIdResult("", null);
+	}
+});
 </script>
 <%@ include file="/common/footer.jsp" %>

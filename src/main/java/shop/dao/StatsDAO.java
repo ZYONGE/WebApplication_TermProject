@@ -20,18 +20,23 @@ import shop.util.DBUtil;
 */
 public class StatsDAO {
 
+	/*
+	  최근 N일 매출 — 오늘 포함 N일 달력 범위다 (DB 트랙 전달: 6일 범위로 자른다 = 오늘 + 6일 전까지).
+	  LIMIT N 으로 "최근 N행" 을 받으면 주문이 뜸할 때 몇 주 전 날짜가 섞인다.
+	  매출이 없는 날은 뷰에 행이 없으므로 0 으로 채워 N일을 항상 다 보여준다. 최신 날짜가 위.
+	*/
 	public List<SalesDailyDTO> findSalesDaily(int days) throws SQLException {
 		String sql = "SELECT sales_date, order_count, goods_amount, delivery_amount, total_amount"
 				   + "  FROM v_sales_daily"
-				   + " ORDER BY sales_date DESC LIMIT ?";
-		List<SalesDailyDTO> list = new ArrayList<SalesDailyDTO>();
+				   + " WHERE sales_date >= CURDATE() - INTERVAL ? DAY";
+		Map<String, SalesDailyDTO> byDate = new LinkedHashMap<String, SalesDailyDTO>();
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
 			conn = DBUtil.getConnection();
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, days);
+			pstmt.setInt(1, days - 1);
 			rs = pstmt.executeQuery();
 			while (rs.next()) {
 				SalesDailyDTO dto = new SalesDailyDTO();
@@ -40,12 +45,24 @@ public class StatsDAO {
 				dto.setGoodsAmount(rs.getInt("goods_amount"));
 				dto.setDeliveryAmount(rs.getInt("delivery_amount"));
 				dto.setTotalAmount(rs.getInt("total_amount"));
-				list.add(dto);
+				byDate.put(dto.getSalesDate().toString(), dto);
 			}
-			return list;
 		} finally {
 			DBUtil.close(rs, pstmt, conn);
 		}
+
+		List<SalesDailyDTO> list = new ArrayList<SalesDailyDTO>();
+		java.time.LocalDate today = java.time.LocalDate.now();
+		for (int i = 0; i < days; i++) {
+			java.sql.Date day = java.sql.Date.valueOf(today.minusDays(i));
+			SalesDailyDTO dto = byDate.get(day.toString());
+			if (dto == null) {
+				dto = new SalesDailyDTO();
+				dto.setSalesDate(day);
+			}
+			list.add(dto);
+		}
+		return list;
 	}
 
 	/*
@@ -123,7 +140,9 @@ public class StatsDAO {
 	public Map<String, Integer> findSummary() throws SQLException {
 		String sql = "SELECT"
 				+ " (SELECT COUNT(*) FROM member  WHERE status = 'ACTIVE')            AS member_count,"
-				+ " (SELECT COUNT(*) FROM product WHERE status = '판매중')            AS product_count,"
+				/* 고객에게 보이는 상품 수 — 노출 규칙과 같은 조건 (ERD § 2.4). 판매중이어도 재고 0 은 빼고 따로 센다 */
+				+ " (SELECT COUNT(*) FROM product WHERE status = '판매중' AND stock > 0) AS product_count,"
+				+ " (SELECT COUNT(*) FROM product WHERE status = '판매중' AND stock = 0) AS soldout_count,"
 				+ " (SELECT COUNT(*) FROM orders  WHERE order_status = '정상')        AS order_count,"
 				+ " (SELECT COUNT(*) FROM orders  WHERE order_status = '정상'"
 				+ "    AND DATE(ordered_at) = CURDATE())                              AS today_order_count,"
@@ -141,6 +160,7 @@ public class StatsDAO {
 			if (rs.next()) {
 				map.put("memberCount", Integer.valueOf(rs.getInt("member_count")));
 				map.put("productCount", Integer.valueOf(rs.getInt("product_count")));
+				map.put("soldoutCount", Integer.valueOf(rs.getInt("soldout_count")));
 				map.put("orderCount", Integer.valueOf(rs.getInt("order_count")));
 				map.put("todayOrderCount", Integer.valueOf(rs.getInt("today_order_count")));
 				map.put("todayAmount", Integer.valueOf(rs.getInt("today_amount")));

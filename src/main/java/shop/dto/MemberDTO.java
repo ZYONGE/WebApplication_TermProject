@@ -87,4 +87,19 @@ public class MemberDTO {
 	public void setCreatedAt(Timestamp createdAt) {
 		this.createdAt = createdAt;
 	}
+
+	/* 화면 표기 — 권한 · 상태 코드를 그대로 보이지 않는다 */
+	public String getRoleLabel() {
+		if ("ADMIN".equals(role)) {
+			return "관리자";
+		}
+		if ("DEV".equals(role)) {
+			return "개발자";
+		}
+		return "회원";
+	}
+
+	public String getStatusLabel() {
+		return "LEFT".equals(status) ? "탈퇴" : "활동";
+	}
 }

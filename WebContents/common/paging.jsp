@@ -27,5 +27,5 @@
 		<a class="paging_next" href="${ctx}${pageUrl}page=${pageData.page + 1}">다음</a>
 	</c:if>
 </div>
-<p>전체 ${pageData.total}건 / ${pageData.page}·${pageData.totalPages} 페이지</p>
+<p class="paging_info">전체 ${pageData.total}건 · ${pageData.page} / ${pageData.totalPages} 페이지</p>
 </c:if>

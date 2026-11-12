@@ -59,7 +59,7 @@
 				</td>
 				<td class="col_date"><fmt:formatDate value="${order.orderedAt}" pattern="yyyy-MM-dd" /></td>
 				<td class="col_total"><fmt:formatNumber value="${order.payAmount}" pattern="#,##0" />원</td>
-				<td class="col_state"><c:out value="${empty order.delivery ? '-' : order.delivery.status}" /></td>
+				<td class="col_state"><c:out value="${order.displayStatus}" /></td>
 			</tr>
 		</c:forEach>
 		<c:if test="${empty recentOrders}">

@@ -23,7 +23,7 @@ public class AddressDAO {
 
 	public List<AddressDTO> findByMember(int memberId) throws SQLException {
 		String sql = "SELECT " + COLUMNS + " FROM address WHERE member_id = ?"
-				   + " ORDER BY is_default DESC, addr_id DESC";
+				   + " ORDER BY (is_default = 'Y') DESC, addr_id DESC";   /* ENUM 은 정의 순서로 정렬된다 — 'Y' 를 맨 위로 */
 		List<AddressDTO> list = new ArrayList<AddressDTO>();
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -120,18 +120,30 @@ public class AddressDAO {
 		}
 	}
 
-	public int delete(int addrId, int memberId) throws SQLException {
+	public int delete(Connection conn, int addrId, int memberId) throws SQLException {
 		String sql = "DELETE FROM address WHERE addr_id = ? AND member_id = ?";
-		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
-			conn = DBUtil.getConnection();
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, addrId);
 			pstmt.setInt(2, memberId);
 			return pstmt.executeUpdate();
 		} finally {
-			DBUtil.close(pstmt, conn);
+			DBUtil.close(pstmt);
+		}
+	}
+
+	/* 기본 배송지를 지운 뒤 — 남은 것 중 가장 최근 배송지를 기본으로 올린다. 없으면 0 */
+	public int promoteLatest(Connection conn, int memberId) throws SQLException {
+		String sql = "UPDATE address SET is_default = 'Y' WHERE member_id = ?"
+				   + " ORDER BY addr_id DESC LIMIT 1";
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, memberId);
+			return pstmt.executeUpdate();
+		} finally {
+			DBUtil.close(pstmt);
 		}
 	}
 

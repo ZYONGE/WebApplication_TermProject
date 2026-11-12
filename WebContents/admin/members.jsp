@@ -23,9 +23,9 @@
 	       placeholder="아이디 · 이름 · 이메일">
 	<select name="role">
 		<option value="">전체 권한</option>
-		<option value="USER" ${param.role == 'USER' ? 'selected' : ''}>USER</option>
-		<option value="ADMIN" ${param.role == 'ADMIN' ? 'selected' : ''}>ADMIN</option>
-		<option value="DEV" ${param.role == 'DEV' ? 'selected' : ''}>DEV</option>
+		<option value="USER" ${param.role == 'USER' ? 'selected' : ''}>회원</option>
+		<option value="ADMIN" ${param.role == 'ADMIN' ? 'selected' : ''}>관리자</option>
+		<option value="DEV" ${param.role == 'DEV' ? 'selected' : ''}>개발자</option>
 	</select>
 	<button type="submit" class="btn">검색</button>
 </form>
@@ -43,8 +43,8 @@
 				<td><c:out value="${m.name}" /></td>
 				<td><c:out value="${m.email}" /></td>
 				<td><c:out value="${m.phone}" /></td>
-				<td><c:out value="${m.role}" /></td>
-				<td><c:out value="${m.status}" /></td>
+				<td><c:out value="${m.roleLabel}" /></td>
+				<td><c:out value="${m.statusLabel}" /></td>
 				<td><fmt:formatDate value="${m.createdAt}" pattern="yyyy-MM-dd" /></td>
 				<td>
 					<%--

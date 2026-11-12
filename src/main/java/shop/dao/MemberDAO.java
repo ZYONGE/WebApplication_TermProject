@@ -11,6 +11,7 @@ import java.util.List;
 import shop.dto.MemberDTO;
 import shop.dto.PageDTO;
 import shop.util.DBUtil;
+import shop.util.StringUtil;
 import shop.util.Paging;
 
 /*
@@ -192,7 +193,7 @@ public class MemberDAO {
 		List<Object> args = new ArrayList<Object>();
 		if (keyword != null && keyword.length() > 0) {
 			where.append(" AND (login_id LIKE ? OR name LIKE ? OR email LIKE ?)");
-			String like = "%" + keyword + "%";
+			String like = StringUtil.likeContains(keyword);
 			args.add(like);
 			args.add(like);
 			args.add(like);

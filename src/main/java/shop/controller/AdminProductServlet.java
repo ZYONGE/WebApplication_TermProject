@@ -50,6 +50,7 @@ public class AdminProductServlet extends BaseServlet {
 			pageCss(request, "admin");
 
 			int categoryId = intParam(request, "categoryId", 0);
+			request.setAttribute("selectedCategoryId", Integer.valueOf(categoryId));
 			String type = param(request, "type");
 			request.setAttribute("pageData", adminService.findProducts(
 					categoryId > 0 ? Integer.valueOf(categoryId) : null,

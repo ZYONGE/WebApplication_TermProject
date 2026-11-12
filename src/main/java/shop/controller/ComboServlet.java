@@ -59,8 +59,9 @@ public class ComboServlet extends BaseServlet {
 				try {
 					int comboId = comboService.save(memberId, param(request, "comboName"), days, ids,
 							"Y".equals(param(request, "overwrite")));
-					flash(request, "조합을 저장했습니다.");
-					redirect(request, response, "/custom?combo=" + comboId);
+					/* 저장 안내 한 줄만 — 조합 탭의 "불러왔습니다" 배너는 saved=1 이면 내지 않는다 */
+					flash(request, "조합 '" + shop.util.StringUtil.trim(param(request, "comboName")) + "' 을(를) 저장했습니다.");
+					redirect(request, response, "/custom?combo=" + comboId + "&saved=1");
 				} catch (ServiceException e) {
 					/* 고르던 상태를 잃지 않게 쿼리로 되돌린다 */
 					flashError(request, e.getMessage());

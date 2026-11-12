@@ -29,7 +29,7 @@
 
 		<table class="formtable prod_spec">
 			<tr><th>구분</th><td>${product.track ? '트랙 패키지 — 여러 영양제를 1포에 묶은 상품' : '낱개 영양제 — 1포에 한 가지 영양소 1회분'}</td></tr>
-			<tr><th>재고</th><td>${product.stock}포 (${product.stock}일분)</td></tr>
+			<tr><th>재고</th><td>${product.stock}포</td></tr>
 			<tr>
 				<th>별점</th>
 				<td><fmt:formatNumber value="${product.avgRating}" pattern="0.0" /> / 5 (리뷰 ${product.reviewCount}건)</td>
@@ -179,6 +179,13 @@
 	<h3>상품 문의</h3>
 	<c:if test="${sessionScope.loginMember.role == 'USER'}">
 		<button type="button" class="btn" data-popup-open="qnaPopup">문의하기</button>
+	</c:if>
+	<%-- 손님에게는 문의 방법을 알린다 — 로그인 후 이 상품으로 돌아온다 --%>
+	<c:if test="${empty sessionScope.loginMember}">
+		<c:url var="qnaLogin" value="/member/login">
+			<c:param name="returnUrl" value="${ctx}/product/view?productId=${product.productId}" />
+		</c:url>
+		<a class="btn" href="${qnaLogin}">로그인하고 문의하기</a>
 	</c:if>
 
 	<table class="listtable">

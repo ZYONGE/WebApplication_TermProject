@@ -87,7 +87,8 @@
 				<tr><th>기본 배송지</th>
 				    <td><label><input type="checkbox" name="isDefault" value="Y"> 기본 배송지로 지정</label></td></tr>
 			</table>
-			<p class="field_help">우편번호는 직접 입력합니다. (외부 주소 API 는 범위 외)</p>
+			<%-- 외부 주소 API 는 범위 외다 (CLAUDE.md § 2) --%>
+			<p class="field_help">우편번호는 직접 입력합니다.</p>
 		</div>
 		<div class="popup_foot">
 			<button type="submit" class="btn btn_primary">저장</button>

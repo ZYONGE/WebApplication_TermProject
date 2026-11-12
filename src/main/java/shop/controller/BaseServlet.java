@@ -36,6 +36,7 @@ public abstract class BaseServlet extends HttpServlet {
 
 	private final CategoryDAO categoryDAO = new CategoryDAO();
 	private final CartDAO cartDAO = new CartDAO();
+	private final shop.dao.ProductDAO productDAO = new shop.dao.ProductDAO();
 	private final ConfigService configService = new ConfigService();
 
 	/*
@@ -130,7 +131,7 @@ public abstract class BaseServlet extends HttpServlet {
 	*/
 	private void fillHeaderModel(HttpServletRequest request) {
 		try {
-			request.setAttribute("navCategories", categoryDAO.findTree());
+			request.setAttribute("navCategories", visibleTree());
 			request.setAttribute("maintenance", Boolean.valueOf(configService.isMaintenance()));
 
 			/* 장바구니 배지는 USER 세션에서만 조회한다 — 다른 역할에는 장바구니가 없다 (ERD § 5.3).
@@ -143,6 +144,28 @@ public abstract class BaseServlet extends HttpServlet {
 			/* 헤더 때문에 본문을 못 보여주는 것은 과하다. 비워 두고 넘어간다. */
 			request.setAttribute("headerError", e.getMessage());
 		}
+	}
+
+	/*
+	  고객 메뉴용 카테고리 트리 — 판매 중인 상품이 없는 소분류는 뺀다.
+	  대분류는 자기나 소분류 중 하나라도 상품이 있으면 남는다. 관리자 화면의 카테고리 목록은 그대로 전체다.
+	*/
+	private java.util.List<shop.dto.CategoryDTO> visibleTree() throws SQLException {
+		java.util.Set<Integer> live = productDAO.findOnSaleCategoryIds();
+		java.util.List<shop.dto.CategoryDTO> roots = new java.util.ArrayList<shop.dto.CategoryDTO>();
+		for (shop.dto.CategoryDTO root : categoryDAO.findTree()) {
+			java.util.List<shop.dto.CategoryDTO> kids = new java.util.ArrayList<shop.dto.CategoryDTO>();
+			for (shop.dto.CategoryDTO sub : root.getChildren()) {
+				if (live.contains(Integer.valueOf(sub.getCategoryId()))) {
+					kids.add(sub);
+				}
+			}
+			root.setChildren(kids);
+			if (!kids.isEmpty() || live.contains(Integer.valueOf(root.getCategoryId()))) {
+				roots.add(root);
+			}
+		}
+		return roots;
 	}
 
 	/* 서블릿이 잡지 못한 SQLException 은 500 으로 올린다 — 고장은 감추지 않는다. */

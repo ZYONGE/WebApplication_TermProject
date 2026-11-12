@@ -12,6 +12,7 @@ public class WishItemDTO {
 	private String thumbnail;
 	private String status;
 	private int price;
+	private int stock;
 	private Timestamp createdAt;
 
 
@@ -87,5 +88,21 @@ public class WishItemDTO {
 
 	public void setProductType(String productType) {
 		this.productType = productType;
+	}
+
+	public int getStock() {
+		return stock;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+
+	/* 화면 상태 — 노출 규칙과 같다 (판매중 · 재고 > 0). 판매중이어도 재고 0 이면 '재고 없음' */
+	public String getStateLabel() {
+		if (!"판매중".equals(status)) {
+			return "판매 중지";
+		}
+		return stock > 0 ? "판매중" : "재고 없음";
 	}
 }

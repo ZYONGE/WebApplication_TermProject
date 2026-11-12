@@ -18,18 +18,32 @@
 
 <h2>카테고리 관리</h2>
 
+<div class="admin_filter">
+	<span class="field_help">상품은 소분류에만 등록됩니다. 판매 중인 상품이 없는 카테고리는 고객 메뉴에 보이지 않습니다.</span>
+	<button type="button" class="btn btn_primary" onclick="newCategory()">카테고리 등록</button>
+</div>
+
 <table class="listtable">
 	<thead class="listtable_head">
-		<tr><th>번호</th><th>이름</th><th>상위</th><th>순서</th><th></th></tr>
+		<tr><th class="col_no">번호</th><th class="col_name">이름</th><th class="col_name">상위</th>
+		    <th class="col_state">순서</th><th class="col_action"></th></tr>
 	</thead>
 	<tbody>
 		<c:forEach var="cat" items="${categories}">
 			<tr>
-				<td>${cat.categoryId}</td>
-				<td><c:if test="${not empty cat.parentId}">— </c:if><c:out value="${cat.name}" /></td>
-				<td>${empty cat.parentId ? '(대분류)' : cat.parentId}</td>
-				<td>${cat.sortOrder}</td>
-				<td>
+				<td class="col_no">${cat.categoryId}</td>
+				<td class="col_name"><c:if test="${not empty cat.parentId}">— </c:if><c:out value="${cat.name}" /></td>
+				<%-- 상위는 번호가 아니라 이름으로 --%>
+				<td class="col_name">
+					<c:choose>
+						<c:when test="${empty cat.parentId}">(대분류)</c:when>
+						<c:otherwise>
+							<c:forEach var="r" items="${tree}"><c:if test="${r.categoryId == cat.parentId}"><c:out value="${r.name}" /></c:if></c:forEach>
+						</c:otherwise>
+					</c:choose>
+				</td>
+				<td class="col_state">${cat.sortOrder}</td>
+				<td class="col_action">
 					<button type="button" class="btn btn_small"
 					        onclick="editCategory(${cat.categoryId}, '<c:out value="${cat.name}" />', ${empty cat.parentId ? 0 : cat.parentId}, ${cat.sortOrder})">수정</button>
 					<form action="${ctx}/admin/categories" method="post">
@@ -46,52 +60,54 @@
 	</tbody>
 </table>
 
-<h3>카테고리 등록 · 수정</h3>
-<form class="formtable_form" action="${ctx}/admin/categories" method="post" data-validate>
-	<input type="hidden" name="mode" value="save">
-	<table class="formtable">
-		<tr><th>구분</th>
-		    <td>
-		    	<%-- 번호는 내부 값이라 입력란으로 노출하지 않는다. 목록의 '수정' 이 채운다. --%>
-		    	<input type="hidden" id="categoryId" name="categoryId" value="0">
-		    	<span id="categoryMode">신규 등록</span>
-		    </td></tr>
-		<tr><th><label for="name">이름</label></th>
-		    <td><input type="text" id="name" name="name" class="field" data-rule="required"></td></tr>
-		<tr><th><label for="parentId">상위 카테고리</label></th>
-		    <td>
-		    	<select id="parentId" name="parentId">
-		    		<option value="0">(대분류로 등록)</option>
-		    		<c:forEach var="cat" items="${tree}">
-		    			<option value="${cat.categoryId}"><c:out value="${cat.name}" /></option>
-		    		</c:forEach>
-		    	</select>
-		    	<%-- 대분류 이름 중복은 서비스가 막는다. UNIQUE 가 parent_id IS NULL 을 보호하지 못하기 때문이다. --%>
-		    </td></tr>
-		<tr><th><label for="sortOrder">정렬 순서</label></th>
-		    <td><input type="number" id="sortOrder" name="sortOrder" value="0"></td></tr>
-	</table>
-	<div class="btnstyle">
-		<button type="submit" class="btn btn_primary">저장</button>
-		<button type="button" class="btn btn_sub" onclick="resetCategory()">새로 입력</button>
-	</div>
-</form>
+<%-- 등록 · 수정 — 다른 관리 화면처럼 팝업 (DECISIONS § 4) --%>
+<dialog id="categoryPopup" class="popup">
+	<form class="popup_form" action="${ctx}/admin/categories" method="post" data-validate>
+		<input type="hidden" name="mode" value="save">
+		<%-- 번호는 내부 값이라 입력란으로 노출하지 않는다. 목록의 '수정' 이 채운다. --%>
+		<input type="hidden" id="categoryId" name="categoryId" value="0">
+		<h3 class="popup_head" id="categoryMode">카테고리 등록</h3>
+		<div class="popup_body">
+			<table class="formtable">
+				<tr><th><label for="name">이름</label></th>
+				    <td><input type="text" id="name" name="name" class="field" data-rule="required"></td></tr>
+				<tr><th><label for="parentId">상위 카테고리</label></th>
+				    <td>
+				    	<select id="parentId" name="parentId">
+				    		<option value="0">(대분류로 등록)</option>
+				    		<c:forEach var="cat" items="${tree}">
+				    			<option value="${cat.categoryId}"><c:out value="${cat.name}" /></option>
+				    		</c:forEach>
+				    	</select>
+				    	<%-- 대분류 이름 중복은 서비스가 막는다. UNIQUE 가 parent_id IS NULL 을 보호하지 못하기 때문이다. --%>
+				    </td></tr>
+				<tr><th><label for="sortOrder">정렬 순서</label></th>
+				    <td><input type="number" id="sortOrder" name="sortOrder" value="0"></td></tr>
+			</table>
+		</div>
+		<div class="popup_foot">
+			<button type="submit" class="btn btn_primary">저장</button>
+			<button type="button" class="btn btn_sub popup_close" data-popup-close="categoryPopup">닫기</button>
+		</div>
+	</form>
+</dialog>
 
 <script>
-function editCategory(id, name, parentId, sortOrder) {
+function fillCategory(id, name, parentId, sortOrder, title) {
 	document.getElementById("categoryId").value = id;
-	document.getElementById("categoryMode").textContent = "수정 중 — #" + id + " " + name;
+	document.getElementById("categoryMode").textContent = title;
 	document.getElementById("name").value = name;
 	document.getElementById("parentId").value = parentId;
 	document.getElementById("sortOrder").value = sortOrder;
+	window.openPopup("categoryPopup");
 }
 
-function resetCategory() {
-	document.getElementById("categoryId").value = 0;
-	document.getElementById("categoryMode").textContent = "신규 등록";
-	document.getElementById("name").value = "";
-	document.getElementById("parentId").value = 0;
-	document.getElementById("sortOrder").value = 0;
+function editCategory(id, name, parentId, sortOrder) {
+	fillCategory(id, name, parentId, sortOrder, "카테고리 수정 — " + name);
+}
+
+function newCategory() {
+	fillCategory(0, "", 0, 0, "카테고리 등록");
 }
 </script>
 <%@ include file="/common/footer.jsp" %>

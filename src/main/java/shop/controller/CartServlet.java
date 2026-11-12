@@ -46,24 +46,25 @@ public class CartServlet extends BaseServlet {
 		try {
 			if ("add".equals(action)) {
 				cartService.add(memberId, intParam(request, "productId", 0),
-						intParam(request, "quantity", 1));
-				flash(request, intParam(request, "quantity", 1) + "일분을 장바구니에 담았습니다.");
+						intParam(request, "quantity", 0));
+				flash(request, intParam(request, "quantity", 0) + "일분을 장바구니에 담았습니다.");
 				/* 담은 뒤 어디로 갈지는 보낸 쪽이 정한다 — 상품상세에 남을 수도, 장바구니로 갈 수도 있다. */
 				String back = param(request, "back");
 				redirect(request, response, back != null && back.startsWith("/") ? back : "/cart/list");
 				return;
 			}
 			if ("addAll".equals(action)) {
-				int[] result = cartService.addAll(memberId, intParams(request, "productId"),
-						intParam(request, "days", 0));
-				flash(request, "조합 " + result[0] + "종을 " + intParam(request, "days", 0) + "일분씩 담았습니다."
-						+ (result[1] > 0 ? " (담을 수 없는 " + result[1] + "종은 뺐습니다)" : ""));
+				CartService.AddAllResult result = cartService.addAll(memberId,
+						intParams(request, "productId"), intParam(request, "days", 0));
+				flash(request, "조합 " + result.added + "종을 " + intParam(request, "days", 0) + "일분씩 담았습니다."
+						+ (result.skipped.isEmpty() ? ""
+								: " 담지 못한 상품: " + String.join(", ", result.skipped)));
 				redirect(request, response, "/cart/list");
 				return;
 			}
 			if ("update".equals(action)) {
 				cartService.updateQuantity(intParam(request, "cartId", 0), memberId,
-						intParam(request, "quantity", 1));
+						intParam(request, "quantity", 0));
 				flash(request, "섭취 일수를 변경했습니다.");
 			} else if ("delete".equals(action)) {
 				cartService.delete(intParam(request, "cartId", 0), memberId);

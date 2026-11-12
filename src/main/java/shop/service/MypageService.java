@@ -108,8 +108,29 @@ public class MypageService {
 		}
 	}
 
+	/*
+	  배송지 삭제 — 기본 배송지를 지웠으면 남은 것 중 최근 배송지를 기본으로 올린다.
+	  기본 배송지가 하나도 없는 상태를 만들지 않는다 (주문서 자동 입력 · 마이페이지 주소가 기본 배송지를 본다).
+	*/
 	public void deleteAddress(int addrId, int memberId) throws SQLException {
-		addressDAO.delete(addrId, memberId);
+		AddressDTO target = addressDAO.findById(addrId, memberId);
+		if (target == null) {
+			throw new ServiceException("배송지를 찾을 수 없습니다.");
+		}
+		Connection conn = null;
+		try {
+			conn = DBUtil.beginTransaction();
+			addressDAO.delete(conn, addrId, memberId);
+			if ("Y".equals(target.getIsDefault())) {
+				addressDAO.promoteLatest(conn, memberId);
+			}
+			DBUtil.commit(conn);
+		} catch (SQLException e) {
+			DBUtil.rollback(conn);
+			throw e;
+		} finally {
+			DBUtil.release(conn);
+		}
 	}
 
 	private void validateAddress(AddressDTO addr) {

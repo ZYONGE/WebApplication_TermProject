@@ -18,8 +18,8 @@
 			message: "비밀번호는 8자 이상으로 입력하세요."
 		},
 		name: {
-			test: function (v) { return v.length > 0 && v.length <= 30; },
-			message: "이름을 30자 이내로 입력하세요."
+			test: function (v) { return v.length <= 30; },
+			message: "이름은 30자 이내로 입력하세요."
 		},
 		email: {
 			test: function (v) { return /^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$/.test(v); },
@@ -50,6 +50,20 @@
 		}
 	};
 
+	/* 알림에 붙일 칸 이름 — 연결된 label 글자(* 표시 제외) → placeholder → 없으면 빈 값 */
+	function fieldName(field) {
+		var label = field.id ? document.querySelector("label[for='" + field.id + "']") : null;
+		var text = label ? label.textContent : (field.getAttribute("placeholder") || "");
+		return text.replace(/\*/g, "").replace(/\s+/g, " ").trim();
+	}
+
+	function fail(field, message) {
+		var name = fieldName(field);
+		alert(name && message.indexOf(name) < 0 ? "[" + name + "] " + message : message);
+		field.focus();
+		return false;
+	}
+
 	/* data-rule 속성이 붙은 입력만 검사한다. */
 	function validateForm(form) {
 		var fields = form.querySelectorAll("[data-rule]");
@@ -60,10 +74,24 @@
 				continue;
 			}
 			var value = (field.value || "").trim();
+			/* 빈 칸은 규칙 문구("30자 이내" 등)가 아니라 "입력하세요" 로 알린다 */
+			if (value === "") {
+				return fail(field, field.getAttribute("data-message") || "필수 입력 항목입니다. 값을 입력하세요.");
+			}
 			if (!rule.test(value, field)) {
-				alert(field.getAttribute("data-message") || rule.message);
-				field.focus();
-				return false;
+				return fail(field, field.getAttribute("data-message") || rule.message);
+			}
+		}
+
+		/*
+		  확인이 필요한 칸 — 아이디 중복확인처럼 버튼으로 확인한 값과 지금 값이 같아야 한다.
+		    data-check-required="안내 문구"  data-checked-value="확인을 통과한 값"
+		  값을 바꾸면 확인을 다시 해야 한다. (판정은 서버가 다시 한다)
+		*/
+		var checks = form.querySelectorAll("[data-check-required]");
+		for (var k = 0; k < checks.length; k++) {
+			if ((checks[k].value || "").trim() !== checks[k].getAttribute("data-checked-value")) {
+				return fail(checks[k], checks[k].getAttribute("data-check-required"));
 			}
 		}
 
@@ -87,11 +115,25 @@
 		}
 	});
 
-	/* 삭제처럼 되돌릴 수 없는 동작은 한 번 묻는다. */
+	/*
+	  삭제처럼 되돌릴 수 없는 동작은 한 번 묻는다.
+	  검증할 폼의 제출 버튼이면 입력 검사를 먼저 한다 — 빈 칸이 있는데 "결제하시겠습니까?" 부터 묻지 않는다.
+	*/
 	document.addEventListener("click", function (event) {
 		var el = event.target.closest("[data-confirm-message]");
-		if (el && !window.confirm(el.getAttribute("data-confirm-message"))) {
+		if (!el) {
+			return;
+		}
+		var form = el.form || el.closest("form");
+		var isSubmit = el.tagName === "BUTTON" && (el.type || "submit") === "submit";
+		if (isSubmit && form && form.hasAttribute("data-validate") && !validateForm(form)) {
+			event.preventDefault();
+			return;
+		}
+		if (!window.confirm(el.getAttribute("data-confirm-message"))) {
 			event.preventDefault();
 		}
 	});
+
+	window.validateForm = validateForm;
 })();

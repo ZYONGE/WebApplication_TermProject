@@ -38,7 +38,7 @@
 						</div>
 					</c:if>
 				</td>
-				<td class="col_state">${q.secretPost ? 'Y' : 'N'}</td>
+				<td class="col_state">${q.secretPost ? '비밀' : '공개'}</td>
 				<td class="col_date"><fmt:formatDate value="${q.createdAt}" pattern="yyyy-MM-dd" /></td>
 				<td class="col_state">${q.answered ? '답변완료' : '미답변'}</td>
 				<td class="col_action">

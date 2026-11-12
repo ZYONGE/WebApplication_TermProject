@@ -31,13 +31,16 @@
 			buttons[i].classList.toggle("on", buttons[i].getAttribute("data-days-value") === value);
 		}
 		var totals = document.querySelectorAll('[data-days-total="' + input.id + '"]');
+		var max = toInt(input.getAttribute("max")) || 0;
 		for (var j = 0; j < totals.length; j++) {
 			var days = toInt(input.value);
 			var price = toInt(totals[j].getAttribute("data-price"));
 			var count = totals[j].querySelector("[data-days-count]");
 			var sum = totals[j].querySelector("[data-days-sum]");
+			/* 담을 수 없는 일수(0 이하 · 상한 초과)는 합계를 내지 않고 범위를 알린다 */
+			var ok = days >= 1 && (max === 0 || days <= max);
 			if (count) { count.textContent = days; }
-			if (sum) { sum.textContent = fmt(price * days); }
+			if (sum) { sum.textContent = ok ? fmt(price * days) : "— (1~" + max + "일로 입력)"; }
 		}
 	}
 
@@ -119,6 +122,7 @@
 
 		/* 내 조합 목록 — textContent 로만 넣는다 (상품명 이스케이프) */
 		var ul = document.getElementById("customPicked");
+		var days = currentDays();
 		ul.innerHTML = "";
 		for (var i = 0; i < picked.length; i++) {
 			var box = picked[i];
@@ -131,6 +135,11 @@
 			li.setAttribute("data-id", box.value);
 			li.appendChild(el("span", "custom_picked_name", box.getAttribute("data-name")));
 			li.appendChild(el("span", "custom_picked_price", "1포 " + fmt(price) + "원"));
+			/* 재고보다 많은 일수 — 담을 때 서버가 이 상품을 뺀다. 고르는 즉시 알린다 */
+			var stock = toInt(box.getAttribute("data-stock"));
+			if (stock < days) {
+				li.appendChild(el("span", "custom_picked_warn", "재고 " + stock + "포 — " + days + "일분은 담을 수 없음"));
+			}
 			var remove = el("button", "btn btn_small btn_sub", "빼기");
 			remove.type = "button";
 			remove.setAttribute("data-unpick", box.value);
@@ -141,7 +150,6 @@
 		document.getElementById("customEmpty").hidden = picked.length > 0;
 
 		/* 합계 · 배송비 미리보기 — 서버 ConfigService.calculateDeliveryFee 와 같은 식 */
-		var days = currentDays();
 		var total = pack * days;
 		var fee = total <= 0 ? 0 : (total >= freeMin ? 0 : baseFee);
 		document.getElementById("sumPack").textContent = fmt(pack);
@@ -182,7 +190,20 @@
 		}
 	}
 
-	form.addEventListener("change", render);
+	/* 불러온 뒤 고르기를 바꾸면 "…을(를) 불러왔습니다" 배너는 더 이상 맞지 않는다 — 내린다 */
+	function dropLoadedBanner() {
+		var banners = document.querySelectorAll("[data-loaded]");
+		for (var b = 0; b < banners.length; b++) {
+			banners[b].hidden = true;
+		}
+	}
+
+	form.addEventListener("change", function (event) {
+		if (event.target.name === "productId") {
+			dropLoadedBanner();
+		}
+		render();
+	});
 	daysInput.addEventListener("input", render);
 
 	form.addEventListener("click", function (event) {
@@ -192,6 +213,7 @@
 			if (box) {
 				box.checked = false;
 			}
+			dropLoadedBanner();
 			render();
 			return;
 		}

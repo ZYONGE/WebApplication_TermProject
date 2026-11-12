@@ -31,13 +31,13 @@
 	<label for="productA">영양제 A</label>
 	<select id="productA" name="productA">
 		<c:forEach var="sg" items="${singles}">
-			<option value="${sg.productId}">[${sg.productId}] <c:out value="${sg.name}" /></option>
+			<option value="${sg.productId}"><c:out value="${sg.name}" /></option>
 		</c:forEach>
 	</select>
 	<label for="productB">영양제 B</label>
 	<select id="productB" name="productB">
 		<c:forEach var="sg" items="${singles}" varStatus="st">
-			<option value="${sg.productId}" ${st.index == 1 ? 'selected' : ''}>[${sg.productId}] <c:out value="${sg.name}" /></option>
+			<option value="${sg.productId}" ${st.index == 1 ? 'selected' : ''}><c:out value="${sg.name}" /></option>
 		</c:forEach>
 	</select>
 	<label for="message">경고 문구</label>
@@ -54,8 +54,8 @@
 		<c:forEach var="cf" items="${conflicts}">
 			<tr>
 				<td>${cf.conflictId}</td>
-				<td>[${cf.productA}] <c:out value="${cf.productAName}" /></td>
-				<td>[${cf.productB}] <c:out value="${cf.productBName}" /></td>
+				<td><c:out value="${cf.productAName}" /></td>
+				<td><c:out value="${cf.productBName}" /></td>
 				<td><c:out value="${cf.message}" /></td>
 				<td><fmt:formatDate value="${cf.createdAt}" pattern="yyyy-MM-dd" /></td>
 				<td>

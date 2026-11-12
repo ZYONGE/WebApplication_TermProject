@@ -26,8 +26,7 @@
 			<th class="col_date">주문일</th>
 			<th class="col_name">상품</th>
 			<th class="col_total">결제금액</th>
-			<th class="col_state">주문상태</th>
-			<th class="col_state">배송상태</th>
+			<th class="col_state">상태</th>
 			<th class="col_action"></th>
 		</tr>
 	</thead>
@@ -43,21 +42,15 @@
 					<c:if test="${fn:length(order.items) > 1}">외 ${fn:length(order.items) - 1}건</c:if>
 				</td>
 				<td class="col_total"><fmt:formatNumber value="${order.payAmount}" pattern="#,##0" />원</td>
-				<td class="col_state"><c:out value="${order.orderStatus}" /></td>
-				<%-- 취소 주문은 배송 행이 결제완료로 남아 있다 — 주문 상태를 먼저 본다 (ERD § 7 취소 주문 조회) --%>
-				<td class="col_state">
-					<c:choose>
-						<c:when test="${order.orderStatus == '취소'}">취소</c:when>
-						<c:otherwise><c:out value="${empty order.delivery ? '-' : order.delivery.status}" /></c:otherwise>
-					</c:choose>
-				</td>
+				<%-- 주문 · 배송 상태를 한 칸으로 — 취소면 '취소', 아니면 배송 단계 (OrderDTO.displayStatus) --%>
+				<td class="col_state"><c:out value="${order.displayStatus}" /></td>
 				<td class="col_action">
 					<a class="btn btn_small" href="${ctx}/order/view?orderId=${order.orderId}">상세</a>
 				</td>
 			</tr>
 		</c:forEach>
 		<c:if test="${empty pageData.list}">
-			<tr><td colspan="7" class="empty">주문 내역이 없습니다.</td></tr>
+			<tr><td colspan="6" class="empty">주문 내역이 없습니다.</td></tr>
 		</c:if>
 	</tbody>
 </table>

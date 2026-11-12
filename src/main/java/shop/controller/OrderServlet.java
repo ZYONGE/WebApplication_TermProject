@@ -126,6 +126,8 @@ public class OrderServlet extends BaseServlet {
 
 		try {
 			int orderId = orderService.pay(memberId, form, param(request, "method"));
+			/* 주문완료 화면은 방금 결제한 주문에만 한 번 보여준다 */
+			request.getSession().setAttribute(JUST_PAID, Integer.valueOf(orderId));
 			redirect(request, response, "/order/complete?orderId=" + orderId);
 		} catch (ServiceException e) {
 			/* 재고 부족 · 빈 장바구니 등 — 주문서로 돌려보내 다시 시도하게 한다. */
@@ -134,10 +136,21 @@ public class OrderServlet extends BaseServlet {
 		}
 	}
 
-	/* 9번 주문완료 */
+	/*
+	  9번 주문완료 — 방금 결제한 주문일 때만 "주문이 완료되었습니다" 를 보인다.
+	  예전 주문 번호로 들어오면(새로고침 · 주소 입력) 주문상세로 보낸다.
+	*/
+	private static final String JUST_PAID = "justPaidOrderId";
+
 	private void complete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException, SQLException {
 		int orderId = intParam(request, "orderId", 0);
+		Object justPaid = request.getSession().getAttribute(JUST_PAID);
+		if (!(justPaid instanceof Integer) || ((Integer) justPaid).intValue() != orderId) {
+			redirect(request, response, "/order/view?orderId=" + orderId);
+			return;
+		}
+		request.getSession().removeAttribute(JUST_PAID);
 		OrderDTO order = orderService.findDetail(orderId, loginMemberId(request), false);
 		if (order == null) {
 			flashError(request, "주문을 찾을 수 없습니다.");

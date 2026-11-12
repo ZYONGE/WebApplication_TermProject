@@ -14,6 +14,7 @@ import shop.dto.OrderItemDTO;
 import shop.dto.PageDTO;
 import shop.dto.PaymentDTO;
 import shop.util.DBUtil;
+import shop.util.StringUtil;
 import shop.util.Paging;
 
 /*
@@ -291,7 +292,7 @@ public class OrderDAO {
 		List<Object> args = new ArrayList<Object>();
 		if (keyword != null && keyword.length() > 0) {
 			where.append(" AND (order_no LIKE ? OR login_id LIKE ? OR receiver LIKE ?)");
-			String like = "%" + keyword + "%";
+			String like = StringUtil.likeContains(keyword);
 			args.add(like);
 			args.add(like);
 			args.add(like);
