@@ -4,6 +4,9 @@
 
 </div>
 
+> [!IMPORTANT]
+> **이 폴더는 UI 편집 전용 소스다.** `UI` 브랜치 로컬 체크아웃(`웹프로그래밍응용_기말프로젝트_UI`)으로, CSS · 목업 · 이미지 · `js/ui.js` 등 화면 편집을 위해 쓴다. 제출 산출물인 `main` 에는 병합하지 않으며, 이 폴더의 문서는 이 README 하나만 둔다.
+
 #### Languages
 
 <img src="https://img.shields.io/badge/Java-007396?style=for-the-badge&logo=openjdk&logoColor=white"/>
@@ -65,7 +68,7 @@
 
 > 이 브랜치(`UI`)는 **UI 실험용**이다. `sandbox` 의 구현을 그대로 복제해 시작했으며, 제출 산출물인 `main` 에는 병합하지 않는다.
 
-- **컨셉**: 커스텀 영양제 구매 사이트 (의류 매장에서 전환 중). 사용자가 영양제 종류와 섭취 일수를 직접 골라 필요한 영양소만 구매한다. 판매 단위는 1포(하루분)이고, 낱개 영양제와 미리 구성한 트랙 패키지를 팔며, 함께 먹기를 권장하지 않는 조합에는 경고 문구를 띄운다. 상세는 [docs/CONCEPT.md](docs/CONCEPT.md). 아래 명세는 아직 전환 전(의류) 기준이다.
+- **컨셉**: 커스텀 영양제 구매 사이트 (의류 매장에서 전환 중). 사용자가 영양제 종류와 섭취 일수를 직접 골라 필요한 영양소만 구매한다. 판매 단위는 1포(하루분)이고, 낱개 영양제와 미리 구성한 트랙 패키지를 팔며, 함께 먹기를 권장하지 않는 조합에는 경고 문구를 띄운다. 아래 명세는 아직 전환 전(의류) 기준이다.
 
 - **아키텍처**: Servlet(Controller) · Service · DAO · DTO 4계층 MVC + 역할별 Filter 체인, 뷰는 JSP + JSTL
 - **DB 연동**: Tomcat JNDI DataSource(`jdbc/shop`, commons-dbcp 커넥션 풀) · MySQL 9.6 · 스키마 `webapplication_sandbox`
@@ -75,12 +78,10 @@
 
 | 트랙 | 상태 | 내용 |
 |---|---|---|
-| ERD | 🟢 완료 | 테이블 17 · 뷰 5 · CRUD 매트릭스 · DTO 필드 계약 ([docs/ERD.md](docs/ERD.md), [docs/CRUD.md](docs/CRUD.md)) |
+| ERD | 🟢 완료 | 테이블 17 · 뷰 5 · CRUD 매트릭스 · DTO 필드 계약 |
 | DB Schema | 🟢 구축 완료 | FK 21 · CHECK 8 · UNIQUE 9, ERD 대조 불일치 0 |
 | JSP 배선 | 🟢 전 화면 배선 | 자바 클래스 84 · JSP 39 · 필터 6, Tomcat 실행 검증 완료 |
 | UI / UX | 🟡 청사진 | CSS 17개 · 목업 8개. 디자인 컨셉(색·타이포 값) 전달 대기 |
-
-PM 결정 대기 항목은 [docs/STATUS.md](docs/STATUS.md)에 있다.
 
 ### LLM 기능 (작업 중 — `LLM_integration` 브랜치)
 
@@ -115,8 +116,6 @@ PM 결정 대기 항목은 [docs/STATUS.md](docs/STATUS.md)에 있다.
 ## DB 설계 명세(Database)
 
 ### ERD
-
-상세 명세(공통 규약 · 제약 · 업무 규칙 · 불변식 · DTO 계약)는 [docs/ERD.md](docs/ERD.md)에 있다.
 
 ```mermaid
 erDiagram
@@ -429,7 +428,6 @@ erDiagram
 | CSS | `base/` 3 · `components/` 6 · `pages/` 8 — 로드 순서 reset → variables → layout → components → pages |
 | 팝업 | `<dialog>` + `showModal()` 인페이지 모달 |
 | 목업 | `WebContents/mockup/` 8개 (헤더 4종 · 구매 영역 3종 포함) |
-| 결정 기록 | [WebContents/css/DECISIONS.md](WebContents/css/DECISIONS.md) — 토큰 이름 · 클래스 네이밍 · 팝업 패턴 |
 
 ---
 
@@ -450,14 +448,13 @@ WebApplication_TermProject/
 │   ├── member/ product/ cart/ order/ mypage/ notice/
 │   ├── admin/            # 관리자 화면
 │   ├── dev/              # 개발자 화면
-│   ├── css/              # base · components · pages + DECISIONS.md
+│   ├── css/              # base · components · pages
 │   ├── mockup/           # 정적 HTML 목업 (UI 트랙)
 │   ├── js/               # ui.js(팝업) · validate.js(폼 검증)
 │   ├── images/ · upload/ # 정적 이미지 · 업로드 (upload 는 git 제외)
 │   ├── META-INF/         # context.xml.example (context.xml 은 git 제외)
 │   └── WEB-INF/          # web.xml · lib/ (라이브러리 6개)
 ├── sql/                  # 00_create_database · schema · data
-├── docs/                 # ERD · CRUD · STATUS · tracks/ (트랙별 현황)
 └── README.md
 ```
 
