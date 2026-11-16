@@ -63,7 +63,7 @@
 
 ## Project Overview
 
-> 이 브랜치(`sandbox`)는 **실험용**이다. 임의로 정한 ERD로 프론트 → 배선 → DB 전 구간을 먼저 구현해 보는 곳이며, 제출 산출물인 `main` 에는 병합하지 않는다.
+> 이 브랜치(`UI`)는 **UI 실험용**이다. `sandbox` 의 구현을 그대로 복제해 시작했으며, 제출 산출물인 `main` 에는 병합하지 않는다.
 
 - **컨셉**: 커스텀 영양제 구매 사이트 (의류 매장에서 전환 중). 사용자가 영양제 종류와 섭취 일수를 직접 골라 필요한 영양소만 구매한다. 판매 단위는 1포(하루분)이고, 낱개 영양제와 미리 구성한 트랙 패키지를 팔며, 함께 먹기를 권장하지 않는 조합에는 경고 문구를 띄운다. 상세는 [docs/CONCEPT.md](docs/CONCEPT.md). 아래 명세는 아직 전환 전(의류) 기준이다.
 
@@ -490,7 +490,7 @@ mysql -D webapplication_sandbox < sql/data.sql
 
 ### Eclipse 설정
 
-1. `File > Import > Existing Projects into Workspace` 로 이 폴더를 연다. 프로젝트명은 `WebApplication_TermProject_Sandbox` 라 `main` 체크아웃과 동시에 Import 할 수 있다.
+1. `File > Import > Existing Projects into Workspace` 로 이 폴더를 연다. 프로젝트명은 `WebApplication_TermProject_UI` 라 `main` 체크아웃과 동시에 Import 할 수 있다.
 2. `WebContents/META-INF/context.xml.example` 을 `context.xml` 로 복사하고 스키마명 · 계정 · 비밀번호를 채운다.
 3. Tomcat 9.0 런타임에 프로젝트를 추가한다.
 
@@ -500,7 +500,7 @@ mysql -D webapplication_sandbox < sql/data.sql
 2. 아래 주소로 접속한다.
 
 ```
-http://localhost:8080/WebApplication_TermProject_Sandbox/
+http://localhost:8080/WebApplication_TermProject_UI/
 ```
 
 | 샘플 계정 | 역할 | 비밀번호 |

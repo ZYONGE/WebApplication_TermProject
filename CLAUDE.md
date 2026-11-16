@@ -1,6 +1,6 @@
 # CLAUDE.md — 프로젝트 규약
 
-> **이 폴더는 샌드박스(`sandbox`)다.** Eclipse 프로젝트명과 Context Root가 `WebApplication_TermProject_Sandbox` 라서 메인과 동시에 Import할 수 있다. 여기서는 `sandbox` 만 푸시한다.
+> **이 폴더는 UI 브랜치(`UI`)다.** Eclipse 프로젝트명과 Context Root가 `WebApplication_TermProject_UI` 라서 메인 · 샌드박스 · LLM과 동시에 Import할 수 있다. 여기서는 `UI` 만 푸시한다.
 
 웹프로그래밍응용 기말프로젝트 · JSP 쇼핑몰 · 3인(Jiyong Kim, Hawon Yoon, Minjun Kim). 규약은 PM 세션이 관리하며, 충돌이 있으면 PM에 확인한다.
 
@@ -8,7 +8,7 @@
 
 - Eclipse Dynamic Web Project · JDK 17 · Tomcat 9.0 (Servlet 4.0 / JSP 2.3) · MySQL 9.6 · Connector/J 9.7
 - 웹 루트 `WebContents/` · 소스 `src/main/java/shop/{controller,service,dao,dto,util}` · 출력 `build/classes`
-- Context Root `WebApplication_TermProject_Sandbox` → `http://localhost:8080/WebApplication_TermProject_Sandbox/`
+- Context Root `WebApplication_TermProject_UI` → `http://localhost:8080/WebApplication_TermProject_UI/`
 - 라이브러리는 `WEB-INF/lib` 의 6개만 쓴다 (connector-j · dbcp · pool · JSTL · cos.jar)
 - 스펙 기준은 `README.md`
 
@@ -45,9 +45,10 @@
 | `main` | `웹프로그래밍응용_기말프로젝트` | 제출 산출물 |
 | `sandbox` | `웹프로그래밍응용_기말프로젝트_Sandbox` (형제 폴더) | 실험. origin에 올라가 있다 |
 | `LLM_integration` | `웹프로그래밍응용_기말프로젝트_LLM` (형제 폴더) | LLM API 연동 실험. 샌드박스에서 갈라졌고 origin에 올라가 있다 |
+| `UI` | `웹프로그래밍응용_기말프로젝트_UI` (형제 폴더) | UI 실험. 샌드박스 `30ba2ac` 에서 그대로 복제했다 |
 
-- 위 세 브랜치 외에는 브랜치 · worktree를 만들지 않는다. 각 폴더는 자기 브랜치만 체크아웃하고 자기 브랜치만 푸시한다.
-- 샌드박스 · LLM 브랜치 결과는 `main` 에 **병합하지 않는다.** PM이 판단으로 정리해 `main` 에서 다시 구현한다.
+- 위 네 브랜치 외에는 브랜치 · worktree를 만들지 않는다. 각 폴더는 자기 브랜치만 체크아웃하고 자기 브랜치만 푸시한다.
+- 샌드박스 · LLM · UI 브랜치 결과는 `main` 에 **병합하지 않는다.** PM이 판단으로 정리해 `main` 에서 다시 구현한다.
 - LLM API 키는 `META-INF/context.xml` 의 `<Environment>` 에만 둔다 (git 제외). 소스 · 커밋 · 문서에 키를 쓰지 않는다.
 - 커밋 전 `git status` 로 확인하고, 자기 파일만 경로로 지정해 스테이징한다. `git add -A` · `git add .` 은 쓰지 않는다. 한 커밋에는 한 트랙만 담는다.
 - `git reset --hard` · `git checkout -- .` · 강제 푸시는 금지한다. 같은 폴더의 다른 세션 작업이 사라진다.
@@ -60,4 +61,5 @@
 - `sandbox`: 4개 트랙 모두 여기서 작업 중이다. 샌드박스의 `docs/ERD.md` 는 실험용 ERD다.
 - `sandbox` 컨셉: 의류 매장 → **커스텀 영양제 구매 사이트** 로 전환 중이다. 명세 · 결정 · 트랙별 영향은 `docs/CONCEPT.md` 가 기준이다.
 - `LLM_integration`: 샌드박스에서 갈라졌다. LLM 기능 3종(리뷰 요약 · 상품설명 요약 · 연관검색어)을 **이 브랜치에서 작업 중**이며, 샌드박스 소스에는 없다.
+- `UI`: 샌드박스 `30ba2ac` 를 그대로 복제했다. 소스는 그 시점의 샌드박스와 같다.
 - 트랙별 진행과 PM 결정 대기 항목은 `docs/STATUS.md` 에 있다.
