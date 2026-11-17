@@ -5,8 +5,8 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<%-- 사이트명 '윤라댄' 은 임시 이름이다 (PM 결정 K9, 2026-11-10). 바꿀 때는 이 파일의 두 곳과 MainServlet 을 함께 고친다 --%>
-<title><c:out value="${empty pageTitle ? '윤라댄' : pageTitle}" /></title>
+<%-- 사이트명 '필살기' 은 임시 이름이다 (PM 결정 K9, 2026-11-10). 바꿀 때는 이 파일의 두 곳과 MainServlet 을 함께 고친다 --%>
+<title><c:out value="${empty pageTitle ? '필살기' : pageTitle}" /></title>
 <!--
   CSS 로드 순서는 CLAUDE.md § 3 Stage 1 이 정한 것이다.
     reset -> variables -> layout -> components/* -> pages/*
@@ -39,7 +39,7 @@
 <div class="wrap">
 
 <header class="page_header">
-	<h1><a href="${ctx}/">윤라댄</a></h1>
+	<h1><a href="${ctx}/">필살기</a></h1>
 
 	<ul class="page_header_util">
 		<c:choose>

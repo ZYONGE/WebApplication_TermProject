@@ -6,6 +6,10 @@
   ★ 컨셉 적용 단계 (2026-11-17) — 브랜드 "필살기 (Pill + 필살기)".
     개인 맞춤 영양제 조합 쇼핑몰. 다크틸(신뢰·헬시) + 볼트옐로우(번개·필살기 임팩트).
     값만 갈아끼웠다 — 변수 구조는 유지 (D-01 · D-04). 신규 토큰은 ※ 표시.
+
+  ※ 사용 규칙
+    - --color-accent(볼트옐로우) 배경 위 글자는 반드시 --color-text(먹색) 사용. 흰 글자 금지(가독성).
+    - --color-success = 시너지 배지("같이 먹으면 좋아요"), --color-warning = 성분 중복 경고 배지.
 */
 
 :root {
@@ -22,12 +26,10 @@
 	--color-primary: #0D5C5C;       /* 헤더 · 주요 버튼 · 링크 */
 	--color-primary-dark: #084242;  /* 호버 · 푸터 · 강조 배경 */
 	--color-primary-light: #E5F4F1; /* 띠 · 머리줄 · 선택 배경 — 연민트 */
-	--color-accent: #FFD540;        /* CTA 버튼 · 배지 · 하이라이트 — 볼트옐로우
-	                                   ※ 위에 올리는 글자는 --color-text(먹색) 사용할 것. 흰글자는 안됨 */
+	--color-accent: #FFD540;        /* CTA 버튼 · 배지 · 하이라이트 — 볼트옐로우 */
 	--color-danger: #E04B4B;        /* 삭제 · 품절 · 에러 */
-	--color-success: #2BA84A;       /* 시너지 배지 — "같이 먹으면 좋아요" */
-	/* ※ 신규 토큰 — 성분 중복 경고 배지용 (조합 빌더 궁합검사) */
-	--color-warning: #F59E0B;
+	--color-success: #2BA84A;       /* 시너지 배지 */
+	--color-warning: #F59E0B;       /* ※ 신규 — 성분 중복 경고 (조합 빌더 궁합검사) */
 
 	/*타이포 — 실습 관례 기준값 (DECISIONS.md 부록 A)*/
 	--font-base: "Pretendard", "Apple SD Gothic Neo", "맑은 고딕", "나눔고딕", "돋움", Dotum, sans-serif;
