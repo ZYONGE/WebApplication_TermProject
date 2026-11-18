@@ -1,7 +1,7 @@
 /*
   폼 검증 — JSP 배선 트랙 소유 (CLAUDE.md § 4.1)
 
-  ★ 규칙은 서버(shop.service.MemberService) 와 같아야 한다.
+  ★ 규칙은 서버(shop.service.MemberServlet) 와 같아야 한다.
     여기서 막는 것은 왕복을 줄이기 위해서일 뿐, 판정의 근거는 언제나 서버다.
     규칙을 고치면 두 곳을 같이 고친다.
 */
@@ -39,7 +39,7 @@
 		},
 		/*
 		  섭취 일수 — 1 ~ data-max (MAX_INTAKE_DAYS 와 재고 중 작은 값).
-		  서버 CartService.checkDays 가 같은 범위를 다시 검사한다.
+		  서버 BaseServlet.checkDays 가 같은 범위를 다시 검사한다.
 		*/
 		intakeDays: {
 			test: function (v, field) {

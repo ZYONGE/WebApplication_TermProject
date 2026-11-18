@@ -67,7 +67,7 @@
 
 - **컨셉**: 커스텀 영양제 구매 사이트 (의류 매장에서 전환 중). 사용자가 영양제 종류와 섭취 일수를 직접 골라 필요한 영양소만 구매한다. 판매 단위는 1포(하루분)이고, 낱개 영양제와 미리 구성한 트랙 패키지를 팔며, 함께 먹기를 권장하지 않는 조합에는 경고 문구를 띄운다. 상세는 [docs/CONCEPT.md](docs/CONCEPT.md). 아래 명세는 아직 전환 전(의류) 기준이다.
 
-- **아키텍처**: Servlet(Controller) · Service · DAO · DTO 4계층 MVC + 역할별 Filter 체인, 뷰는 JSP + JSTL
+- **아키텍처**: `model` · `dao` · `service`(서블릿) 3패키지 MVC, 뷰는 `WEB-INF/views` 의 JSP + JSTL
 - **DB 연동**: Tomcat JNDI DataSource(`jdbc/shop`, commons-dbcp 커넥션 풀) · MySQL 9.6 · 스키마 `webapplication_sandbox`
 - **인증 방식**: 세션 로그인 + 3역할 완전 격리(`USER` 구매 / `ADMIN` 상품·주문 관리 / `DEV` 데이터·상태 조작)
 
@@ -77,8 +77,8 @@
 |---|---|---|
 | ERD | 🟢 완료 | 테이블 17 · 뷰 5 · CRUD 매트릭스 · DTO 필드 계약 ([docs/ERD.md](docs/ERD.md), [docs/CRUD.md](docs/CRUD.md)) |
 | DB Schema | 🟢 구축 완료 | FK 21 · CHECK 8 · UNIQUE 9, ERD 대조 불일치 0 |
-| JSP 배선 | 🟢 전 화면 배선 | 자바 클래스 84 · JSP 39 · 필터 6, Tomcat 실행 검증 완료 |
-| UI / UX | 🟡 청사진 | CSS 17개 · 목업 8개. 디자인 컨셉(색·타이포 값) 전달 대기 |
+| JSP 배선 | 🟢 전 화면 배선 | 자바 클래스 34 (model 12 · dao 10 · service 12) · JSP 47, Tomcat 실행 검증 완료 |
+| UI / UX | 🟡 청사진 | CSS 1개(`style.css`) · 목업 8개. 디자인 컨셉(색·타이포 값) 전달 대기 |
 
 PM 결정 대기 항목은 [docs/STATUS.md](docs/STATUS.md)에 있다.
 
@@ -98,17 +98,17 @@ PM 결정 대기 항목은 [docs/STATUS.md](docs/STATUS.md)에 있다.
 
 | 계층 | 구성 요소 | 역할 |
 |---|---|---|
-| Controller | `shop.controller` — `*Servlet` 24개 + `BaseServlet` | `@WebServlet` 정확 일치 매핑, 요청 파라미터 처리, JSP forward |
-| Model | `shop.service` (9) · `shop.dao` (16) · `shop.dto` (21) | 업무 규칙과 트랜잭션 / SQL 실행 / 화면 데이터 전달 |
-| View | `WebContents/{영역}/*.jsp` (39) | JSTL · EL 렌더링, 팝업은 `<dialog>` 인페이지 모달 |
-| Filter | `shop.filter` (6) | 인코딩 · JSP 직접 접근 차단 · 점검 모드 · 역할별 접근 제어 |
+| Model | `shop.model` (12) | 테이블 한 행을 담는 객체 (Product · Order · Item · Member …) |
+| DAO | `shop.dao` (10) | SQL 실행. `DB` 가 커넥션 · 트랜잭션 · 결과 → 객체 변환을 맡는다 |
+| Service | `shop.service` — `*Servlet` 11개 + `BaseServlet` · `Erd` | `@WebServlet` 정확 일치 매핑, 입력 검사 · 업무 규칙 · 트랜잭션, JSP forward |
+| View | `WebContents/WEB-INF/views/{기능}/*.jsp` (47) | JSTL · EL 렌더링만. 팝업은 `<dialog>` 인페이지 모달 |
 
 ```
-요청 ─▶ EncodingFilter ─▶ JspDirectAccessFilter ─▶ ShopFilter ─▶ UserFilter / AdminFilter / DevFilter
-                                                       │ (점검 모드면 비로그인·USER → /maintenance)
-     ─▶ *Servlet ─▶ *Service ─▶ *DAO ─▶ DBUtil(JNDI jdbc/shop) ─▶ MySQL
-     ◀─ JSP (forward) ◀─ DTO
+요청 ─▶ BaseServlet 입장 검사 (점검 모드 · USER / ADMIN / DEV 영역)
+     ─▶ *Servlet (검사 · 규칙) ─▶ *DAO ─▶ DB(JNDI jdbc/shop) ─▶ MySQL
+     ◀─ WEB-INF/views/*.jsp (forward) ◀─ model 객체
 ```
+인코딩(UTF-8)은 `web.xml` 의 `request-character-encoding` 이 정한다. JSP 는 `WEB-INF` 아래에 있어 브라우저가 직접 열 수 없다.
 
 ---
 
@@ -388,7 +388,7 @@ erDiagram
 
 ### 점검 모드
 
-`system_config.SHOP_STATUS` 가 `MAINTENANCE` 이면 `ShopFilter` 가 비로그인 · USER 요청을 점검 안내로 보낸다. 관리자 · dev 경로, 로그인, 정적 자원은 통과한다.
+`system_config.SHOP_STATUS` 가 `MAINTENANCE` 이면 `BaseServlet` 이 비로그인 · USER 요청을 점검 안내로 보낸다. 관리자 · dev 경로, 로그인, 정적 자원은 통과한다.
 
 ---
 
@@ -396,24 +396,18 @@ erDiagram
 
 서블릿은 `@WebServlet` **정확 일치** 매핑만 쓴다. `/xxx/*` 와일드카드는 JSP 디렉터리와 접두어가 같아 forward 가 같은 서블릿으로 되돌아오는 무한 순환이 생긴다.
 
-| 영역 | URL | Servlet | View |
+| 영역 | URL | Servlet | View (`WEB-INF/views/`) |
 |---|---|---|---|
-| 공개 | `/` · `/main` | `MainServlet` | `main.jsp` |
+| 공개 | `/` · `/main` · `/maintenance` · `/notice/list` · `/notice/view` | `MainServlet` | `main/*.jsp` · `notice/*.jsp` |
 | 공개 | `/member/join` · `/member/login` · `/member/logout` · `/member/idcheck` | `MemberServlet` | `member/*.jsp` |
 | 공개 | `/product/list` · `/product/view` | `ProductServlet` | `product/*.jsp` |
-| 공개 | `/notice/list` · `/notice/view` | `NoticeServlet` | `notice/*.jsp` |
-| 공개 | `/maintenance` | `MaintenanceServlet` | `maintenance.jsp` |
-| USER | `/cart/list` · `/cart/add` · `/cart/update` · `/cart/delete` | `CartServlet` | `cart/list.jsp` |
-| USER | `/wish/toggle` · `/wish/remove` | `WishServlet` | (redirect) |
+| 공개 · USER | `/custom` · `/mypage/combo` · `/mypage/combo/save` · `/mypage/combo/delete` | `CustomServlet` | `custom/index.jsp` · `mypage/combo.jsp` |
+| USER | `/cart/list` · `/cart/add` · `/cart/addAll` · `/cart/update` · `/cart/delete` · `/wish/toggle` · `/wish/remove` | `CartServlet` | `cart/list.jsp` |
 | USER | `/order/form` · `/order/pay` · `/order/complete` · `/order/list` · `/order/view` · `/order/cancel` | `OrderServlet` | `order/*.jsp` |
 | USER | `/mypage/` · `/mypage/edit` · `/mypage/password` · `/mypage/leave` · `/mypage/address` · `/mypage/wishlist` · `/mypage/review` · `/mypage/qna` | `MypageServlet` | `mypage/*.jsp` |
-| ADMIN | `/admin/dashboard` | `AdminDashboardServlet` | `admin/dashboard.jsp` |
-| ADMIN | `/admin/products` · `/admin/categories` | `AdminProductServlet` · `AdminCategoryServlet` | `admin/*.jsp` |
-| ADMIN | `/admin/orders` · `/admin/members` | `AdminOrderServlet` · `AdminMemberServlet` | `admin/*.jsp` |
-| ADMIN | `/admin/qna` · `/admin/notices` · `/admin/reviews` | `AdminQnaServlet` · `AdminNoticeServlet` · `AdminReviewServlet` | `admin/*.jsp` |
-| DEV | `/dev/` · `/dev/state` | `DevHubServlet` · `DevStateServlet` | `dev/*.jsp` |
-| DEV | `/dev/data` · `/dev/erd` · `/dev/seed` | `DevDataServlet` · `DevErdServlet` · `DevSeedServlet` | `dev/*.jsp` |
-| DEV | `/dev/loginAs` · `/dev/loginAs/return` · `/dev/log` | `DevLoginAsServlet` · `DevLogServlet` | `dev/*.jsp` |
+| ADMIN | `/admin/dashboard` · `/admin/orders` · `/admin/members` · `/admin/notices` · `/admin/qna` · `/admin/reviews` | `AdminServlet` | `admin/*.jsp` |
+| ADMIN | `/admin/products` · `/admin/categories` · `/admin/conflicts` | `AdminProductServlet` | `admin/*.jsp` |
+| DEV | `/dev/` · `/dev/state` · `/dev/data` · `/dev/erd` · `/dev/seed` · `/dev/log` · `/dev/loginAs` · `/dev/loginAs/return` | `DevServlet` | `dev/*.jsp` |
 
 팝업(문의 · 리뷰 · 배송지 · 상품 등록 · 운송장 · 답변 · 공지)은 별도 라우트 없이 부모 화면에 포함되며, 부모 화면의 URL 로 제출한다.
 
@@ -421,12 +415,12 @@ erDiagram
 
 ## UI
 
-현재 CSS 는 **청사진** 단계다. 흰 바탕에 객체 종류(이미지 · 입력 · 버튼 · 데이터 · 팝업 · 내비 · 상태)를 색으로 구분해 배선 확인용으로 쓰며, 디자인 컨셉이 전달되면 `css/base/variables.css` 의 토큰 값만 교체한다.
+현재 CSS 는 **청사진** 단계다. 흰 바탕에 객체 종류(이미지 · 입력 · 버튼 · 데이터 · 팝업 · 내비 · 상태)를 색으로 구분해 배선 확인용으로 쓰며, 디자인 컨셉이 전달되면 `css/style.css` 맨 위 `:root` 의 토큰 값만 교체한다.
 
 | 항목 | 현재 |
 |---|---|
 | 레이아웃 | 고정폭 1200px 중앙 정렬 (반응형 범위 외) |
-| CSS | `base/` 3 · `components/` 6 · `pages/` 8 — 로드 순서 reset → variables → layout → components → pages |
+| CSS | `css/style.css` 한 파일 — 기본 → 공통 부품 → 화면별 순서 |
 | 팝업 | `<dialog>` + `showModal()` 인페이지 모달 |
 | 목업 | `WebContents/mockup/` 8개 (헤더 4종 · 구매 영역 3종 포함) |
 | 결정 기록 | [WebContents/css/DECISIONS.md](WebContents/css/DECISIONS.md) — 토큰 이름 · 클래스 네이밍 · 팝업 패턴 |
@@ -438,24 +432,22 @@ erDiagram
 ```
 WebApplication_TermProject/
 ├── src/main/java/shop/
-│   ├── controller/       # Servlet 24 + BaseServlet
-│   ├── service/          # 업무 규칙 · 트랜잭션
-│   ├── dao/              # SQL 실행
-│   ├── dto/              # 화면 데이터 객체
-│   ├── filter/           # Encoding · JspDirectAccess · Shop · User · Admin · Dev
-│   └── util/             # DBUtil(JNDI) · Paging · RoleUtil 등
+│   ├── model/            # 테이블 한 행 객체 (Product · Order · Item · Member …)
+│   ├── dao/              # SQL 실행 — DB(JNDI · 트랜잭션) + 테이블 묶음별 DAO
+│   └── service/          # Servlet 11 + BaseServlet(입장 검사) · Erd(ERD 그림)
 ├── WebContents/          # 웹 루트
-│   ├── main.jsp · maintenance.jsp
-│   ├── common/           # header · footer · paging · error404 · error500
-│   ├── member/ product/ cart/ order/ mypage/ notice/
-│   ├── admin/            # 관리자 화면
-│   ├── dev/              # 개발자 화면
-│   ├── css/              # base · components · pages + DECISIONS.md
+│   ├── WEB-INF/
+│   │   ├── views/        # JSP — 기능별 폴더
+│   │   │   ├── common/   # header · footer · paging · warnbox · prodcard · 메뉴 · 오류
+│   │   │   ├── main/ notice/ member/ product/ custom/ cart/ order/ mypage/
+│   │   │   └── admin/ dev/
+│   │   ├── web.xml
+│   │   └── lib/          # 라이브러리 6개
+│   ├── css/style.css     # 스타일 한 파일
+│   ├── js/               # ui.js(팝업 · 탭 · 메뉴) · validate.js(폼 검증) · custom.js(조합 계산)
 │   ├── mockup/           # 정적 HTML 목업 (UI 트랙)
-│   ├── js/               # ui.js(팝업) · validate.js(폼 검증)
 │   ├── images/ · upload/ # 정적 이미지 · 업로드 (upload 는 git 제외)
-│   ├── META-INF/         # context.xml.example (context.xml 은 git 제외)
-│   └── WEB-INF/          # web.xml · lib/ (라이브러리 6개)
+│   └── META-INF/         # context.xml.example (context.xml 은 git 제외)
 ├── sql/                  # 00_create_database · schema · data
 ├── docs/                 # ERD · CRUD · STATUS · tracks/ (트랙별 현황)
 └── README.md

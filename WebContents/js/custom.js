@@ -2,7 +2,7 @@
   섭취 일수 선택 · 조합 탭 즉시 계산 — JSP 배선 트랙 소유 (IMPACT K11)
 
   ★ 여기서 하는 계산은 편의일 뿐이다. 합계 · 경고 · 담기 가능 여부의 판정은
-    담을 때 서버(CartService.addAll · IntakeService)가 다시 한다.
+    담을 때 서버(CartServlet · ConflictDAO)가 다시 한다.
   ★ 금지 조합 목록은 서버가 페이지에 데이터(#customConflicts)로 심어 준다. 외부 요청은 없다.
 
   1. 섭취 일수 빠른 선택 — 상품상세 · 조합 탭 공통
@@ -149,7 +149,7 @@
 		document.getElementById("customCount").textContent = picked.length;
 		document.getElementById("customEmpty").hidden = picked.length > 0;
 
-		/* 합계 · 배송비 미리보기 — 서버 ConfigService.calculateDeliveryFee 와 같은 식 */
+		/* 합계 · 배송비 미리보기 — 서버 ConfigDAO.deliveryFee 와 같은 식 */
 		var total = pack * days;
 		var fee = total <= 0 ? 0 : (total >= freeMin ? 0 : baseFee);
 		document.getElementById("sumPack").textContent = fmt(pack);

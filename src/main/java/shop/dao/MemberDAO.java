@@ -1,199 +1,55 @@
 package shop.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import shop.dto.MemberDTO;
-import shop.dto.PageDTO;
-import shop.util.DBUtil;
-import shop.util.StringUtil;
-import shop.util.Paging;
+import shop.model.Address;
+import shop.model.Member;
+import shop.model.Page;
 
-/*
-  member — 회원.
-
-  물리 삭제가 없다. 주문 · 리뷰가 FK 로 참조하므로 탈퇴는 status = 'LEFT' 로 처리한다.
-  (CRUD.md § 4)
-*/
+/* 회원 · 배송지 (member, address) */
 public class MemberDAO {
 
-	private static final String COLUMNS =
-		"member_id, login_id, password, name, email, phone, role, status, created_at";
-
-	public MemberDTO findByLoginId(String loginId) throws SQLException {
-		String sql = "SELECT " + COLUMNS + " FROM member WHERE login_id = ?";
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			conn = DBUtil.getConnection();
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, loginId);
-			rs = pstmt.executeQuery();
-			return rs.next() ? map(rs) : null;
-		} finally {
-			DBUtil.close(rs, pstmt, conn);
-		}
+	public static Member byLoginId(String loginId) throws SQLException {
+		return DB.one(Member.class, "SELECT * FROM member WHERE login_id = ?", loginId);
 	}
 
-	public MemberDTO findById(int memberId) throws SQLException {
-		String sql = "SELECT " + COLUMNS + " FROM member WHERE member_id = ?";
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			conn = DBUtil.getConnection();
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, memberId);
-			rs = pstmt.executeQuery();
-			return rs.next() ? map(rs) : null;
-		} finally {
-			DBUtil.close(rs, pstmt, conn);
-		}
+	public static Member byId(int memberId) throws SQLException {
+		return DB.one(Member.class, "SELECT * FROM member WHERE member_id = ?", memberId);
 	}
 
-	public boolean existsLoginId(String loginId) throws SQLException {
-		return exists("SELECT 1 FROM member WHERE login_id = ?", loginId);
+	public static boolean exists(String column, String value, int exceptId) throws SQLException {
+		return DB.number("SELECT COUNT(*) FROM member WHERE " + column + " = ? AND member_id <> ?", value, exceptId) > 0;
 	}
 
-	public boolean existsEmail(String email) throws SQLException {
-		return exists("SELECT 1 FROM member WHERE email = ?", email);
-	}
-
-	/* 수정 화면용 — 자기 자신은 중복에서 제외한다. */
-	public boolean existsEmailExcept(String email, int memberId) throws SQLException {
-		String sql = "SELECT 1 FROM member WHERE email = ? AND member_id <> ?";
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			conn = DBUtil.getConnection();
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, email);
-			pstmt.setInt(2, memberId);
-			rs = pstmt.executeQuery();
-			return rs.next();
-		} finally {
-			DBUtil.close(rs, pstmt, conn);
-		}
-	}
-
-	private boolean exists(String sql, String value) throws SQLException {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			conn = DBUtil.getConnection();
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, value);
-			rs = pstmt.executeQuery();
-			return rs.next();
-		} finally {
-			DBUtil.close(rs, pstmt, conn);
-		}
-	}
-
-	public int insert(MemberDTO member) throws SQLException {
-		String sql = "INSERT INTO member (login_id, password, name, email, phone, role, status)"
-				   + " VALUES (?, ?, ?, ?, ?, 'USER', 'ACTIVE')";
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			conn = DBUtil.getConnection();
-			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			pstmt.setString(1, member.getLoginId());
-			pstmt.setString(2, member.getPassword());
-			pstmt.setString(3, member.getName());
-			pstmt.setString(4, member.getEmail());
-			pstmt.setString(5, member.getPhone());
-			pstmt.executeUpdate();
-			rs = pstmt.getGeneratedKeys();
-			return rs.next() ? rs.getInt(1) : 0;
-		} finally {
-			DBUtil.close(rs, pstmt, conn);
-		}
-	}
-
-	/* 정보 수정 — 비밀번호는 입력이 있을 때만 바꾸므로 별도 메서드로 분리한다. */
-	public int update(MemberDTO member) throws SQLException {
-		String sql = "UPDATE member SET name = ?, email = ?, phone = ? WHERE member_id = ?";
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		try {
-			conn = DBUtil.getConnection();
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, member.getName());
-			pstmt.setString(2, member.getEmail());
-			pstmt.setString(3, member.getPhone());
-			pstmt.setInt(4, member.getMemberId());
-			return pstmt.executeUpdate();
-		} finally {
-			DBUtil.close(pstmt, conn);
-		}
-	}
-
-	public int updatePassword(int memberId, String password) throws SQLException {
-		String sql = "UPDATE member SET password = ? WHERE member_id = ?";
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		try {
-			conn = DBUtil.getConnection();
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, password);
-			pstmt.setInt(2, memberId);
-			return pstmt.executeUpdate();
-		} finally {
-			DBUtil.close(pstmt, conn);
-		}
-	}
-
-	/* 탈퇴 — 소프트 삭제 */
-	public int leave(int memberId) throws SQLException {
-		String sql = "UPDATE member SET status = 'LEFT' WHERE member_id = ? AND status = 'ACTIVE'";
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		try {
-			conn = DBUtil.getConnection();
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, memberId);
-			return pstmt.executeUpdate();
-		} finally {
-			DBUtil.close(pstmt, conn);
-		}
-	}
-
-	/*
-	  관리자 탈퇴 처리 — 트랜잭션에 참여한다 (admin_log 와 함께 커밋).
-	  역할은 바꾸지 않는다. 역할 변경 경로는 존재하지 않는다 (ERD § 5.3 — 역할 불변).
-	  대상은 USER 로 한정한다 — 운영 계정을 화면에서 지울 수 없게.
-	*/
-	public int leaveByAdmin(Connection conn, int memberId) throws SQLException {
-		String sql = "UPDATE member SET status = 'LEFT'"
-				   + " WHERE member_id = ? AND status = 'ACTIVE' AND role = 'USER'";
-		PreparedStatement pstmt = null;
-		try {
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, memberId);
-			return pstmt.executeUpdate();
-		} finally {
-			DBUtil.close(pstmt);
-		}
-	}
-
-	/* 관리자 회원 목록 — 집계는 v_admin_member 가 들고 있다. */
-	public PageDTO<MemberDTO> findPage(String keyword, String role, int page, int size)
+	public static void insert(String loginId, String password, String name, String email, String phone)
 			throws SQLException {
-		StringBuilder where = new StringBuilder(" WHERE 1 = 1");
+		DB.update("INSERT INTO member (login_id, password, name, email, phone, role, status)"
+				+ " VALUES (?, ?, ?, ?, ?, 'USER', 'ACTIVE')", loginId, password, name, email, phone);
+	}
+
+	public static void update(int memberId, String name, String email, String phone) throws SQLException {
+		DB.update("UPDATE member SET name = ?, email = ?, phone = ? WHERE member_id = ?", name, email, phone, memberId);
+	}
+
+	public static void updatePassword(int memberId, String password) throws SQLException {
+		DB.update("UPDATE member SET password = ? WHERE member_id = ?", password, memberId);
+	}
+
+	/* 탈퇴 — onlyUser 면 일반 회원만 (관리자 처리) */
+	public static int leave(int memberId, boolean onlyUser) throws SQLException {
+		return DB.update("UPDATE member SET status = 'LEFT' WHERE member_id = ? AND status = 'ACTIVE'"
+				+ (onlyUser ? " AND role = 'USER'" : ""), memberId);
+	}
+
+	/* 회원 목록 (관리자) — 아이디 · 이름 · 이메일 검색, 역할 필터 */
+	public static Page<Member> page(String keyword, String role, int page, int size) throws SQLException {
+		StringBuilder where = new StringBuilder("FROM member WHERE 1 = 1");
 		List<Object> args = new ArrayList<Object>();
 		if (keyword != null && keyword.length() > 0) {
 			where.append(" AND (login_id LIKE ? OR name LIKE ? OR email LIKE ?)");
-			String like = StringUtil.likeContains(keyword);
+			String like = ProductDAO.like(keyword);
 			args.add(like);
 			args.add(like);
 			args.add(like);
@@ -202,65 +58,80 @@ public class MemberDAO {
 			where.append(" AND role = ?");
 			args.add(role);
 		}
+		return DB.page(Member.class, "SELECT *", where.toString(), "ORDER BY member_id DESC", page, size, args);
+	}
 
-		int total = count("SELECT COUNT(*) FROM member" + where, args);
-		String sql = "SELECT " + COLUMNS + " FROM member" + where
-				   + " ORDER BY member_id DESC LIMIT ? OFFSET ?";
+	/* ---------- 배송지 ---------- */
 
-		List<MemberDTO> list = new ArrayList<MemberDTO>();
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+	/* 기본 배송지가 맨 위, 나머지는 최근 것부터 */
+	public static List<Address> addresses(int memberId) throws SQLException {
+		return DB.list(Address.class, "SELECT * FROM address WHERE member_id = ?"
+				+ " ORDER BY (is_default = 'Y') DESC, addr_id DESC", memberId);
+	}
+
+	public static Address defaultAddress(int memberId) throws SQLException {
+		return DB.one(Address.class, "SELECT * FROM address WHERE member_id = ? AND is_default = 'Y' LIMIT 1", memberId);
+	}
+
+	public static Address address(int addrId, int memberId) throws SQLException {
+		return DB.one(Address.class, "SELECT * FROM address WHERE addr_id = ? AND member_id = ?", addrId, memberId);
+	}
+
+	/* 저장 — 기본으로 지정하면 다른 배송지의 기본 표시를 먼저 지운다. 고칠 배송지가 없으면 false */
+	public static boolean saveAddress(int addrId, int memberId, String addrName, String receiver, String receiverPhone,
+			String zipcode, String addr1, String addr2, boolean asDefault) throws SQLException {
+		DB.begin();
 		try {
-			conn = DBUtil.getConnection();
-			pstmt = conn.prepareStatement(sql);
-			int i = bind(pstmt, args);
-			pstmt.setInt(i++, Paging.normalizeSize(size));
-			pstmt.setInt(i, Paging.offset(page, size));
-			rs = pstmt.executeQuery();
-			while (rs.next()) {
-				list.add(map(rs));
+			if (asDefault) {
+				DB.update("UPDATE address SET is_default = 'N' WHERE member_id = ?", memberId);
 			}
+			String flag = asDefault ? "Y" : "N";
+			int n;
+			if (addrId > 0) {
+				n = DB.update("UPDATE address SET addr_name = ?, receiver = ?, receiver_phone = ?, zipcode = ?,"
+						+ " addr1 = ?, addr2 = ?, is_default = ? WHERE addr_id = ? AND member_id = ?",
+						addrName, receiver, receiverPhone, zipcode, addr1, addr2, flag, addrId, memberId);
+			} else {
+				n = DB.update("INSERT INTO address (member_id, addr_name, receiver, receiver_phone, zipcode, addr1, addr2,"
+						+ " is_default) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+						memberId, addrName, receiver, receiverPhone, zipcode, addr1, addr2, flag);
+			}
+			if (n > 0) {
+				DB.commit();
+			}
+			return n > 0;
 		} finally {
-			DBUtil.close(rs, pstmt, conn);
+			DB.end();
 		}
-		return new PageDTO<MemberDTO>(list, page, size, total);
 	}
 
-	private int count(String sql, List<Object> args) throws SQLException {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+	/* 기본 배송지 바꾸기 — 대상이 없으면 false (아무것도 바꾸지 않음) */
+	public static boolean setDefault(int addrId, int memberId) throws SQLException {
+		DB.begin();
 		try {
-			conn = DBUtil.getConnection();
-			pstmt = conn.prepareStatement(sql);
-			bind(pstmt, args);
-			rs = pstmt.executeQuery();
-			return rs.next() ? rs.getInt(1) : 0;
+			DB.update("UPDATE address SET is_default = 'N' WHERE member_id = ?", memberId);
+			if (DB.update("UPDATE address SET is_default = 'Y' WHERE addr_id = ? AND member_id = ?", addrId, memberId) == 0) {
+				return false;
+			}
+			DB.commit();
+			return true;
 		} finally {
-			DBUtil.close(rs, pstmt, conn);
+			DB.end();
 		}
 	}
 
-	private int bind(PreparedStatement pstmt, List<Object> args) throws SQLException {
-		int i = 1;
-		for (Object arg : args) {
-			pstmt.setObject(i++, arg);
+	/* 삭제 — 기본 배송지를 지웠으면 가장 최근 배송지를 기본으로 */
+	public static void deleteAddress(Address target) throws SQLException {
+		DB.begin();
+		try {
+			DB.update("DELETE FROM address WHERE addr_id = ? AND member_id = ?", target.getAddrId(), target.getMemberId());
+			if ("Y".equals(target.getIsDefault())) {
+				DB.update("UPDATE address SET is_default = 'Y' WHERE member_id = ? ORDER BY addr_id DESC LIMIT 1",
+						target.getMemberId());
+			}
+			DB.commit();
+		} finally {
+			DB.end();
 		}
-		return i;
-	}
-
-	private MemberDTO map(ResultSet rs) throws SQLException {
-		MemberDTO dto = new MemberDTO();
-		dto.setMemberId(rs.getInt("member_id"));
-		dto.setLoginId(rs.getString("login_id"));
-		dto.setPassword(rs.getString("password"));
-		dto.setName(rs.getString("name"));
-		dto.setEmail(rs.getString("email"));
-		dto.setPhone(rs.getString("phone"));
-		dto.setRole(rs.getString("role"));
-		dto.setStatus(rs.getString("status"));
-		dto.setCreatedAt(rs.getTimestamp("created_at"));
-		return dto;
 	}
 }

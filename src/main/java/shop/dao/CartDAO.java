@@ -1,182 +1,119 @@
 package shop.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import shop.dto.CartItemDTO;
-import shop.util.DBUtil;
+import shop.model.Combo;
+import shop.model.Item;
 
-/*
-  cart — 장바구니.
-
-  ★ 노출 조건을 붙이지 않는다 (CRUD.md § 2 주의).
-    사용자가 담아 둔 자기 기록이므로 숨김 · 품절이어도 보여주고,
-    CartItemDTO.isOrderable() 로 주문 대상에서만 뺀다.
-
-  ★ quantity 는 섭취 일수(= 포 수)다 (ERD § 7.1).
-    같은 상품을 다시 담으면 일수를 덮어쓴다 — 합산하지 않는다.
-    헤더 배지는 일수 합이 아니라 줄 수다.
-*/
+/* 장바구니 · 찜 · 내 조합 (cart, wishlist, combo, combo_item) */
 public class CartDAO {
 
-	private static final String SELECT_BASE =
-		"SELECT ct.cart_id, ct.member_id, ct.product_id, ct.quantity,"
-	  + "       p.product_type, p.name AS product_name, p.thumbnail, p.status, p.price, p.stock"
-	  + "  FROM cart ct"
-	  + "  JOIN product p ON p.product_id = ct.product_id";
+	private static final String PRODUCT_COLS =
+		"p.product_type, p.name AS product_name, p.thumbnail, p.status, p.price, p.stock";
 
-	public List<CartItemDTO> findByMember(int memberId) throws SQLException {
-		String sql = SELECT_BASE + " WHERE ct.member_id = ? ORDER BY ct.cart_id DESC";
-		List<CartItemDTO> list = new ArrayList<CartItemDTO>();
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+	/* 장바구니 — newestFirst 면 최근에 담은 것부터 */
+	public static List<Item> cart(int memberId, boolean newestFirst) throws SQLException {
+		return DB.list(Item.class, "SELECT ct.*, " + PRODUCT_COLS
+				+ " FROM cart ct JOIN product p ON p.product_id = ct.product_id WHERE ct.member_id = ?"
+				+ " ORDER BY ct.cart_id" + (newestFirst ? " DESC" : ""), memberId);
+	}
+
+	public static int countCart(int memberId) throws SQLException {
+		return DB.number("SELECT COUNT(*) FROM cart WHERE member_id = ?", memberId);
+	}
+
+	/* 담기 — 이미 담긴 상품이면 일수를 새 값으로 바꾼다 */
+	public static void add(int memberId, int productId, int days) throws SQLException {
+		DB.update("INSERT INTO cart (member_id, product_id, quantity) VALUES (?, ?, ?)"
+				+ " ON DUPLICATE KEY UPDATE quantity = ?", memberId, productId, days, days);
+	}
+
+	public static int updateDays(int cartId, int memberId, int days) throws SQLException {
+		return DB.update("UPDATE cart SET quantity = ? WHERE cart_id = ? AND member_id = ?", days, cartId, memberId);
+	}
+
+	public static void delete(int cartId, int memberId) throws SQLException {
+		DB.update("DELETE FROM cart WHERE cart_id = ? AND member_id = ?", cartId, memberId);
+	}
+
+	public static void clear(int memberId) throws SQLException {
+		DB.update("DELETE FROM cart WHERE member_id = ?", memberId);
+	}
+
+	/* ---------- 찜 ---------- */
+
+	public static List<Item> wishes(int memberId) throws SQLException {
+		return DB.list(Item.class, "SELECT w.*, " + PRODUCT_COLS
+				+ " FROM wishlist w JOIN product p ON p.product_id = w.product_id WHERE w.member_id = ?"
+				+ " ORDER BY w.created_at DESC", memberId);
+	}
+
+	public static boolean isWished(int memberId, int productId) throws SQLException {
+		return DB.number("SELECT COUNT(*) FROM wishlist WHERE member_id = ? AND product_id = ?", memberId, productId) > 0;
+	}
+
+	public static int countWishes(int memberId) throws SQLException {
+		return DB.number("SELECT COUNT(*) FROM wishlist WHERE member_id = ?", memberId);
+	}
+
+	public static void wish(int memberId, int productId) throws SQLException {
+		DB.update("INSERT IGNORE INTO wishlist (member_id, product_id) VALUES (?, ?)", memberId, productId);
+	}
+
+	public static void unwish(int memberId, int productId) throws SQLException {
+		DB.update("DELETE FROM wishlist WHERE member_id = ? AND product_id = ?", memberId, productId);
+	}
+
+	/* ---------- 내 조합 ---------- */
+
+	private static final String COMBO = "SELECT cb.*,"
+		+ " (SELECT COUNT(*) FROM combo_item ci WHERE ci.combo_id = cb.combo_id) AS item_count FROM combo cb";
+
+	public static List<Combo> combos(int memberId) throws SQLException {
+		return DB.list(Combo.class, COMBO + " WHERE cb.member_id = ? ORDER BY cb.updated_at DESC, cb.combo_id DESC", memberId);
+	}
+
+	/* 조합 하나 — 담긴 영양제까지 (내 조합이 아니면 null) */
+	public static Combo combo(int comboId, int memberId) throws SQLException {
+		Combo combo = DB.one(Combo.class, COMBO + " WHERE cb.combo_id = ? AND cb.member_id = ?", comboId, memberId);
+		if (combo != null) {
+			combo.setItems(DB.list(Item.class, "SELECT ci.*, " + PRODUCT_COLS
+					+ " FROM combo_item ci JOIN product p ON p.product_id = ci.product_id WHERE ci.combo_id = ?"
+					+ " ORDER BY ci.sort_order, ci.product_id", comboId));
+		}
+		return combo;
+	}
+
+	public static int comboIdByName(int memberId, String name) throws SQLException {
+		return DB.number("SELECT combo_id FROM combo WHERE member_id = ? AND name = ?", memberId, name);
+	}
+
+	/* 저장 — comboId 가 있으면 덮어쓰고, 없으면 새로 만든다. 저장된 조합 id 를 돌려준다 */
+	public static int saveCombo(int comboId, int memberId, String name, int days, Collection<Integer> productIds)
+			throws SQLException {
+		DB.begin();
 		try {
-			conn = DBUtil.getConnection();
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, memberId);
-			rs = pstmt.executeQuery();
-			while (rs.next()) {
-				list.add(map(rs));
+			if (comboId > 0) {
+				DB.update("UPDATE combo SET days = ?, updated_at = CURRENT_TIMESTAMP WHERE combo_id = ? AND member_id = ?",
+						days, comboId, memberId);
+				DB.update("DELETE FROM combo_item WHERE combo_id = ?", comboId);
+			} else {
+				comboId = DB.insert("INSERT INTO combo (member_id, name, days) VALUES (?, ?, ?)", memberId, name, days);
 			}
-			return list;
-		} finally {
-			DBUtil.close(rs, pstmt, conn);
-		}
-	}
-
-	/* 결제 트랜잭션 안에서 다시 읽는다 — 커넥션을 공유해야 같은 트랜잭션에서 본다. */
-	public List<CartItemDTO> findByMember(Connection conn, int memberId) throws SQLException {
-		String sql = SELECT_BASE + " WHERE ct.member_id = ? ORDER BY ct.cart_id";
-		List<CartItemDTO> list = new ArrayList<CartItemDTO>();
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, memberId);
-			rs = pstmt.executeQuery();
-			while (rs.next()) {
-				list.add(map(rs));
+			int order = 1;
+			for (Integer id : productIds) {
+				DB.update("INSERT INTO combo_item (combo_id, product_id, sort_order) VALUES (?, ?, ?)", comboId, id, order++);
 			}
-			return list;
+			DB.commit();
+			return comboId;
 		} finally {
-			DBUtil.close(rs);
-			DBUtil.close(pstmt);
+			DB.end();
 		}
 	}
 
-	/*
-	  헤더 배지 — 장바구니 줄 수.
-	  SUM(quantity) 는 일수 합이 되어 버린다 (30일 × 3종 = 90). ERD § 7.1 헤더 배지.
-	*/
-	public int countLines(int memberId) throws SQLException {
-		String sql = "SELECT COUNT(*) FROM cart WHERE member_id = ?";
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			conn = DBUtil.getConnection();
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, memberId);
-			rs = pstmt.executeQuery();
-			return rs.next() ? rs.getInt(1) : 0;
-		} finally {
-			DBUtil.close(rs, pstmt, conn);
-		}
-	}
-
-	/*
-	  담기 — UNIQUE (member_id, product_id) 덕분에 한 문장으로 끝난다.
-	  이미 있으면 일수를 덮어쓴다 (ERD § 7.1 — IMPACT K4).
-	  VALUES() 함수는 MySQL 8.0.20 부터 폐기 예정이라 같은 값을 한 번 더 바인딩한다.
-	*/
-	public int add(int memberId, int productId, int quantity) throws SQLException {
-		Connection conn = null;
-		try {
-			conn = DBUtil.getConnection();
-			return add(conn, memberId, productId, quantity);
-		} finally {
-			DBUtil.close(conn);
-		}
-	}
-
-	/* 조합 담기(/cart/addAll) 는 여러 줄을 한 트랜잭션으로 넣는다 — 커넥션을 밖에서 받는다. */
-	public int add(Connection conn, int memberId, int productId, int quantity) throws SQLException {
-		String sql = "INSERT INTO cart (member_id, product_id, quantity) VALUES (?, ?, ?)"
-				   + " ON DUPLICATE KEY UPDATE quantity = ?";
-		PreparedStatement pstmt = null;
-		try {
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, memberId);
-			pstmt.setInt(2, productId);
-			pstmt.setInt(3, quantity);
-			pstmt.setInt(4, quantity);
-			return pstmt.executeUpdate();
-		} finally {
-			DBUtil.close(pstmt);
-		}
-	}
-
-	public int updateQuantity(int cartId, int memberId, int quantity) throws SQLException {
-		String sql = "UPDATE cart SET quantity = ? WHERE cart_id = ? AND member_id = ?";
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		try {
-			conn = DBUtil.getConnection();
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, quantity);
-			pstmt.setInt(2, cartId);
-			pstmt.setInt(3, memberId);
-			return pstmt.executeUpdate();
-		} finally {
-			DBUtil.close(pstmt, conn);
-		}
-	}
-
-	public int delete(int cartId, int memberId) throws SQLException {
-		String sql = "DELETE FROM cart WHERE cart_id = ? AND member_id = ?";
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		try {
-			conn = DBUtil.getConnection();
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, cartId);
-			pstmt.setInt(2, memberId);
-			return pstmt.executeUpdate();
-		} finally {
-			DBUtil.close(pstmt, conn);
-		}
-	}
-
-	/* 주문 후 비우기 — 결제 트랜잭션의 마지막 단계 (ERD § 6.1-7) */
-	public int clear(Connection conn, int memberId) throws SQLException {
-		String sql = "DELETE FROM cart WHERE member_id = ?";
-		PreparedStatement pstmt = null;
-		try {
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, memberId);
-			return pstmt.executeUpdate();
-		} finally {
-			DBUtil.close(pstmt);
-		}
-	}
-
-	private CartItemDTO map(ResultSet rs) throws SQLException {
-		CartItemDTO dto = new CartItemDTO();
-		dto.setCartId(rs.getInt("cart_id"));
-		dto.setMemberId(rs.getInt("member_id"));
-		dto.setProductId(rs.getInt("product_id"));
-		dto.setProductType(rs.getString("product_type"));
-		dto.setProductName(rs.getString("product_name"));
-		dto.setThumbnail(rs.getString("thumbnail"));
-		dto.setStatus(rs.getString("status"));
-		dto.setPrice(rs.getInt("price"));
-		dto.setStock(rs.getInt("stock"));
-		dto.setQuantity(rs.getInt("quantity"));
-		return dto;
+	public static int deleteCombo(int comboId, int memberId) throws SQLException {
+		return DB.update("DELETE FROM combo WHERE combo_id = ? AND member_id = ?", comboId, memberId);
 	}
 }
