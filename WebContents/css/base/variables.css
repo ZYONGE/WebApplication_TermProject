@@ -1,0 +1,29 @@
+@charset "utf-8";
+/* ===== 디자인 토큰 (색 · 글꼴 · 간격) ===== */
+:root {
+	--color-bg: #ffffff;
+	--color-surface: #ffffff;
+	--color-text: #1f1f1f;
+	--color-text-weak: #6e6e6e;
+	--color-text-inverse: #ffffff;
+	--color-border: #e2e2e2;
+	--color-border-strong: #bdbdbd;
+	--color-primary: #2b2b2b;
+	--color-primary-dark: #111111;
+	--color-primary-light: #f4f4f4;
+	--color-danger: #b23b3b;
+	--color-success: #3b7a4a;
+	--font-base: "Apple SD Gothic Neo", "맑은 고딕", "나눔고딕", "돋움", Dotum, sans-serif;
+	--font-size-base: 15px;
+	--font-size-small: 13px;
+	--font-size-title: 22px;
+	--line-height-base: 160%;
+	--space-xs: 4px;
+	--space-sm: 8px;
+	--space-md: 16px;
+	--space-lg: 24px;
+	--space-xl: 44px;
+	--layout-width: 1200px;
+	--radius-sm: 4px;
+	--radius-md: 8px;
+}

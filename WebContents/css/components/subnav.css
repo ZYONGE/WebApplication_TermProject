@@ -1,0 +1,28 @@
+@charset "utf-8";
+/* ===== 마이페이지 · 관리자 메뉴 (같은 모양) ===== */
+.my_nav, .admin_nav {
+	display: flex;
+	flex-wrap: wrap;
+	margin-bottom: var(--space-lg);
+	border-bottom: 1px solid var(--color-border-strong);
+}
+.my_nav li, .admin_nav li {
+	margin-right: 0;
+}
+.my_nav a, .admin_nav a {
+	display: block;
+	padding: var(--space-sm) var(--space-md);
+	font-size: var(--font-size-small);
+	color: var(--color-text-weak);
+	text-decoration: none;
+	border-bottom: 2px solid transparent;
+	margin-bottom: -1px;
+}
+.my_nav a:hover, .admin_nav a:hover {
+	color: var(--color-text);
+}
+.my_nav a.on, .admin_nav a.on {
+	font-weight: bold;
+	color: var(--color-text);
+	border-bottom-color: var(--color-primary);
+}

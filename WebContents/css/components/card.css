@@ -1,0 +1,76 @@
+@charset "utf-8";
+/* ===== 상품 카드 ===== */
+.prodlist {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: var(--space-lg);
+	margin-top: 0;
+	margin-bottom: var(--space-lg);
+	padding-left: 0;
+}
+.prodlist > .empty {
+	grid-column: 1 / -1;
+}
+.prodcard {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+.prodcard > a {
+	display: block;
+	width: 100%;
+	color: var(--color-text);
+	text-decoration: none;
+}
+/* 이미지 자리 (상품 카드 · 상세 갤러리 공통) */
+.prodcard_thumb, .prod_gallery > img, .prod_gallery > span, .prod_gallery > p {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	aspect-ratio: 1 / 1;
+	font-size: var(--font-size-small);
+	color: var(--color-text-weak);
+	background-color: var(--color-primary-light);
+}
+.prodcard_thumb {
+	margin-bottom: var(--space-sm);
+	overflow: hidden;
+	border-radius: var(--radius-md);
+}
+.prodcard_thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.prodcard > a:hover .prodcard_name {
+	text-decoration: underline;
+}
+.prodcard_name {
+	display: block;
+	margin-bottom: var(--space-xs);
+}
+.prodcard_price {
+	display: block;
+	font-size: 17px;
+	font-weight: bold;
+}
+.prodcard_badge {
+	display: inline-block;
+	margin-top: var(--space-xs);
+	margin-right: var(--space-xs);
+	padding: 0 var(--space-xs);
+	font-size: var(--font-size-small);
+	font-weight: normal;
+	line-height: var(--line-height-base);
+	color: var(--color-text-weak);
+	vertical-align: middle;
+	background-color: var(--color-primary-light);
+	border-radius: var(--radius-sm);
+}
+.prodcard > .btn {
+	margin-top: var(--space-sm);
+}
+.prodcard.soldout {
+	opacity: 0.5;
+}

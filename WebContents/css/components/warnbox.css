@@ -1,0 +1,60 @@
+@charset "utf-8";
+/* ===== 동시 섭취 경고 ===== */
+.warnbox {
+	margin-top: var(--space-md);
+	margin-bottom: var(--space-md);
+	padding: var(--space-sm) var(--space-md);
+	background-color: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-left: 4px solid var(--color-danger);
+	border-radius: var(--radius-sm);
+}
+.warnbox_title {
+	margin-top: 0;
+	margin-bottom: var(--space-sm);
+	font-size: var(--font-size-base);
+	color: var(--color-danger);
+}
+.warnbox_list {
+	margin: 0;
+	padding-left: 0;
+	list-style: none;
+}
+.warnbox_list li {
+	margin-bottom: var(--space-sm);
+	padding-bottom: var(--space-sm);
+	border-bottom: 1px dashed var(--color-border);
+}
+.warnbox_list li:last-child {
+	margin-bottom: 0;
+	border-bottom-width: 0;
+}
+.warnbox_label {
+	display: inline-block;
+	margin-right: var(--space-sm);
+	padding: 0 var(--space-xs);
+	font-size: var(--font-size-small);
+	color: var(--color-text-inverse);
+	background-color: var(--color-danger);
+	border-radius: var(--radius-sm);
+}
+.warnbox_dup .warnbox_label {
+	color: var(--color-danger);
+	background-color: var(--color-surface);
+	border: 1px solid var(--color-danger);
+}
+.warnbox_note {
+	margin-top: var(--space-sm);
+	margin-bottom: 0;
+	font-size: var(--font-size-small);
+	color: var(--color-text-weak);
+}
+.warnbox_ok {
+	margin-top: var(--space-md);
+	padding: var(--space-xs) var(--space-sm);
+	font-size: var(--font-size-small);
+	color: var(--color-success);
+	border: 1px solid var(--color-border);
+	border-left: 4px solid var(--color-success);
+	border-radius: var(--radius-sm);
+}

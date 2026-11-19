@@ -1,0 +1,79 @@
+@charset "utf-8";
+/* ===== 입력 폼 ===== */
+.formtable_form {
+	max-width: 760px;
+	margin-right: auto;
+	margin-left: auto;
+}
+.formtable {
+	width: 100%;
+	background-color: var(--color-surface);
+	border-top: 2px solid var(--color-text);
+}
+.formtable th {
+	width: 160px;
+	padding: var(--space-sm) var(--space-md);
+	font-size: var(--font-size-small);
+	font-weight: bold;
+	text-align: left;
+	vertical-align: middle;
+	background-color: var(--color-primary-light);
+	border-bottom: 1px solid var(--color-border);
+}
+.formtable td {
+	padding: var(--space-sm) var(--space-md);
+	text-align: left;
+	vertical-align: middle;
+	border-bottom: 1px solid var(--color-border);
+}
+.field, .page_content input[type="text"], .page_content input[type="password"], .page_content input[type="email"], .page_content input[type="number"], .page_content select, .page_content textarea {
+	box-sizing: border-box;
+	min-height: 36px;
+	padding: var(--space-xs) var(--space-sm);
+	color: var(--color-text);
+	background-color: var(--color-surface);
+	border: 1px solid var(--color-border-strong);
+	border-radius: var(--radius-sm);
+}
+.field {
+	width: 100%;
+}
+.page_content input:focus, .page_content select:focus, .page_content textarea:focus {
+	outline: 2px solid var(--color-primary);
+	outline-offset: -1px;
+}
+textarea.field, .page_content textarea {
+	line-height: var(--line-height-base);
+	resize: vertical;
+}
+.page_content input[type="checkbox"], .page_content input[type="radio"] {
+	width: 16px;
+	height: 16px;
+	margin-right: var(--space-xs);
+	vertical-align: middle;
+	accent-color: var(--color-primary);
+}
+.field_help, .warnbox_msg {
+	display: block;
+	margin-top: var(--space-xs);
+	font-size: var(--font-size-small);
+	color: var(--color-text-weak);
+}
+.required {
+	color: var(--color-danger);
+	font-weight: bold;
+}
+.btnstyle {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: var(--space-sm);
+	margin-top: var(--space-lg);
+	padding-top: var(--space-md);
+}
+.btnstyle .btn {
+	min-width: 120px;
+}
+.btnstyle form {
+	margin: 0;
+}

@@ -1,0 +1,43 @@
+@charset "utf-8";
+/* ===== 탭 ===== */
+.tab {
+	margin-bottom: var(--space-md);
+}
+.tab_list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	border-top: 2px solid var(--color-text);
+}
+.tab_list li {
+	border-bottom: 1px solid var(--color-border);
+}
+.tab_btn {
+	display: block;
+	width: 100%;
+	padding: var(--space-sm) var(--space-md);
+	font-family: var(--font-base);
+	font-size: var(--font-size-base);
+	color: var(--color-text);
+	text-align: left;
+	background-color: var(--color-surface);
+	border: 0;
+	border-left: 3px solid transparent;
+	cursor: pointer;
+}
+.tab_btn:hover {
+	background-color: var(--color-primary-light);
+}
+.tab_btn.on {
+	font-weight: bold;
+	background-color: var(--color-primary-light);
+	border-left-color: var(--color-primary);
+}
+.tab_panel {
+	padding: 0;
+}
+.tab_panel h3 {
+	margin-top: 0;
+	margin-bottom: var(--space-sm);
+	font-size: 17px;
+}

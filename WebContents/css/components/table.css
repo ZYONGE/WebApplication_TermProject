@@ -1,0 +1,102 @@
+@charset "utf-8";
+/* ===== 목록 표 ===== */
+.listtable {
+	width: 100%;
+	margin-bottom: var(--space-md);
+	background-color: var(--color-surface);
+	border-top: 2px solid var(--color-text);
+}
+.listtable_head th {
+	padding: var(--space-sm);
+	font-size: var(--font-size-small);
+	font-weight: bold;
+	color: var(--color-text-weak);
+	text-align: left;
+	white-space: nowrap;
+	background-color: var(--color-primary-light);
+	border-bottom: 1px solid var(--color-border-strong);
+}
+.listtable td {
+	padding: var(--space-sm);
+	text-align: left;
+	vertical-align: middle;
+	border-bottom: 1px solid var(--color-border);
+}
+.listtable tbody tr:hover td {
+	background-color: var(--color-primary-light);
+}
+.listtable tr.soldout td, .my_combo_off {
+	color: var(--color-text-weak);
+	text-decoration: line-through;
+}
+.listtable tr.soldout td.col_state, .listtable tr.soldout td.col_action, .listtable tr.soldout td.col_qty {
+	text-decoration: none;
+}
+.listtable tr.disabled td {
+	color: var(--color-text-weak);
+	background-color: var(--color-primary-light);
+}
+.empty {
+	padding-top: var(--space-xl);
+	padding-bottom: var(--space-xl);
+	font-size: var(--font-size-small);
+	color: var(--color-text-weak);
+	text-align: center;
+}
+.listtable td.empty {
+	padding-top: var(--space-xl);
+	padding-bottom: var(--space-xl);
+	text-align: center;
+}
+.listtable tr:hover td.empty {
+	background-color: transparent;
+}
+.col_no {
+	width: 130px;
+}
+.col_name, .col_content, .col_addr {
+	width: auto;
+}
+.listtable td.col_name {
+	min-width: 140px;
+}
+.col_date {
+	width: 110px;
+	white-space: nowrap;
+}
+.col_price, .col_total {
+	width: 110px;
+	text-align: right;
+	white-space: nowrap;
+}
+.listtable td.col_price, .listtable td.col_total, .listtable th.col_price, .listtable th.col_total {
+	text-align: right;
+}
+.col_qty {
+	width: 150px;
+	white-space: nowrap;
+}
+.col_state, .col_rating, .col_check {
+	width: 90px;
+	white-space: nowrap;
+}
+.listtable td.col_state, .listtable th.col_state, .listtable td.col_check, .listtable th.col_check {
+	text-align: center;
+}
+.col_action {
+	width: 150px;
+	white-space: nowrap;
+}
+.listtable td.col_action, .listtable th.col_action {
+	text-align: center;
+}
+.col_writer {
+	width: 100px;
+}
+.qna_answer {
+	margin-top: var(--space-sm);
+	padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-md);
+	font-size: var(--font-size-small);
+	background-color: var(--color-primary-light);
+	border-left: 3px solid var(--color-border-strong);
+}

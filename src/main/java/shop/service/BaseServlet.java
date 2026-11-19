@@ -152,7 +152,7 @@ public abstract class BaseServlet extends HttpServlet {
 
 	/* ---------- 화면 · 이동 ---------- */
 
-	/* /WEB-INF/views/{view}.jsp 를 보여준다 (title 은 브라우저 제목). 머리글이 쓰는 값도 함께 넣는다 */
+	/* /{view}.jsp 를 보여준다 (title 은 브라우저 제목). 머리글이 쓰는 값도 함께 넣는다 */
 	protected void render(HttpServletRequest request, HttpServletResponse response, String view, String title)
 			throws ServletException, IOException, SQLException {
 		request.setAttribute("pageTitle", title);
@@ -162,7 +162,7 @@ public abstract class BaseServlet extends HttpServlet {
 		if (member != null && "USER".equals(member.getRole())) {
 			request.setAttribute("cartCount", CartDAO.countCart(member.getMemberId()));
 		}
-		request.getRequestDispatcher("/WEB-INF/views/" + view + ".jsp").forward(request, response);
+		request.getRequestDispatcher("/" + view + ".jsp").forward(request, response);
 	}
 
 	/* 메뉴용 카테고리 — 판매 중인 상품이 있는 카테고리만 */

@@ -5,7 +5,7 @@
   <!--
     서블릿 주소는 각 서블릿의 @WebServlet 에 있다 (shop.service).
     로그인 · 권한 · 점검 모드 검사는 BaseServlet 이 한다.
-    화면(JSP)은 WEB-INF/views 아래에 있어 브라우저가 직접 열 수 없고, 서블릿을 거쳐야 보인다.
+    화면(JSP)은 WebContents 아래 기능별 폴더에 있고, 서블릿이 값을 담아 forward 한다.
   -->
 
   <!-- 요청 · 응답 글자 인코딩 (한글) -->
@@ -33,14 +33,14 @@
 
   <error-page>
     <error-code>404</error-code>
-    <location>/WEB-INF/views/common/error404.jsp</location>
+    <location>/common/error404.jsp</location>
   </error-page>
   <error-page>
     <error-code>500</error-code>
-    <location>/WEB-INF/views/common/error500.jsp</location>
+    <location>/common/error500.jsp</location>
   </error-page>
   <error-page>
     <exception-type>java.lang.Throwable</exception-type>
-    <location>/WEB-INF/views/common/error500.jsp</location>
+    <location>/common/error500.jsp</location>
   </error-page>
 </web-app>

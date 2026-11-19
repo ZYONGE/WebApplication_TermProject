@@ -1,0 +1,46 @@
+@charset "utf-8";
+/* ===== 장바구니 ===== */
+.cart_table {
+	margin-bottom: var(--space-lg);
+}
+.cart_table .col_qty {
+	width: 220px;
+}
+.cart_table .col_qty form {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-xs);
+	margin: 0;
+}
+.cart_table .col_qty input[type="number"] {
+	width: 72px;
+	text-align: right;
+}
+.cart_table .col_qty .field_help {
+	width: 100%;
+	margin-top: 0;
+}
+.cart_table .col_name .prodcard_badge {
+	margin-top: 0;
+}
+.cart_sum {
+	width: 420px;
+	margin-left: auto;
+}
+.cart_sum th {
+	width: 140px;
+}
+.cart_sum td {
+	text-align: right;
+}
+.cart_sum td .field_help {
+	display: block;
+}
+.cart_sum tr:last-child th, .cart_sum tr:last-child td {
+	font-size: 18px;
+	font-weight: bold;
+}
+.cart_notice {
+	padding: var(--space-sm) var(--space-md);
+}

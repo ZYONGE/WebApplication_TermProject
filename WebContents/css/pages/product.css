@@ -1,0 +1,141 @@
+@charset "utf-8";
+/* ===== 상품 ===== */
+.prod_filter, .admin_filter {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-sm);
+	margin-bottom: var(--space-lg);
+	padding: var(--space-md);
+	background-color: var(--color-primary-light);
+	border-radius: var(--radius-md);
+}
+.prod_filter label {
+	margin-left: var(--space-sm);
+	font-size: var(--font-size-small);
+	font-weight: bold;
+}
+.prod_filter label:first-child {
+	margin-left: 0;
+}
+.prod_filter input[type="text"] {
+	width: 220px;
+}
+.prod_detail {
+	display: grid;
+	grid-template-columns: 480px 1fr;
+	column-gap: var(--space-xl);
+	align-items: start;
+	margin-bottom: var(--space-xl);
+}
+.prod_gallery {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: var(--space-sm);
+}
+.prod_gallery > img, .prod_gallery > span, .prod_gallery > p {
+	object-fit: cover;
+	border-radius: var(--radius-sm);
+}
+.prod_gallery > :first-child {
+	grid-column: 1 / -1;
+	border-radius: var(--radius-md);
+}
+.page_content .prod_info h2 {
+	margin-bottom: var(--space-lg);
+	padding-bottom: 0;
+	font-size: 28px;
+	border-bottom: 0;
+}
+.prod_price {
+	margin-bottom: var(--space-md);
+	padding-bottom: var(--space-md);
+	border-bottom: 1px solid var(--color-border);
+}
+.prod_price strong {
+	font-size: 28px;
+}
+.prod_spec {
+	margin-bottom: var(--space-md);
+	border-top-width: 1px;
+}
+.prod_spec th {
+	width: 90px;
+}
+.prod_buy {
+	margin-top: var(--space-md);
+	padding: var(--space-md);
+	border: 1px solid var(--color-border-strong);
+	border-radius: var(--radius-md);
+}
+.prod_actions {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--space-sm);
+}
+.prod_actions .btn {
+	min-height: 48px;
+	font-size: 16px;
+}
+.prod_buy > .field_help {
+	text-align: center;
+}
+.prod_days {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-xs);
+	margin-bottom: var(--space-sm);
+}
+.prod_days_label {
+	width: 100%;
+	margin-bottom: var(--space-xs);
+	font-size: var(--font-size-small);
+	font-weight: bold;
+}
+.prod_days label {
+	margin-left: var(--space-sm);
+	font-size: var(--font-size-small);
+	color: var(--color-text-weak);
+}
+.prod_days input[type="number"] {
+	width: 72px;
+	text-align: right;
+}
+.prod_days_total {
+	margin-top: var(--space-sm);
+	margin-bottom: var(--space-md);
+	padding-top: var(--space-sm);
+	text-align: right;
+	border-top: 1px dashed var(--color-border);
+}
+.prod_days_total strong {
+	font-size: 20px;
+}
+.prod_wish {
+	display: none;
+}
+.prod_desc, .prod_track, .prod_review, .prod_qna {
+	margin-bottom: var(--space-xl);
+}
+.prod_desc h3, .prod_track h3, .prod_review h3, .prod_qna h3 {
+	margin-top: 0;
+}
+.prod_desc p {
+	padding-top: var(--space-md);
+	padding-bottom: var(--space-md);
+	white-space: pre-line;
+	border-top: 2px solid var(--color-text);
+	border-bottom: 1px solid var(--color-border);
+}
+.prod_track .listtable {
+	margin-bottom: var(--space-sm);
+}
+.prod_qna {
+	position: relative;
+}
+.prod_qna > .btn {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
