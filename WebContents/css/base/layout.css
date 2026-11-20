@@ -9,6 +9,9 @@
       ┌ 로고 ───────── 검색 ─────────── 유틸(로그인 · 장바구니) ┐  1행
       ├ 안내 (계정 전환 · 점검 모드) — 있을 때만 ────────────────┤  2행~
       └ 내비 (카테고리 · 조합 맞추기 · 공지) — 소분류는 펼침 메뉴 ┘  마지막 행
+
+  ★ 필살기 헤더 적용 (2026-11-20).
+    헤더 스티키 고정 + 하단 다크틸 보더 + 로고 이미지 대응 + 조합 맞추기 볼트옐로우 CTA.
 */
 
 .wrap {
@@ -22,23 +25,44 @@
 /*상단*/
 
 .page_header {
+	position: sticky;
+	top: 0;
+	z-index: 100;
 	display: grid;
 	grid-template-columns: auto 1fr auto;
 	column-gap: var(--space-lg);
 	align-items: center;
 	padding-top: var(--space-md);
-	border-bottom: 1px solid var(--color-border-strong);
+	padding-bottom: var(--space-sm);
+	background-color: var(--color-surface);
+	border-bottom: 2px solid var(--color-primary);
+	box-shadow: var(--shadow-card);
 }
 
 .page_header h1 {
 	grid-row: 1;
 	grid-column: 1;
-	font-size: 26px;
-	letter-spacing: 1px;
+	margin: 0;
 }
 
 .page_header h1 a {
-	color: var(--color-text);
+	display: block;
+	line-height: 0;
+}
+
+/*필살기 로고 이미지 — 세로 64px 기준*/
+.page_header h1 img {
+	height: 64px;
+	width: auto;
+}
+
+/*이미지 로고가 없을 때 텍스트 로고 폴백*/
+.page_header h1 a:not(:has(img)) {
+	font-size: 26px;
+	font-weight: bold;
+	letter-spacing: 1px;
+	color: var(--color-primary);
+	line-height: 64px;
 	text-decoration: none;
 }
 
@@ -63,9 +87,15 @@
 	height: 40px;
 	padding-right: var(--space-md);
 	padding-left: var(--space-md);
+	font-size: var(--font-size-base);
 	border: 2px solid var(--color-primary);
 	border-right-width: 0px;
 	border-radius: var(--radius-sm) 0px 0px var(--radius-sm);
+}
+
+.page_search input[type="text"]:focus {
+	outline: none;
+	background-color: var(--color-primary-light);
 }
 
 .page_search .btn {
@@ -144,6 +174,7 @@
 
 .page_nav > ul > li > a:hover,
 .page_nav > ul > li > a.on {
+	color: var(--color-primary);
 	border-bottom-color: var(--color-primary);
 }
 
@@ -187,15 +218,25 @@
 	margin-left: auto;
 }
 
+/*조합 맞추기 — 볼트옐로우 CTA (번개 배지 포함). 글자는 항상 --color-text*/
 .page_nav > ul > li.page_nav_custom > a {
-	color: var(--color-text-inverse);
-	background-color: var(--color-primary);
-	border-radius: var(--radius-sm) var(--radius-sm) 0px 0px;
+	font-weight: bold;
+	color: var(--color-text);
+	background-color: var(--color-accent);
+	border-bottom: none;
+	border-radius: var(--radius-sm);
+	box-shadow: 0px 2px 0px 0px #C9A800;
+}
+
+.page_nav > ul > li.page_nav_custom > a::before {
+	content: "⚡ ";
 }
 
 .page_nav > ul > li.page_nav_custom > a:hover {
-	background-color: var(--color-primary-dark);
-	border-bottom-color: var(--color-primary-dark);
+	color: var(--color-text);
+	background-color: #FFC900;
+	border-bottom: none;
+	transform: translateY(-1px);
 }
 
 /*중앙*/

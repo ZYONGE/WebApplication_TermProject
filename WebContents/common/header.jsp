@@ -39,7 +39,7 @@
 <div class="wrap">
 
 <header class="page_header">
-	<h1><a href="${ctx}/">필살기</a></h1>
+	<h1><a href="#"><img src="../images/logo_pillsalgi.png" alt="필살기"></a></h1>
 
 	<ul class="page_header_util">
 		<c:choose>
