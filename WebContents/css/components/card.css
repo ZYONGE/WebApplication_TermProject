@@ -6,6 +6,12 @@
 
   1200px 폭에 4열 격자. 썸네일은 정사각형 자리를 먼저 잡아 두므로
   이미지가 없을 때("[이미지 없음]")도 카드 높이가 같다.
+
+  ★ 필살기 카드 스타일 (2026-11-20).
+    1) hover 시 카드 살짝 떠오름 + 그림자 + 상품명 틸 강조
+    2) 가격 틸색 굵게 강조
+    3) 썸네일 얇은 테두리
+    4) 강조 배지 2종 (prodcard_badge_gold = 노랑 베스트 / prodcard_badge_new = 틸 신상)
 */
 
 .prodlist {
@@ -33,9 +39,24 @@
 	width: 100%;
 	color: var(--color-text);
 	text-decoration: none;
+	transition: transform 0.15s ease;
 }
 
-/*이미지 자리 — 정사각형*/
+/*호버 — 카드가 살짝 뜨며 그림자 + 상품명 틸 강조*/
+.prodcard > a:hover {
+	transform: translateY(-4px);
+}
+
+.prodcard > a:hover .prodcard_thumb {
+	box-shadow: var(--shadow-card);
+}
+
+.prodcard > a:hover .prodcard_name {
+	color: var(--color-primary);
+	text-decoration: underline;
+}
+
+/*이미지 자리 — 정사각형 + 얇은 테두리*/
 .prodcard_thumb {
 	display: flex;
 	align-items: center;
@@ -47,17 +68,15 @@
 	font-size: var(--font-size-small);
 	color: var(--color-text-weak);
 	background-color: var(--color-primary-light);
+	border: 1px solid var(--color-border);
 	border-radius: var(--radius-md);
+	transition: box-shadow 0.15s ease;
 }
 
 .prodcard_thumb img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
-}
-
-.prodcard > a:hover .prodcard_name {
-	text-decoration: underline;
 }
 
 .prodcard_name {
@@ -67,8 +86,9 @@
 
 .prodcard_price {
 	display: block;
-	font-size: 17px;
+	font-size: 18px;
 	font-weight: bold;
+	color: var(--color-primary);
 }
 
 /*구분 · 별점 · 구성 같은 부가 정보 — 작은 꼬리표*/
@@ -87,6 +107,19 @@
 	vertical-align: middle;
 	background-color: var(--color-primary-light);
 	border-radius: var(--radius-sm);
+}
+
+/*강조 배지 — JSP에서 별도 클래스 조합 (예: class="prodcard_badge prodcard_badge_gold")*/
+.prodcard_badge_gold {
+	font-weight: bold;
+	color: var(--color-text);
+	background-color: var(--color-accent);   /*볼트옐로우 — 글자는 항상 --color-text*/
+}
+
+.prodcard_badge_new {
+	font-weight: bold;
+	color: var(--color-text-inverse);
+	background-color: var(--color-primary);
 }
 
 .prodcard > .btn {
